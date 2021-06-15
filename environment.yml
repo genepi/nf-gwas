@@ -1,0 +1,10 @@
+# You can use this file to create a conda environment for this pipeline:
+#   conda env create -f environment.yml
+name: pre-imputation
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - regenie=1.0.6.7
+  - plink2
