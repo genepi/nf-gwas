@@ -2,7 +2,8 @@ params.project = "test-gwas"
 params.output = "tests/output"
 params.genotyped = "tests/input/example.{bim,bed,fam}"
 params.imputed = "tests/input/example.bgen"
-params.phenotypeFile = "tests/input/phenotype_bin.txt"
+params.phenotypeFile = "tests/input/phenotype.txt"
+params.phenotypeBinary = false
 params.phenotypeColumns = "Y1"
 
 params.qcMaf = "0.01"
@@ -68,7 +69,8 @@ process regenieStep1 {
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypeColumns} \
     --bsize ${params.bsizeStep1} \
-    --bt --lowmem \
+    ${params.phenotypeBinary ? '--bt' : ''} \
+    --lowmem \
     --lowmem-prefix tmp_rg \
     --out fit_bin_out
   """
@@ -95,7 +97,7 @@ process regenieStep2 {
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypeColumns} \
     --bsize ${params.bsizeStep2} \
-    --bt \
+    ${params.phenotypeBinary ? '--bt' : ''} \
     --firth --approx \
     --pThresh ${params.pThreshold} \
     --pred fit_bin_out_pred.list \
