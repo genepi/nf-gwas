@@ -1,27 +1,32 @@
 params.project = "test-gwas"
-params.output = "tests/output"
-params.genotyped = "tests/input/example.{bim,bed,fam}"
-params.imputed = "tests/input/example.bgen"
-params.phenotypeFile = "tests/input/phenotype.txt"
-params.phenotypeBinary = false
-params.phenotypeColumns = "Y1"
+params.output = "tests/output/${params.project}"
 
-params.qcMaf = "0.01"
-params.qcMac = "100"
-params.qcGeno = "0.1"
-params.qcHwe = "1e-15"
-params.qcMind = "0.1"
+params.genotypes_typed = "tests/input/example.{bim,bed,fam}"
+params.genotypes_imputed = "tests/input/example.bgen"
+params.genotypes_imputed_format = "bgen"
 
-params.bsizeStep1 = 100
-params.bsizeStep2 = 200
-params.pThreshold = 0.01
+params.phenotypes_filename = "tests/input/phenotype.txt"
+params.phenotypes_binary_trait = false
+params.phenotypes_columns = ["Y1"]
 
-Channel.fromFilePairs("${params.genotyped}", size: 3).set {genotyped_plink_files_ch}
-Channel.fromFilePairs("${params.genotyped}", size: 3).set {genotyped_plink_files_ch2}
-imputed_files_ch =  Channel.fromPath("${params.imputed}")
-phenotype_file_ch = file(params.phenotypeFile)
-phenotype_file_ch2 = file(params.phenotypeFile)
+params.qc_maf = "0.01"
+params.qc_mac = "100"
+params.qc_geno = "0.1"
+params.qc_hwe = "1e-15"
+params.qc_mind = "0.1"
 
+params.regenie_step1_bsize = 100
+params.regenie_step2_bsize = 200
+params.regenie_pvalue_threshold = 0.01
+
+
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
+imputed_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
+phenotype_file_ch = file(params.phenotypes_filename)
+phenotype_file_ch2 = file(params.phenotypes_filename)
+
+//TODO: if params.genotypes_imputed_format == "vcf" --> define process to convert to bgen or bed?
 
 process qualityControl {
 
@@ -36,17 +41,16 @@ process qualityControl {
   """
   plink2 \
     --bfile ${genotyped_plink_filename} \
-    --maf ${params.qcMaf} \
-    --mac ${params.qcMac} \
-    --geno ${params.qcGeno} \
-    --hwe ${params.qcHwe} \
-    --mind ${params.qcMind} \
+    --maf ${params.qc_maf} \
+    --mac ${params.qc_mac} \
+    --geno ${params.qc_geno} \
+    --hwe ${params.qc_hwe} \
+    --mind ${params.qc_mind} \
     --write-snplist --write-samples --no-id-header \
     --out ${genotyped_plink_filename}.qc
   """
 
 }
-
 
 process regenieStep1 {
 
@@ -61,15 +65,16 @@ process regenieStep1 {
     file "fit_bin_out*" into fit_bin_out_ch
 
   """
+
   regenie \
     --step 1 \
     --bed ${genotyped_plink_filename} \
     --extract ${genotyped_plink_filename}.qc.snplist \
     --keep ${genotyped_plink_filename}.qc.id \
     --phenoFile ${phenotype_file} \
-    --phenoColList  ${params.phenotypeColumns} \
-    --bsize ${params.bsizeStep1} \
-    ${params.phenotypeBinary ? '--bt' : ''} \
+    --phenoColList  ${params.phenotypes_columns.join(',')} \
+    --bsize ${params.regenie_step1_bsize} \
+    ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
     --lowmem-prefix tmp_rg \
     --out fit_bin_out
@@ -95,11 +100,11 @@ process regenieStep2 {
     --step 2 \
     --bgen ${imputed_file} \
     --phenoFile ${phenotype_file} \
-    --phenoColList  ${params.phenotypeColumns} \
-    --bsize ${params.bsizeStep2} \
-    ${params.phenotypeBinary ? '--bt' : ''} \
+    --phenoColList  ${params.phenotypes_columns.join(',')} \
+    --bsize ${params.regenie_step2_bsize} \
+    ${params.phenotypes_binary_trait ? '--bt' : ''} \
     --firth --approx \
-    --pThresh ${params.pThreshold} \
+    --pThresh ${params.regenie_pvalue_threshold} \
     --pred fit_bin_out_pred.list \
     --out gwas_results.${imputed_file.baseName}
 
