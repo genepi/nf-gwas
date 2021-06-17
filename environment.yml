@@ -8,3 +8,15 @@ channels:
 dependencies:
   - regenie=1.0.6.7
   - plink2
+  - r=4.0
+  - r-rmarkdown=2.6
+  - r-ggplot2=3.3.3
+  - r-dplyr=1.0.2
+  - r-dt=0.17
+  - r-qqman
+  - r-htmltools
+  - r-rmdformats=1.0.1
+  - pandoc=2.11.3
+  - cairo
+  - xorg-libxt
+  - fonts-anaconda=1

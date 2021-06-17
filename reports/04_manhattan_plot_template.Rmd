@@ -1,0 +1,33 @@
+---
+title: "Manhattan PLot"
+output:
+  rmdformats::robobook:
+    self_contained: true
+    thumbnails: false
+    lightbox: true
+    gallery: false
+    highlight: tango
+params:
+  project: test-gwas
+  regenie_merged: ../tests/output/test-gwas/03_regenie_step2/gwas_results.example.regenie
+  phenotype: "Y1,Y2"
+---
+
+```{r setup, include=FALSE}
+library(qqman)
+```
+
+
+```{r, echo=FALSE}
+regenieTable = read.table(params$regenie_merged, header=TRUE, sep=" ", dec = ".");
+
+for (phenotype in strsplit(params$phenotype,',')[[1]]) { 
+logpColumn <- paste("LOG10P.",phenotype, sep = "");
+title <- paste(params$project,":",phenotype,sep = "")
+manhattan(regenieTable , main =title, ylim = c(0, 30), chr="CHROM", bp="GENPOS", snp="ID", p=logpColumn, logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+}
+
+```
+
+
+

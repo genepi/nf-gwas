@@ -7,7 +7,7 @@ params.genotypes_imputed_format = "bgen"
 
 params.phenotypes_filename = "tests/input/phenotype.txt"
 params.phenotypes_binary_trait = false
-params.phenotypes_columns = ["Y1"]
+params.phenotypes_columns = ["Y1","Y2"]
 
 params.qc_maf = "0.01"
 params.qc_mac = "100"
@@ -18,6 +18,8 @@ params.qc_mind = "0.1"
 params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
 params.regenie_pvalue_threshold = 0.01
+
+manhattan_plot_template = file("$baseDir/reports/04_manhattan_plot_template.Rmd")
 
 
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
@@ -93,7 +95,7 @@ process regenieStep2 {
     file fit_bin_out from fit_bin_out_ch.collect()
 
   output:
-    file "gwas_results.*" into gwas_results_ch
+    file "gwas_results.*regenie" into gwas_results_ch
 
   """
   regenie \
@@ -112,7 +114,32 @@ process regenieStep2 {
 
 }
 
-//TODO: process manhattanPlot
+//define merge process for several regenie files
+//ls -1v first.regenie | xargs cat | zgrep -hE 'CHROM' > header.txt
+//ls -1v *.regenie | xargs cat | zgrep -hE '^[0-9]' > merged_data.regenie
+//cat header.txt  merged.regenie > merged.regenie
+
+process manhattanPlot {
+
+publishDir "$params.output", mode: 'copy'
+
+  input:
+  file regenie from gwas_results_ch.collect()
+  file manhattan_plot_template
+
+  output:
+  file "*.html" into report_ch
+
+  """
+  Rscript -e "require( 'rmarkdown' ); render('${manhattan_plot_template}',
+    params = list(
+      project = '${params.project}',
+      regenie_merged = '${regenie}',
+      phenotype='${params.phenotypes_columns.join(',')}'
+    ), knit_root_dir='\$PWD', output_file='\$PWD/04_manhattan_plot.html')"
+  """
+}
+
 //TODO: process annotate
 
 workflow.onComplete {
