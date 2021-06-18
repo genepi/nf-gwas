@@ -152,7 +152,7 @@ publishDir "$params.output/04_regenie_merged", mode: 'copy'
   """
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' > header.txt
   ls -1v ${regenie_chromosomes} | xargs cat | zgrep -hE '^[0-9]' > chromosomes_data.regenie
-  cat header.txt chromosomes_data.regenie > merged.regenie
+  cat header.txt chromosomes_data.regenie > ${params.project}.regenie
   """
 
 }
