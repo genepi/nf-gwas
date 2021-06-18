@@ -147,7 +147,7 @@ publishDir "$params.output/04_regenie_merged", mode: 'copy'
   file regenie_chromosomes from gwas_results_ch.collect()
 
   output:
-  file "merged.regenie" into merged_ch
+  file "${params.project}.regenie" into merged_ch
 
   """
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' > header.txt
