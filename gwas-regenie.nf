@@ -37,7 +37,7 @@ if (params.genotypes_imputed_format == "vcf"){
     publishDir "$params.output/01_quality_control", mode: 'copy'
 
     input:
-      set file(imputed_vcf_file) from imputed_vcf_files_ch
+      file(imputed_vcf_file) from imputed_vcf_files_ch
 
     output:
       file "*.bgen" into imputed_files_ch
