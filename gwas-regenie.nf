@@ -19,7 +19,7 @@ params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
 params.regenie_pvalue_threshold = 0.01
 
-manhattan_plot_template = file("$baseDir/reports/04_manhattan_plot_template.Rmd")
+gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 
 
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
@@ -114,31 +114,45 @@ process regenieStep2 {
 
 }
 
-//define merge process for several regenie files
-//ls -1v first.regenie | xargs cat | zgrep -hE 'CHROM' > header.txt
-//ls -1v *.regenie | xargs cat | zgrep -hE '^[0-9]' > merged_data.regenie
-//cat header.txt  merged.regenie > merged.regenie
+process mergeRegenie {
 
-process manhattanPlot {
+publishDir "$params.output/04_regenie_merged", mode: 'copy'
+
+  input:
+  file regenie_chromosomes from gwas_results_ch.collect()
+
+  output:
+  file "merged.regenie" into merged_ch
+
+  """
+  ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' > header.txt
+  ls -1v ${regenie_chromosomes} | xargs cat | zgrep -hE '^[0-9]' > chromosomes_data.regenie
+  cat header.txt chromosomes_data.regenie > merged.regenie
+  """
+
+}
+
+process gwasReport {
 
 publishDir "$params.output", mode: 'copy'
 
   input:
-  file regenie from gwas_results_ch.collect()
-  file manhattan_plot_template
+  file regenie_merged from merged_ch
+  file gwas_report_template
 
   output:
   file "*.html" into report_ch
 
   """
-  Rscript -e "require( 'rmarkdown' ); render('${manhattan_plot_template}',
+  Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
       project = '${params.project}',
-      regenie_merged = '${regenie}',
+      regenie_merged = '${regenie_merged}',
       phenotype='${params.phenotypes_columns.join(',')}'
-    ), knit_root_dir='\$PWD', output_file='\$PWD/04_manhattan_plot.html')"
+    ), knit_root_dir='\$PWD', output_file='\$PWD/05_gwas_report.html')"
   """
 }
+
 
 //TODO: process annotate
 

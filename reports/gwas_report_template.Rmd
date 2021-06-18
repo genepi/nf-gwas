@@ -1,5 +1,5 @@
 ---
-title: "Manhattan PLot"
+title: "GWAS Report"
 output:
   rmdformats::robobook:
     self_contained: true
@@ -18,13 +18,17 @@ library(qqman)
 ```
 
 
+## Manhattan and QQ Plot
+
 ```{r, echo=FALSE}
 regenieTable = read.table(params$regenie_merged, header=TRUE, sep=" ", dec = ".");
-
 for (phenotype in strsplit(params$phenotype,',')[[1]]) { 
 logpColumn <- paste("LOG10P.",phenotype, sep = "");
+qqplotFrame <- regenieTable[,logpColumn]
 title <- paste(params$project,":",phenotype,sep = "")
-manhattan(regenieTable , main =title, ylim = c(0, 30), chr="CHROM", bp="GENPOS", snp="ID", p=logpColumn, logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+manhattan(regenieTable, main =title, ylim = c(0, 30), chr="CHROM", bp="GENPOS", snp="ID", p=logpColumn, logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+#todo: plot values not log10p
+qq(qqplotFrame)
 }
 
 ```
