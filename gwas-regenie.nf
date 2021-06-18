@@ -24,11 +24,36 @@ gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
-imputed_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
 phenotype_file_ch = file(params.phenotypes_filename)
 phenotype_file_ch2 = file(params.phenotypes_filename)
 
-//TODO: if params.genotypes_imputed_format == "vcf" --> define process to convert to bgen or bed?
+//convert vcf files to bgen
+if (params.genotypes_imputed_format == "vcf"){
+
+  imputed_vcf_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
+
+  process vcfToBgen {
+
+    publishDir "$params.output/01_quality_control", mode: 'copy'
+
+    input:
+      set file(imputed_vcf_file) from imputed_vcf_files_ch
+
+    output:
+      file "*.bgen" into imputed_files_ch
+
+    """
+    plink2 --vcf ${imputed_vcf_file} --export bgen-1.3 --out ${imputed_vcf_file.baseName}
+    """
+
+  }
+
+} else {
+
+  imputed_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
+
+}
+
 
 process qualityControl {
 
