@@ -18,6 +18,7 @@ params.qc_mind = "0.1"
 params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
 params.regenie_pvalue_threshold = 0.01
+params.regenie_threads = 1
 
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 
@@ -104,6 +105,7 @@ process regenieStep1 {
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
     --lowmem-prefix tmp_rg \
+    --threads ${params.regenie_threads} \
     --out fit_bin_out
   """
 
@@ -133,6 +135,7 @@ process regenieStep2 {
     --firth --approx \
     --pThresh ${params.regenie_pvalue_threshold} \
     --pred fit_bin_out_pred.list \
+    --threads ${params.regenie_threads} \
     --out gwas_results.${imputed_file.baseName}
 
   """
