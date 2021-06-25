@@ -15,10 +15,15 @@ params.qc_geno = "0.1"
 params.qc_hwe = "1e-15"
 params.qc_mind = "0.1"
 
+params.prune_maf = 0.01
+params.prune_window_kbsize = 50
+params.prune_step_size = 5
+params.prune_r2_threshold = 0.2
+
 params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
 params.regenie_pvalue_threshold = 0.01
-params.regenie_threads = 1
+params.regenie_threads = (Runtime.runtime.availableProcessors() - 1)
 
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 
@@ -55,13 +60,29 @@ if (params.genotypes_imputed_format == "vcf"){
 
 }
 
+process snpPruning {
+  publishDir "$params.output/01_quality_control", mode: 'copy'
+
+  input:
+    set genotyped_plink_filename, file(genotyped_plink_file) from genotyped_plink_files_ch
+  output:
+    tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch
+    tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch2
+
+  """
+# Prune, filter and convert to plink
+plink2 --bfile ${genotyped_plink_filename} --double-id --maf "${params.prune_maf}" --indep-pairwise "${params.prune_window_kbsize}" "${params.prune_step_size}" "${params.prune_r2_threshold}" --out ${params.project}
+plink2 --bfile ${genotyped_plink_filename} --extract ${params.project}.prune.in --double-id --make-bed --out ${params.project}.pruned
+  """
+
+}
 
 process qualityControl {
 
   publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, file(genotyped_plink_file) from genotyped_plink_files_ch
+    set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch
 
   output:
     file "${genotyped_plink_filename}.qc.*" into genotyped_plink_files_qc_ch
@@ -85,7 +106,7 @@ process regenieStep1 {
   publishDir "$params.output/02_regenie_step1", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, file(genotyped_plink_file) from genotyped_plink_files_ch2
+    set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
     file phenotype_file from phenotype_file_ch
     file qcfiles from genotyped_plink_files_qc_ch.collect()
 
@@ -93,7 +114,6 @@ process regenieStep1 {
     file "fit_bin_out*" into fit_bin_out_ch
 
   """
-
   regenie \
     --step 1 \
     --bed ${genotyped_plink_filename} \
@@ -113,7 +133,7 @@ process regenieStep1 {
 
 
 process regenieStep2 {
-
+	cpus "${params.regenie_threads}"
   publishDir "$params.output/03_regenie_step2", mode: 'copy'
 
   input:
