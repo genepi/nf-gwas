@@ -17,6 +17,7 @@ params.qc_mind = "0.1"
 
 params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
+params.regenie_step2_sample_file = 'NO_FILE'
 params.regenie_pvalue_threshold = 0.01
 params.regenie_threads = 1
 
@@ -27,6 +28,7 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 phenotype_file_ch = file(params.phenotypes_filename)
 phenotype_file_ch2 = file(params.phenotypes_filename)
+sample_file_ch = file(params.regenie_step2_sample_file)
 
 //convert vcf files to bgen
 if (params.genotypes_imputed_format == "vcf"){
@@ -119,11 +121,13 @@ process regenieStep2 {
   input:
     file imputed_file from imputed_files_ch
     file phenotype_file from phenotype_file_ch2
+    file sample_file from sample_file_ch
     file fit_bin_out from fit_bin_out_ch.collect()
 
   output:
     file "gwas_results.*regenie" into gwas_results_ch
-
+  script:
+    def bgenSample = sample_file.name != 'NO_FILE' ? "--sample $sample_file" : ''
   """
   regenie \
     --step 2 \
@@ -136,6 +140,7 @@ process regenieStep2 {
     --pThresh ${params.regenie_pvalue_threshold} \
     --pred fit_bin_out_pred.list \
     --threads ${params.regenie_threads} \
+    $bgenSample \
     --out gwas_results.${imputed_file.baseName}
 
   """
