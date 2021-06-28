@@ -160,6 +160,7 @@ process regenieStep2 {
     --pThresh ${params.regenie_pvalue_threshold} \
     --pred fit_bin_out_pred.list \
     --threads ${params.regenie_threads} \
+    --split \\
     $bgenSample \
     --out gwas_results.${imputed_file.baseName}
 
@@ -175,12 +176,18 @@ publishDir "$params.output/04_regenie_merged", mode: 'copy'
   file regenie_chromosomes from gwas_results_ch.collect()
 
   output:
-  file "${params.project}.regenie" into merged_ch
+  file "${params.project}.*.regenie" into merged_ch
+
 
   """
+  # static header due to split
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' > header.txt
-  ls -1v ${regenie_chromosomes} | xargs cat | zgrep -hE '^[0-9]' > chromosomes_data.regenie
-  cat header.txt chromosomes_data.regenie > ${params.project}.regenie
+  export IFS=","
+  phenotypes=${params.phenotypes_columns.join(',')}
+  for phenotype in \${phenotypes}; do
+    ls -1v ${regenie_chromosomes} | ls *_\${phenotype}.regenie | xargs cat | zgrep -hE '^[0-9]' > chromosomes_data_\${phenotype}.regenie
+    cat header.txt chromosomes_data_\${phenotype}.regenie > ${params.project}.\${phenotype}.regenie
+  done
   """
 
 }
