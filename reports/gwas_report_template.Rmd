@@ -21,15 +21,11 @@ library(qqman)
 ## Manhattan and QQ Plot
 
 ```{r, echo=FALSE}
-for (path in strsplit(params$regenie_merged,' ')[[1]]) { 
+for (path in strsplit(params$regenie_merged,' ')[[1]]) {
 regenieTable = read.table(path, header=TRUE, sep=" ", dec = ".");
 title <- basename(path)
-manhattan(regenieTable, main =title, ylim = c(0, 30), chr="CHROM", bp="GENPOS", snp="ID", p="LOG10P", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
-#todo: plot values not log10p
+manhattan(regenieTable, main = title, chr="CHROM", bp="GENPOS", snp="ID", p="LOG10P", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
 qq(regenieTable$LOG10P)
 }
 
 ```
-
-
-
