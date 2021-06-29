@@ -216,7 +216,7 @@ publishDir "$params.output/05_regenie_filtered", mode: 'copy'
 
   """
   #todo: replace by jbang script
-  (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -k12 --numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
+  (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
   zcat ${regenie_merged.baseName}.sorted.gz | head -n ${params.gwas_tophits} | gzip > ${regenie_merged.baseName}.sorted.filtered.gz
   """
 
