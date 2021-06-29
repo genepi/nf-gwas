@@ -26,6 +26,8 @@ params.regenie_step2_sample_file = 'NO_FILE'
 params.regenie_pvalue_threshold = 0.01
 params.threads = (Runtime.runtime.availableProcessors() - 1)
 
+params.gwas_tophits = 50
+
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 
 
@@ -34,6 +36,8 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 phenotype_file_ch = file(params.phenotypes_filename)
 phenotype_file_ch2 = file(params.phenotypes_filename)
 sample_file_ch = file(params.regenie_step2_sample_file)
+
+phenotypes_ch = Channel.from(params.phenotypes_columns)
 
 //convert vcf files to bgen
 if (params.genotypes_imputed_format == "vcf"){
@@ -177,20 +181,37 @@ publishDir "$params.output/04_regenie_merged", mode: 'copy'
 
   input:
   file regenie_chromosomes from gwas_results_ch.collect()
+  val phenotype from phenotypes_ch
 
   output:
-  file "${params.project}.*.regenie.gz" into merged_ch
+  file "${params.project}.*.regenie.gz" into regenie_merged_ch
+  file "${params.project}.*.regenie.gz" into regenie_merged_ch2
 
 
   """
   # static header due to split
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
-  export IFS=","
-  phenotypes=${params.phenotypes_columns.join(',')}
-  for phenotype in \${phenotypes}; do
-  ls -1v  ${regenie_chromosomes} | ls *_\${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_\${phenotype}.regenie.gz
-  cat header.gz chromosomes_data_\${phenotype}.regenie.gz > ${params.project}.\${phenotype}.regenie.gz
-  done
+  ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.gz
+  cat header.gz chromosomes_data_${phenotype}.regenie.gz > ${params.project}.${phenotype}.regenie.gz
+  """
+
+}
+
+process gwasTophits {
+
+publishDir "$params.output/05_regenie_filtered", mode: 'copy'
+
+  input:
+  file regenie_merged from regenie_merged_ch2
+
+  output:
+  file "${regenie_merged.baseName}.sorted.filtered.gz" into filtered_ch
+
+
+  """
+  #todo: replace by jbang script
+  (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -k12 --numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
+  zcat ${regenie_merged.baseName}.sorted.gz | head -n ${params.gwas_tophits} | gzip > ${regenie_merged.baseName}.sorted.filtered.gz
   """
 
 }
@@ -200,7 +221,7 @@ process gwasReport {
 publishDir "$params.output", mode: 'copy'
 
   input:
-  file regenie_merged from merged_ch
+  file regenie_merged from regenie_merged_ch.collect()
   file gwas_report_template
 
   output:
