@@ -23,6 +23,8 @@ params.prune_r2_threshold = 0.2
 params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
 params.regenie_step2_sample_file = 'NO_FILE'
+//only dominant or recessive allowed, default is additive
+params.regenie_step2_test = 'additive'
 params.regenie_pvalue_threshold = 0.01
 params.threads = (Runtime.runtime.availableProcessors() - 1)
 
@@ -36,6 +38,7 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 phenotype_file_ch = file(params.phenotypes_filename)
 phenotype_file_ch2 = file(params.phenotypes_filename)
 sample_file_ch = file(params.regenie_step2_sample_file)
+regenie_test_ch = file(params.regenie_step2_test)
 
 phenotypes_ch = Channel.from(params.phenotypes_columns)
 
@@ -148,12 +151,14 @@ process regenieStep2 {
     file imputed_file from imputed_files_ch
     file phenotype_file from phenotype_file_ch2
     file sample_file from sample_file_ch
+    file regenie_test from regenie_test_ch
     file fit_bin_out from fit_bin_out_ch.collect()
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
   script:
     def bgenSample = sample_file.name != 'NO_FILE' ? "--sample $sample_file" : ''
+    def regenieTest = regenie_test.name != 'additive' ? "--test $regenie_test" : ''
   """
   regenie \
     --step 2 \
@@ -161,6 +166,7 @@ process regenieStep2 {
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     --bsize ${params.regenie_step2_bsize} \
+    $regenieTest \
     ${params.phenotypes_binary_trait ? '--bt' : ''} \
     --firth --approx \
     --pThresh ${params.regenie_pvalue_threshold} \
