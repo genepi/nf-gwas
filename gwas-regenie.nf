@@ -26,6 +26,8 @@ params.regenie_step2_sample_file = 'NO_FILE'
 //only dominant or recessive allowed, default is additive
 params.regenie_step2_test = 'additive'
 params.regenie_pvalue_threshold = 0.01
+params.regenie_min_imputation_score = 0.00
+params.regenie_min_mac = 5
 params.threads = (Runtime.runtime.availableProcessors() - 1)
 
 params.gwas_tophits = 50
@@ -167,18 +169,18 @@ process regenieStep2 {
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     --bsize ${params.regenie_step2_bsize} \
     $regenieTest \
-    ${params.phenotypes_binary_trait ? '--bt' : ''} \
-    --firth --approx \
+    ${params.phenotypes_binary_trait ? '--bt --firth --approx' : ''} \
     --pThresh ${params.regenie_pvalue_threshold} \
     --pred fit_bin_out_pred.list \
     --threads ${params.threads} \
+    --minMAC ${params.regenie_min_mac} \
+    --minINFO ${params.regenie_min_imputation_score} \
     --split \
     --gz \
     $bgenSample \
     --out gwas_results.${imputed_file.baseName}
 
   """
-
 }
 
 process mergeRegenie {
