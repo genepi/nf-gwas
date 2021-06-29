@@ -126,6 +126,7 @@ process regenieStep1 {
     --bsize ${params.regenie_step1_bsize} \
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
+    --gz \
     --lowmem-prefix tmp_rg \
     --threads ${params.regenie_threads} \
     --out fit_bin_out
@@ -145,7 +146,7 @@ process regenieStep2 {
     file fit_bin_out from fit_bin_out_ch.collect()
 
   output:
-    file "gwas_results.*regenie" into gwas_results_ch
+    file "gwas_results.*regenie.gz" into gwas_results_ch
   script:
     def bgenSample = sample_file.name != 'NO_FILE' ? "--sample $sample_file" : ''
   """
@@ -160,7 +161,8 @@ process regenieStep2 {
     --pThresh ${params.regenie_pvalue_threshold} \
     --pred fit_bin_out_pred.list \
     --threads ${params.regenie_threads} \
-    --split \\
+    --split \
+    --gz \
     $bgenSample \
     --out gwas_results.${imputed_file.baseName}
 
@@ -176,17 +178,17 @@ publishDir "$params.output/04_regenie_merged", mode: 'copy'
   file regenie_chromosomes from gwas_results_ch.collect()
 
   output:
-  file "${params.project}.*.regenie" into merged_ch
+  file "${params.project}.*.regenie.gz" into merged_ch
 
 
   """
   # static header due to split
-  ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' > header.txt
+  ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
   export IFS=","
   phenotypes=${params.phenotypes_columns.join(',')}
   for phenotype in \${phenotypes}; do
-    ls -1v ${regenie_chromosomes} | ls *_\${phenotype}.regenie | xargs cat | zgrep -hE '^[0-9]' > chromosomes_data_\${phenotype}.regenie
-    cat header.txt chromosomes_data_\${phenotype}.regenie > ${params.project}.\${phenotype}.regenie
+  ls -1v  ${regenie_chromosomes} | ls *_\${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_\${phenotype}.regenie.gz
+  cat header.gz chromosomes_data_\${phenotype}.regenie.gz > ${params.project}.\${phenotype}.regenie.gz
   done
   """
 

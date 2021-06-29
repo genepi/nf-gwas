@@ -9,7 +9,7 @@ output:
     highlight: tango
 params:
   project: test-gwas
-  regenie_merged: ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y1.regenie ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y2.regenie
+  regenie_merged: ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y1.regenie.gz ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y2.regenie.gz
   phenotype: "Y1,Y2"
 ---
 
