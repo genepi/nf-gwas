@@ -8,6 +8,8 @@ params.genotypes_imputed_format = "bgen"
 params.phenotypes_filename = "tests/input/phenotype.txt"
 params.phenotypes_binary_trait = false
 params.phenotypes_columns = ["Y1","Y2"]
+params.covariates_filename = 'NO_COV_FILE'
+params.covariates_columns = ["SEX","AGE"]
 
 params.qc_maf = "0.01"
 params.qc_mac = "100"
@@ -22,9 +24,9 @@ params.prune_r2_threshold = 0.2
 
 params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
-params.regenie_step2_sample_file = 'NO_FILE'
+params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
 //only dominant or recessive allowed, default is additive
-params.regenie_step2_test = 'additive'
+params.regenie_step2_test = 'ADDITIVE'
 params.regenie_step2_range = 'COMPLETE'
 params.regenie_min_imputation_score = 0.00
 params.regenie_min_mac = 5
@@ -37,13 +39,20 @@ gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
+
+//phenotype channels
 phenotype_file_ch = file(params.phenotypes_filename)
 phenotype_file_ch2 = file(params.phenotypes_filename)
+phenotypes_ch = Channel.from(params.phenotypes_columns)
+
+//covariate channels
+covariate_file_ch = file(params.covariates_filename)
+covariate_file_ch2 = file(params.covariates_filename)
+
 sample_file_ch = file(params.regenie_step2_sample_file)
 regenie_test_ch = file(params.regenie_step2_test)
 regenie_range_ch = file(params.regenie_step2_range)
 
-phenotypes_ch = Channel.from(params.phenotypes_columns)
 
 //convert vcf files to bgen
 if (params.genotypes_imputed_format == "vcf"){
@@ -122,10 +131,13 @@ process regenieStep1 {
     set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
     file phenotype_file from phenotype_file_ch
     file qcfiles from genotyped_plink_files_qc_ch.collect()
+    file covariate_file from covariate_file_ch
 
   output:
     file "fit_bin_out*" into fit_bin_out_ch
 
+  script:
+      def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
   """
   regenie \
     --step 1 \
@@ -134,6 +146,7 @@ process regenieStep1 {
     --keep ${genotyped_plink_filename}.qc.id \
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
+    $covariants \
     --bsize ${params.regenie_step1_bsize} \
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
@@ -157,13 +170,16 @@ process regenieStep2 {
     file regenie_test from regenie_test_ch
     file regenie_range from regenie_range_ch
     file fit_bin_out from fit_bin_out_ch.collect()
+    file covariate_file from covariate_file_ch
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
   script:
-    def bgenSample = sample_file.name != 'NO_FILE' ? "--sample $sample_file" : ''
-    def regenieTest = regenie_test.name != 'additive' ? "--test $regenie_test" : ''
+    def bgenSample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
+    def regenieTest = regenie_test.name != 'ADDITIVE' ? "--test $regenie_test" : ''
     def range = regenie_range.name != 'COMPLETE' ? "--range $regenie_range" : ''
+    def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
+
   """
   regenie \
     --step 2 \
@@ -181,6 +197,7 @@ process regenieStep2 {
     $regenieTest \
     $bgenSample \
     $range \
+    $covariants \
     --out gwas_results.${imputed_file.baseName}
 
   """
