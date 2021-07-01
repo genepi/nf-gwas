@@ -59,7 +59,7 @@ if (params.genotypes_imputed_format == "vcf"){
 
   imputed_vcf_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
 
-  process vcfToBgen {
+  process vcfToPlink2 {
 
     cpus "${params.threads}"
     publishDir "$params.output/01_quality_control", mode: 'copy'
@@ -68,10 +68,10 @@ if (params.genotypes_imputed_format == "vcf"){
       file(imputed_vcf_file) from imputed_vcf_files_ch
 
     output:
-      file "*.bgen" into imputed_files_ch
+      tuple val("${imputed_vcf_file.baseName}"), "${imputed_vcf_file.baseName}.pgen", "${imputed_vcf_file.baseName}.psam","${imputed_vcf_file.baseName}.pvar" into imputed_files_ch
 
     """
-    plink2 --vcf ${imputed_vcf_file} --threads ${params.threads} --export bgen-1.3 --out ${imputed_vcf_file.baseName}
+    plink2 --vcf ${imputed_vcf_file} dosage=DS --threads ${params.threads} --make-pgen --double-id --out ${imputed_vcf_file.baseName}
     """
 
   }
@@ -79,7 +79,9 @@ if (params.genotypes_imputed_format == "vcf"){
 } else {
 
   imputed_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
-
+  //Channel.fromFilePairs("${params.genotypes_imputed}")
+  //.map { tuple("${params.genotypes_imputed}", file("${params.genotypes_imputed}"), file("${params.genotypes_imputed}"), file("${params.genotypes_imputed}")) }
+//  .set {imputed_files_ch}
 }
 
 process snpPruning {
@@ -164,7 +166,7 @@ process regenieStep2 {
   publishDir "$params.output/03_regenie_step2", mode: 'copy'
 
   input:
-    file imputed_file from imputed_files_ch
+  set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
     file phenotype_file from phenotype_file_ch2
     file sample_file from sample_file_ch
     file regenie_test from regenie_test_ch
@@ -175,6 +177,7 @@ process regenieStep2 {
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
   script:
+    def inputFormat = sample_file.name == 'bgen' ? "--bgen" : '--pgen'
     def bgenSample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
     def regenieTest = regenie_test.name != 'ADDITIVE' ? "--test $regenie_test" : ''
     def range = regenie_range.name != 'COMPLETE' ? "--range $regenie_range" : ''
@@ -183,7 +186,7 @@ process regenieStep2 {
   """
   regenie \
     --step 2 \
-    --bgen ${imputed_file} \
+    $inputFormat ${filename} \
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     --bsize ${params.regenie_step2_bsize} \
@@ -198,7 +201,7 @@ process regenieStep2 {
     $bgenSample \
     $range \
     $covariants \
-    --out gwas_results.${imputed_file.baseName}
+    --out gwas_results.${filename}
 
   """
 }
