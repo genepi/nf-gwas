@@ -187,7 +187,7 @@ process regenieStep2 {
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     --bsize ${params.regenie_step2_bsize} \
-    ${params.phenotypes_binary_trait ? '--bt' : ''} \
+    ${params.phenotypes_binary_trait ? '--bt  --firth 0.01 --approx' : ''} \
     --pred fit_bin_out_pred.list \
     --threads ${params.threads} \
     --minMAC ${params.regenie_min_mac} \
