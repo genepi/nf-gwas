@@ -71,7 +71,12 @@ if (params.genotypes_imputed_format == "vcf"){
       tuple val("${imputed_vcf_file.baseName}"), "${imputed_vcf_file.baseName}.pgen", "${imputed_vcf_file.baseName}.psam","${imputed_vcf_file.baseName}.pvar" into imputed_files_ch
 
     """
-    plink2 --vcf ${imputed_vcf_file} dosage=DS --threads ${params.threads} --make-pgen --double-id --out ${imputed_vcf_file.baseName}
+    plink2 \
+      --vcf ${imputed_vcf_file} dosage=DS \
+      --threads ${params.threads} \
+      --make-pgen \
+      --double-id \
+      --out ${imputed_vcf_file.baseName}
     """
 
   }
@@ -81,7 +86,7 @@ if (params.genotypes_imputed_format == "vcf"){
   Channel.fromPath(params.genotypes_imputed)
     .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
     .set {imputed_files_ch}
-    
+
 }
 
 process snpPruning {
@@ -94,9 +99,18 @@ process snpPruning {
     tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch2
 
   """
-# Prune, filter and convert to plink
-plink2 --bfile ${genotyped_plink_filename} --double-id --maf "${params.prune_maf}" --indep-pairwise "${params.prune_window_kbsize}" "${params.prune_step_size}" "${params.prune_r2_threshold}" --out ${params.project}
-plink2 --bfile ${genotyped_plink_filename} --extract ${params.project}.prune.in --double-id --make-bed --out ${params.project}.pruned
+  # Prune, filter and convert to plink
+  plink2 \
+    --bfile ${genotyped_plink_filename} \
+    --double-id --maf ${params.prune_maf} \
+    --indep-pairwise ${params.prune_window_kbsize} ${params.prune_step_size} ${params.prune_r2_threshold} \
+    --out ${params.project}
+  plink2 \
+    --bfile ${genotyped_plink_filename} \
+    --extract ${params.project}.prune.in \
+    --double-id \
+    --make-bed \
+    --out ${params.project}.pruned
   """
 
 }
