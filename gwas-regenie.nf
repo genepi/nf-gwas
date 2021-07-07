@@ -14,7 +14,7 @@ params.covariates_columns = ["SEX","AGE"]
 //additive, dominant or recessive allowed. default is additive
 params.test_model = 'additive'
 //range for variants to test: CHR:MINPOS-MAXPOS
-params.range = 'complete'
+params.range = ''
 
 params.qc_maf = "0.01"
 params.qc_mac = "100"
@@ -193,7 +193,7 @@ process regenieStep2 {
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
     def bgen_sample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
     def test = params.test_model != 'additive' ? "--test $params.test_model" : ''
-    def range = params.range != 'complete' ? "--range $params.range" : ''
+    def range = params.range != '' ? "--range $params.range" : ''
     def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
 
   """
