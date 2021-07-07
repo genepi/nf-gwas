@@ -78,10 +78,10 @@ if (params.genotypes_imputed_format == "vcf"){
 
 } else {
 
-  imputed_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
-  //Channel.fromFilePairs("${params.genotypes_imputed}")
-  //.map { tuple("${params.genotypes_imputed}", file("${params.genotypes_imputed}"), file("${params.genotypes_imputed}"), file("${params.genotypes_imputed}")) }
-//  .set {imputed_files_ch}
+  Channel.fromPath(params.genotypes_imputed)
+    .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
+    .set {imputed_files_ch}
+    
 }
 
 process snpPruning {
@@ -177,7 +177,8 @@ process regenieStep2 {
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
   script:
-    def inputFormat = sample_file.name == 'bgen' ? "--bgen" : '--pgen'
+    def inputFormatParam = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
+    def inputFormatExtension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
     def bgenSample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
     def regenieTest = regenie_test.name != 'ADDITIVE' ? "--test $regenie_test" : ''
     def range = regenie_range.name != 'COMPLETE' ? "--range $regenie_range" : ''
@@ -186,7 +187,7 @@ process regenieStep2 {
   """
   regenie \
     --step 2 \
-    $inputFormat ${filename} \
+    $inputFormatParam ${filename}${inputFormatExtension} \
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     --bsize ${params.regenie_step2_bsize} \
