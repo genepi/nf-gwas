@@ -1,6 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e
+
+# defalult test to check dependencies
 nextflow run gwas-regenie.nf
-nextflow run gwas-regenie.nf -c tests/test-gwas-binary.conf
-nextflow run gwas-regenie.nf -c tests/test-gwas-vcf.conf
-nextflow run gwas-regenie.nf -c tests/test-gwas-header.conf
+
+# test all config files in tests folder
+config_files="tests/*.conf"
+for config_file in $config_files
+do
+  echo "---------------------------------------------------------"
+  echo "Execute Test $config_file..."
+  echo "---------------------------------------------------------"
+  nextflow run gwas-regenie.nf -c $config_file
+done

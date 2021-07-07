@@ -11,6 +11,11 @@ params.phenotypes_columns = ["Y1","Y2"]
 params.covariates_filename = 'NO_COV_FILE'
 params.covariates_columns = ["SEX","AGE"]
 
+//additive, dominant or recessive allowed. default is additive
+params.test_model = 'additive'
+//range for variants to test: CHR:MINPOS-MAXPOS
+params.range = 'complete'
+
 params.qc_maf = "0.01"
 params.qc_mac = "100"
 params.qc_geno = "0.1"
@@ -25,9 +30,7 @@ params.prune_r2_threshold = 0.2
 params.regenie_step1_bsize = 100
 params.regenie_step2_bsize = 200
 params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
-//only dominant or recessive allowed, default is additive
-params.regenie_step2_test = 'ADDITIVE'
-params.regenie_step2_range = 'COMPLETE'
+
 params.regenie_min_imputation_score = 0.00
 params.regenie_min_mac = 5
 params.threads = (Runtime.runtime.availableProcessors() - 1)
@@ -50,9 +53,6 @@ covariate_file_ch = file(params.covariates_filename)
 covariate_file_ch2 = file(params.covariates_filename)
 
 sample_file_ch = file(params.regenie_step2_sample_file)
-regenie_test_ch = file(params.regenie_step2_test)
-regenie_range_ch = file(params.regenie_step2_range)
-
 
 //convert vcf files to bgen
 if (params.genotypes_imputed_format == "vcf"){
@@ -180,28 +180,26 @@ process regenieStep2 {
   publishDir "$params.output/03_regenie_step2", mode: 'copy'
 
   input:
-  set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
+    set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
     file phenotype_file from phenotype_file_ch2
     file sample_file from sample_file_ch
-    file regenie_test from regenie_test_ch
-    file regenie_range from regenie_range_ch
     file fit_bin_out from fit_bin_out_ch.collect()
     file covariate_file from covariate_file_ch
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
   script:
-    def inputFormatParam = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
-    def inputFormatExtension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
-    def bgenSample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
-    def regenieTest = regenie_test.name != 'ADDITIVE' ? "--test $regenie_test" : ''
-    def range = regenie_range.name != 'COMPLETE' ? "--range $regenie_range" : ''
+    def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
+    def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
+    def bgen_sample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
+    def test = params.test_model != 'additive' ? "--test $params.test_model" : ''
+    def range = params.range != 'complete' ? "--range $params.range" : ''
     def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
 
   """
   regenie \
     --step 2 \
-    $inputFormatParam ${filename}${inputFormatExtension} \
+    $format ${filename}${extension} \
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     --bsize ${params.regenie_step2_bsize} \
@@ -212,8 +210,8 @@ process regenieStep2 {
     --minINFO ${params.regenie_min_imputation_score} \
     --split \
     --gz \
-    $regenieTest \
-    $bgenSample \
+    $test \
+    $bgen_sample \
     $range \
     $covariants \
     --out gwas_results.${filename}
