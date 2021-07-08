@@ -9,7 +9,7 @@ params.phenotypes_filename = "tests/input/phenotype.txt"
 params.phenotypes_binary_trait = false
 params.phenotypes_columns = ["Y1","Y2"]
 params.covariates_filename = 'NO_COV_FILE'
-params.covariates_columns = ["SEX","AGE"]
+params.covariates_columns = []
 
 //additive, dominant or recessive allowed. default is additive
 params.test_model = 'additive'
