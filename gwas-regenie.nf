@@ -38,18 +38,39 @@ params.threads = (Runtime.runtime.availableProcessors() - 1)
 params.gwas_tophits = 50
 
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
-
+phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd")
 
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
 //phenotypes
 phenotype_file = file(params.phenotypes_filename)
+if (!phenotype_file.exists()){
+  exit 1, "Phenotype file ${params.phenotypes_filename} not found."
+}
 phenotypes_ch = Channel.from(params.phenotypes_columns)
 
-//covariates
+//optional covariates
 covariate_file = file(params.covariates_filename)
+if (params.covariates_filename != 'NO_COV_FILE' && !covariate_file.exists()){
+  exit 1, "Covariate file ${params.covariates_filename} not found."
+}
+
+//optional sample file
 sample_file = file(params.regenie_step2_sample_file)
+if (params.regenie_step2_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists()){
+  exit 1, "Sample file ${params.regenie_step2_sample_file} not found."
+}
+
+//check test model
+if (params.test_model != 'additive' && params.test_model != 'recessive' && params.test_model != 'dominant'){
+  exit 1, "Test model ${params.test_model} not support."
+}
+
+//check imputed file format
+if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
+  exit 1, "File format ${params.genotypes_imputed_format} not support."
+}
 
 //convert vcf files to bgen
 if (params.genotypes_imputed_format == "vcf"){
@@ -266,7 +287,7 @@ publishDir "$params.output", mode: 'copy'
   file gwas_report_template
 
   output:
-  file "*.html" into report_ch
+  file "*.html"
 
   """
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
