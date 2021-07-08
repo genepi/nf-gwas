@@ -43,16 +43,13 @@ gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
-//phenotype channels
-phenotype_file_ch = file(params.phenotypes_filename)
-phenotype_file_ch2 = file(params.phenotypes_filename)
+//phenotypes
+phenotype_file = file(params.phenotypes_filename)
 phenotypes_ch = Channel.from(params.phenotypes_columns)
 
-//covariate channels
-covariate_file_ch = file(params.covariates_filename)
-covariate_file_ch2 = file(params.covariates_filename)
-
-sample_file_ch = file(params.regenie_step2_sample_file)
+//covariates
+covariate_file = file(params.covariates_filename)
+sample_file = file(params.regenie_step2_sample_file)
 
 //convert vcf files to bgen
 if (params.genotypes_imputed_format == "vcf"){
@@ -145,9 +142,9 @@ process regenieStep1 {
 
   input:
     set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
-    file phenotype_file from phenotype_file_ch
+    file phenotype_file
     file qcfiles from genotyped_plink_files_qc_ch.collect()
-    file covariate_file from covariate_file_ch
+    file covariate_file
 
   output:
     file "fit_bin_out*" into fit_bin_out_ch
@@ -181,10 +178,10 @@ process regenieStep2 {
 
   input:
     set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
-    file phenotype_file from phenotype_file_ch2
-    file sample_file from sample_file_ch
+    file phenotype_file
+    file sample_file
     file fit_bin_out from fit_bin_out_ch.collect()
-    file covariate_file from covariate_file_ch
+    file covariate_file
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
