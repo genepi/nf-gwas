@@ -64,12 +64,12 @@ if (params.regenie_step2_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists(
 
 //check test model
 if (params.test_model != 'additive' && params.test_model != 'recessive' && params.test_model != 'dominant'){
-  exit 1, "Test model ${params.test_model} not support."
+  exit 1, "Test model ${params.test_model} not supported."
 }
 
 //check imputed file format
 if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
-  exit 1, "File format ${params.genotypes_imputed_format} not support."
+  exit 1, "File format ${params.genotypes_imputed_format} not supported."
 }
 
 //convert vcf files to bgen
