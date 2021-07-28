@@ -9,23 +9,44 @@ output:
     highlight: tango
 params:
   project: test-gwas
-  regenie_merged: ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y1.regenie.gz ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y2.regenie.gz
-  phenotype: "Y1,Y2"
+  regenie_merged: ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y1.regenie.gz
+  regenie_filename: test-gwas.Y1.regenie.gz
+  phenotype: Y1
+  phenotype_file: ../tests/input/phenotype.txt
+  
 ---
 
 ```{r setup, include=FALSE}
 library(qqman)
+library(ggplot2)
 ```
 
+## Summary
 
-## Manhattan and QQ Plot
+| Parameter     | Value                                      |
+| ------------- |--------------------------------------------|
+| Project       | `r params$project`                         |
+| Phenotype       | `r params$phenotype`                     |
+| Phenotype File      | `r params$phenotype_file`            |
+| Regenie File      | `r params$regenie_filename`             |
+
+## Histogramm
+```{r, echo=FALSE}
+phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".");
+ggplot(phenotypeTable, aes_string(x=params$phenotype)) + 
+geom_histogram(color="black", fill="white")
+```
+
+## Manhattan Plot
 
 ```{r, echo=FALSE}
-for (path in strsplit(params$regenie_merged,' ')[[1]]) {
-regenieTable = read.table(path, header=TRUE, sep=" ", dec = ".");
-title <- basename(path)
-manhattan(regenieTable, main = title, chr="CHROM", bp="GENPOS", snp="ID", p="LOG10P", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
-qq(regenieTable$LOG10P)
-}
+regenieTable <- read.table(params$regenie_merged, header=TRUE, sep=" ", dec = ".");
+pheno <- params$phenotype
+manhattan(regenieTable, chr="CHROM", bp="GENPOS", snp="ID", p="LOG10P", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+```
 
+## QQ Plot
+
+```{r, echo=FALSE}
+qq(regenieTable$LOG10P)
 ```

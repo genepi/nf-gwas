@@ -72,7 +72,7 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
   exit 1, "File format ${params.genotypes_imputed_format} not supported."
 }
 
-//convert vcf files to bgen
+//convert vcf files to plink2 format
 if (params.genotypes_imputed_format == "vcf"){
 
   imputed_vcf_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
@@ -246,7 +246,7 @@ publishDir "$params.output/04_regenie_merged", mode: 'copy'
   val phenotype from phenotypes_ch
 
   output:
-  file "${params.project}.*.regenie.gz" into regenie_merged_ch
+  tuple  phenotype, val("${params.project}.${phenotype}.regenie.gz"), "${params.project}.${phenotype}.regenie.gz" into regenie_merged_ch
   file "${params.project}.*.regenie.gz" into regenie_merged_ch2
 
 
@@ -283,7 +283,8 @@ process gwasReport {
 publishDir "$params.output", mode: 'copy'
 
   input:
-  file regenie_merged from regenie_merged_ch.collect()
+  set phenotype, regenie_merged_name, regenie_merged from regenie_merged_ch
+	file phenotype_file
   file gwas_report_template
 
   output:
@@ -293,9 +294,11 @@ publishDir "$params.output", mode: 'copy'
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
       project = '${params.project}',
-      regenie_merged = '${regenie_merged}',
-      phenotype='${params.phenotypes_columns.join(',')}'
-    ), knit_root_dir='\$PWD', output_file='\$PWD/05_gwas_report.html')"
+      regenie_merged='${regenie_merged}',
+      regenie_filename='${regenie_merged_name}',
+      phenotype_file='${phenotype_file}',
+      phenotype='${phenotype}'
+    ), knit_root_dir='\$PWD', output_file='\$PWD/05_${regenie_merged.baseName}.html')"
   """
 }
 
