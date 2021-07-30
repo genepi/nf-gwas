@@ -43,6 +43,8 @@ phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
+AnalyzeRegenieLog = "$baseDir/bin/AnalyzeRegenieLog.java"
+
 //phenotypes
 phenotype_file = file(params.phenotypes_filename)
 if (!phenotype_file.exists()){
@@ -206,6 +208,7 @@ process regenieStep2 {
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
+    file "gwas_results.${filename}*log" into gwas_results_ch2
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -235,6 +238,22 @@ process regenieStep2 {
     --out gwas_results.${filename}
 
   """
+}
+
+process analyzeRegenieLog {
+
+publishDir "$params.output/04_regenie_log", mode: 'copy'
+
+  input:
+  file regenie_logs from gwas_results_ch2.collect()
+
+  output:
+  file "*log" into logs_ch
+
+  """
+  jbang ${AnalyzeRegenieLog} ${regenie_logs} --output gwas_results.log
+  """
+
 }
 
 process mergeRegenie {
