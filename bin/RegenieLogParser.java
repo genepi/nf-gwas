@@ -43,7 +43,12 @@ public class RegenieLogParser implements Callable<Integer> {
 
 				String line = s.nextLine();
 
-				if (line.contains("n_snps") && line.contains("bim")) {
+				if (line.contains("REGENIE v")) {
+					String value = line.split("\\s+")[3].trim();
+					writer.setString(0, "Regenie Version ");
+					writer.setString(1, value);
+					writer.next();
+				} else	if (line.contains("n_snps") && line.contains("bim")) {
 					String value = line.split("=")[1].trim();
 					writer.setString(0, "Variants total (*.bim)");
 					writer.setInteger(1, Integer.valueOf(value));
@@ -63,7 +68,7 @@ public class RegenieLogParser implements Callable<Integer> {
 					writer.next();
 				} else if (line.contains("* phenotypes")) {
 					String value = line.split("=")[1].trim();
-					writer.setString(0, "Number of definied phenotypes");
+					writer.setString(0, "Number of defined phenotypes");
 					writer.setInteger(1, Integer.valueOf(value));
 					writer.next();
 				} else if (line.contains("-number of phenotyped individuals")) {

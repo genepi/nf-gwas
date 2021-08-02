@@ -1,4 +1,5 @@
 params.project = "test-gwas"
+params.version = "v0.0.1"
 params.output = "tests/output/${params.project}"
 
 params.genotypes_typed = "tests/input/example.{bim,bed,fam}"
@@ -331,10 +332,12 @@ publishDir "$params.output", mode: 'copy'
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
       project = '${params.project}',
+      version = '${params.version}',
       regenie_merged='${regenie_merged}',
       regenie_filename='${regenie_merged_name}',
       phenotype_file='${phenotype_file}',
       phenotype='${phenotype}',
+      covariates='${params.covariates_columns.join(',')}',
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}'
     ), knit_root_dir='\$PWD', output_file='\$PWD/07_${regenie_merged.baseName}.html')"
