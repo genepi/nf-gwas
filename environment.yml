@@ -16,6 +16,8 @@ dependencies:
   - r-qqman
   - r-htmltools
   - r-rmdformats=1.0.1
+  - r-skimr=2.1.3
+  - r-kableextra=1.3.4
   - pandoc=2.11.3
   - cairo
   - xorg-libxt
