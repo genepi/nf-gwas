@@ -43,6 +43,8 @@ phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
+RegenieLogParser = "$baseDir/bin/RegenieLogParser.java"
+
 //phenotypes
 phenotype_file = file(params.phenotypes_filename)
 if (!phenotype_file.exists()){
@@ -169,6 +171,7 @@ process regenieStep1 {
 
   output:
     file "fit_bin_out*" into fit_bin_out_ch
+    file "fit_bin_out*log" into fit_bin_log_ch
 
   script:
       def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
@@ -192,6 +195,22 @@ process regenieStep1 {
 
 }
 
+process parseRegenieLogStep1 {
+
+publishDir "$params.output/04_regenie_log", mode: 'copy'
+
+  input:
+  file regenie_step1_log from fit_bin_log_ch.collect()
+
+  output:
+  file "${params.project}.step1.log" into logs_step1_ch
+
+  """
+  jbang ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
+  """
+
+}
+
 
 process regenieStep2 {
 	cpus "${params.threads}"
@@ -206,6 +225,7 @@ process regenieStep2 {
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
+    file "gwas_results.${filename}*log" into gwas_results_ch2
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -237,9 +257,25 @@ process regenieStep2 {
   """
 }
 
+process parseRegenieLogStep2 {
+
+publishDir "$params.output/04_regenie_log", mode: 'copy'
+
+  input:
+  file regenie_step2_logs from gwas_results_ch2.collect()
+
+  output:
+  file "${params.project}.step2.log" into logs_step2_ch
+
+  """
+  jbang ${RegenieLogParser} ${regenie_step2_logs} --output ${params.project}.step2.log
+  """
+
+}
+
 process mergeRegenie {
 
-publishDir "$params.output/04_regenie_merged", mode: 'copy'
+publishDir "$params.output/05_regenie_merged", mode: 'copy'
 
   input:
   file regenie_chromosomes from gwas_results_ch.collect()
@@ -261,7 +297,7 @@ publishDir "$params.output/04_regenie_merged", mode: 'copy'
 
 process gwasTophits {
 
-publishDir "$params.output/05_regenie_filtered", mode: 'copy'
+publishDir "$params.output/06_regenie_filtered", mode: 'copy'
 
   input:
   file regenie_merged from regenie_merged_ch2
@@ -286,6 +322,8 @@ publishDir "$params.output", mode: 'copy'
   set phenotype, regenie_merged_name, regenie_merged from regenie_merged_ch
 	file phenotype_file
   file gwas_report_template
+  file step1_log from logs_step1_ch
+  file step2_log from logs_step2_ch
 
   output:
   file "*.html"
@@ -297,8 +335,10 @@ publishDir "$params.output", mode: 'copy'
       regenie_merged='${regenie_merged}',
       regenie_filename='${regenie_merged_name}',
       phenotype_file='${phenotype_file}',
-      phenotype='${phenotype}'
-    ), knit_root_dir='\$PWD', output_file='\$PWD/05_${regenie_merged.baseName}.html')"
+      phenotype='${phenotype}',
+      regenie_step1_log='${step1_log}',
+      regenie_step2_log='${step2_log}'
+    ), knit_root_dir='\$PWD', output_file='\$PWD/07_${regenie_merged.baseName}.html')"
   """
 }
 

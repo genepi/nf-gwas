@@ -9,16 +9,19 @@ output:
     highlight: tango
 params:
   project: test-gwas
-  regenie_merged: ../tests/output/test-gwas/04_regenie_merged/test-gwas.Y1.regenie.gz
+  regenie_merged: ../tests/output/test-gwas/05_regenie_merged/test-gwas.Y1.regenie.gz
   regenie_filename: test-gwas.Y1.regenie.gz
   phenotype: Y1
   phenotype_file: ../tests/input/phenotype.txt
-  
+  regenie_step1_log: ../tests/output/test-gwas/04_regenie_log/test-gwas.step1.log
+  regenie_step2_log: ../tests/output/test-gwas/04_regenie_log/test-gwas.step2.log
 ---
 
 ```{r setup, include=FALSE}
 library(qqman)
 library(ggplot2)
+library(skimr)
+library(kableExtra)
 ```
 
 ## Summary
@@ -30,11 +33,37 @@ library(ggplot2)
 | Phenotype File      | `r params$phenotype_file`            |
 | Regenie File      | `r params$regenie_filename`             |
 
-## Histogramm
+## Regenie Log (Step 1)
+
+```{r, echo=FALSE}
+step1_log <- read.table(params$regenie_step1_log, 
+                      sep ="\t", header = TRUE, dec =".")
+kable(step1_log)
+```
+
+## Regenie Log (Step 2)
+
+```{r, echo=FALSE}
+step2_log <- read.table(params$regenie_step2_log, 
+                      sep ="\t", header = TRUE, dec =".")
+kable(step2_log)
+```
+
+## Phenotype Statistics
+
+### Overview
+
 ```{r, echo=FALSE}
 phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".");
+kable(skim(phenotypeTable) %>%
+  dplyr::filter(skim_variable == params$phenotype)) %>%
+  kableExtra::scroll_box(width = "100%")
+```
+
+### Histogram 
+```{r, echo=FALSE}
 ggplot(phenotypeTable, aes_string(x=params$phenotype)) + 
-geom_histogram(color="black", fill="white")
+geom_histogram(color="black", fill="white",bins=30)
 ```
 
 ## Manhattan Plot
