@@ -92,7 +92,7 @@ public class RegenieLogParser implements Callable<Integer> {
 					writer.setInteger(1, Integer.valueOf(value));
 					writer.next();
 				} else if (line.contains("-summary : bgen file")) {
-					String value = line.split("\\s+")[13].trim();
+					String value = line.split("\\s+")[14].trim();
 					variants += Integer.valueOf(value);
 				} else if (line.contains("WARNING:")) {
 					warningMsgs.append(line + "\n");

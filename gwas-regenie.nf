@@ -246,7 +246,6 @@ process regenieStep2 {
     --threads ${params.threads} \
     --minMAC ${params.regenie_min_mac} \
     --minINFO ${params.regenie_min_imputation_score} \
-    --split \
     --gz \
     $test \
     $bgen_sample \

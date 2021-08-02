@@ -6,7 +6,6 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - regenie=1.0.6.9
   - plink2
   - r=4.0
   - r-rmarkdown=2.6
