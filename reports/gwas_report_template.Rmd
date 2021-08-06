@@ -13,7 +13,7 @@ params:
   regenie_merged: ../tests/output/test-gwas/05_regenie_merged/test-gwas.Y1.regenie.gz
   regenie_filename: test-gwas.Y1.regenie.gz
   phenotype: Y1
-  covariates: 
+  covariates:
   phenotype_file: ../tests/input/phenotype.txt
   regenie_step1_log: ../tests/output/test-gwas/04_regenie_log/test-gwas.step1.log
   regenie_step2_log: ../tests/output/test-gwas/04_regenie_log/test-gwas.step2.log
@@ -24,9 +24,10 @@ library(qqman)
 library(ggplot2)
 library(skimr)
 library(kableExtra)
+library(ramwas)
 ```
 
-This report has been created with a GWAS Nextflow Pipeline (https://github.com/lukfor/gwas-regenie) (**`r params$version`**) by Lukas Forer (lukas.forer@i-med.ac.at) and Sebastian Schönherr (sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck. 
+This report has been created with a GWAS Nextflow Pipeline (https://github.com/lukfor/gwas-regenie) (**`r params$version`**) by Lukas Forer (lukas.forer@i-med.ac.at) and Sebastian Schönherr (sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
 
 ## Project Summary
 
@@ -38,12 +39,12 @@ This report has been created with a GWAS Nextflow Pipeline (https://github.com/l
 | Covariates       | `r params$covariates`                     |
 | Regenie Output      | `r params$regenie_filename`             |
 
-## Regenie Log 
+## Regenie Log
 
 ### Step 1
 
 ```{r, echo=FALSE}
-step1_log <- read.table(params$regenie_step1_log, 
+step1_log <- read.table(params$regenie_step1_log,
                       sep ="\t", header = TRUE, dec =".")
 kable(step1_log)
 ```
@@ -51,7 +52,7 @@ kable(step1_log)
 ### Step 2
 
 ```{r, echo=FALSE}
-step2_log <- read.table(params$regenie_step2_log, 
+step2_log <- read.table(params$regenie_step2_log,
                       sep ="\t", header = TRUE, dec =".")
 kable(step2_log)
 ```
@@ -67,9 +68,9 @@ kable(skim(phenotypeTable) %>%
   kableExtra::scroll_box(width = "100%")
 ```
 
-### Histogram 
+### Histogram
 ```{r, echo=FALSE}
-ggplot(phenotypeTable, aes_string(x=params$phenotype)) + 
+ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 geom_histogram(color="black", fill="white",bins=30)
 ```
 
@@ -84,5 +85,6 @@ manhattan(regenieTable, chr="CHROM", bp="GENPOS", snp="ID", p="LOG10P", logp= FA
 ## QQ Plot
 
 ```{r, echo=FALSE}
-qq(regenieTable$LOG10P)
+qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
+qqPlotFast(qqPrepare)
 ```
