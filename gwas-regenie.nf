@@ -1,4 +1,5 @@
 params.project = "test-gwas"
+params.project_date = "2021-08-09"
 params.version = "v0.0.1"
 params.output = "tests/output/${params.project}"
 
@@ -11,6 +12,8 @@ params.phenotypes_binary_trait = false
 params.phenotypes_columns = ["Y1","Y2"]
 params.covariates_filename = 'NO_COV_FILE'
 params.covariates_columns = []
+//removing samples with missing data at any of the phenotypes
+params.phenotypes_delete_missing = false
 
 //additive, dominant or recessive allowed. default is additive
 params.test_model = 'additive'
@@ -28,8 +31,8 @@ params.prune_window_kbsize = 50
 params.prune_step_size = 5
 params.prune_r2_threshold = 0.2
 
-params.regenie_step1_bsize = 100
-params.regenie_step2_bsize = 200
+params.regenie_step1_bsize = 1000
+params.regenie_step2_bsize = 400
 params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
 
 params.regenie_min_imputation_score = 0.00
@@ -175,7 +178,8 @@ process regenieStep1 {
     file "fit_bin_out*log" into fit_bin_log_ch
 
   script:
-      def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
+  def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
+  def deleteMissings = params.phenotypes_delete_missing  ? "--strict" : ''
   """
   regenie \
     --step 1 \
@@ -185,6 +189,7 @@ process regenieStep1 {
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     $covariants \
+    $deleteMissings \
     --bsize ${params.regenie_step1_bsize} \
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
@@ -234,6 +239,7 @@ process regenieStep2 {
     def test = params.test_model != 'additive' ? "--test $params.test_model" : ''
     def range = params.range != '' ? "--range $params.range" : ''
     def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
+    def deleteMissings = params.phenotypes_delete_missing  ? "--strict" : ''
 
   """
   regenie \
@@ -252,6 +258,7 @@ process regenieStep2 {
     $bgen_sample \
     $range \
     $covariants \
+    $deleteMissings \
     --out gwas_results.${filename}
 
   """
@@ -332,6 +339,7 @@ publishDir "$params.output", mode: 'copy'
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
       project = '${params.project}',
+      date = '${params.project_date}',
       version = '${params.version}',
       regenie_merged='${regenie_merged}',
       regenie_filename='${regenie_merged_name}',

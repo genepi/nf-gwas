@@ -1,5 +1,5 @@
 ---
-title: "GWAS Report"
+title: "Regenie Report"
 output:
   rmdformats::robobook:
     self_contained: true
@@ -9,6 +9,7 @@ output:
     highlight: tango
 params:
   project: test-gwas
+  date: 2021-08-09
   version: v0.0.1
   regenie_merged: ../tests/output/test-gwas/05_regenie_merged/test-gwas.Y1.regenie.gz
   regenie_filename: test-gwas.Y1.regenie.gz
@@ -34,6 +35,7 @@ This report has been created with a GWAS Nextflow Pipeline (https://github.com/l
 | Parameter     | Value                                      |
 | ------------- |--------------------------------------------|
 | Project       | `r params$project`                         |
+| Date       | `r params$date`                         |
 | Phenotype File      | `r params$phenotype_file`            |
 | Phenotype       | `r params$phenotype`                     |
 | Covariates       | `r params$covariates`                     |
@@ -44,6 +46,7 @@ This report has been created with a GWAS Nextflow Pipeline (https://github.com/l
 ### Step 1
 
 ```{r, echo=FALSE}
+
 step1_log <- read.table(params$regenie_step1_log,
                       sep ="\t", header = TRUE, dec =".")
 kable(step1_log)
