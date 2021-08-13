@@ -35,6 +35,7 @@ This report has been created with a GWAS Nextflow Pipeline (https://github.com/l
 | Parameter     | Value                                      |
 | ------------- |--------------------------------------------|
 | Project       | `r params$project`                         |
+| Pipeline Version       | `r params$version`                |
 | Date       | `r params$date`                         |
 | Phenotype File      | `r params$phenotype_file`            |
 | Phenotype       | `r params$phenotype`                     |

@@ -13,7 +13,7 @@ params.phenotypes_columns = ["Y1","Y2"]
 params.covariates_filename = 'NO_COV_FILE'
 params.covariates_columns = []
 //removing samples with missing data at any of the phenotypes
-params.phenotypes_delete_missing = false
+params.phenotypes_delete_missing_data = false
 
 //additive, dominant or recessive allowed. default is additive
 params.test_model = 'additive'
@@ -34,6 +34,8 @@ params.prune_r2_threshold = 0.2
 params.regenie_step1_bsize = 1000
 params.regenie_step2_bsize = 400
 params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
+// skip reading the file specified by --pred
+params.regenie_step2_predictions = true
 
 params.regenie_min_imputation_score = 0.00
 params.regenie_min_mac = 5
@@ -179,7 +181,7 @@ process regenieStep1 {
 
   script:
   def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
-  def deleteMissings = params.phenotypes_delete_missing  ? "--strict" : ''
+  def deleteMissingData = params.phenotypes_delete_missing_data  ? "--strict" : ''
   """
   regenie \
     --step 1 \
@@ -189,7 +191,7 @@ process regenieStep1 {
     --phenoFile ${phenotype_file} \
     --phenoColList  ${params.phenotypes_columns.join(',')} \
     $covariants \
-    $deleteMissings \
+    $deleteMissingData \
     --bsize ${params.regenie_step1_bsize} \
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
@@ -218,6 +220,7 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
 }
 
 
+
 process regenieStep2 {
 	cpus "${params.threads}"
   publishDir "$params.output/03_regenie_step2", mode: 'copy'
@@ -239,7 +242,9 @@ process regenieStep2 {
     def test = params.test_model != 'additive' ? "--test $params.test_model" : ''
     def range = params.range != '' ? "--range $params.range" : ''
     def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
-    def deleteMissings = params.phenotypes_delete_missing  ? "--strict" : ''
+    def deleteMissingData = params.phenotypes_delete_missing_data  ? "--strict" : ''
+    def predictions = params.regenie_step2_predictions  ? "" : '--ignore-pred'
+
 
   """
   regenie \
@@ -258,7 +263,8 @@ process regenieStep2 {
     $bgen_sample \
     $range \
     $covariants \
-    $deleteMissings \
+    $deleteMissingData \
+    $predictions \
     --out gwas_results.${filename}
 
   """
