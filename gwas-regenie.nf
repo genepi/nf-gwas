@@ -1,5 +1,5 @@
 params.project = "test-gwas"
-params.project_date = "2021-08-09"
+params.project_date = "`date`"
 params.version = "v0.0.1"
 params.output = "tests/output/${params.project}"
 
@@ -12,44 +12,53 @@ params.phenotypes_binary_trait = false
 params.phenotypes_columns = ["Y1","Y2"]
 params.covariates_filename = 'NO_COV_FILE'
 params.covariates_columns = []
+
 //removing samples with missing data at any of the phenotypes
 params.phenotypes_delete_missing_data = false
 
-//additive, dominant or recessive allowed. default is additive
-params.test_model = 'additive'
-//range for variants to test: CHR:MINPOS-MAXPOS
-params.range = ''
+params.threads = (Runtime.runtime.availableProcessors() - 1)
 
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
+
+RegenieLogParser = "$baseDir/bin/RegenieLogParser.java"
+
+/** params step snpPruning **/
+params.prune_exec = false
+params.prune_maf = 0.01
+params.prune_window_kbsize = 50
+params.prune_step_size = 5
+params.prune_r2_threshold = 0.2
+
+/** params step qualityControl **/
 params.qc_maf = "0.01"
 params.qc_mac = "100"
 params.qc_geno = "0.1"
 params.qc_hwe = "1e-15"
 params.qc_mind = "0.1"
 
-params.prune_maf = 0.01
-params.prune_window_kbsize = 50
-params.prune_step_size = 5
-params.prune_r2_threshold = 0.2
-
+/** params step regenieStep1 **/
 params.regenie_step1_bsize = 1000
+
+/** params step regenieStep2 **/
 params.regenie_step2_bsize = 400
 params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
 // skip reading the file specified by --pred
-params.regenie_step2_predictions = true
+params.regenie_step2_predictions = false
+params.regenie_step2_min_imputation_score = 0.00
+params.regenie_step2_min_mac = 5
+//additive, dominant or recessive allowed. default is additive
+params.regenie_step2_test_model = 'additive'
+//range for variants to test: CHR:MINPOS-MAXPOS
+params.regenie_step2_range = ''
 
-params.regenie_min_imputation_score = 0.00
-params.regenie_min_mac = 5
-params.threads = (Runtime.runtime.availableProcessors() - 1)
-
+/** params step gwasTophits **/
 params.gwas_tophits = 50
 
+/** params step gwasReport **/
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
 phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd")
 
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
-
-RegenieLogParser = "$baseDir/bin/RegenieLogParser.java"
 
 //phenotypes
 phenotype_file = file(params.phenotypes_filename)
@@ -71,8 +80,8 @@ if (params.regenie_step2_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists(
 }
 
 //check test model
-if (params.test_model != 'additive' && params.test_model != 'recessive' && params.test_model != 'dominant'){
-  exit 1, "Test model ${params.test_model} not supported."
+if (params.regenie_step2_test_model != 'additive' && params.regenie_step2_test_model != 'recessive' && params.regenie_step2_test_model != 'dominant'){
+  exit 1, "Test model ${params.regenie_step2_test_model} not supported."
 }
 
 //check imputed file format
@@ -141,6 +150,7 @@ process snpPruning {
 
 }
 
+
 process qualityControl {
 
   publishDir "$params.output/01_quality_control", mode: 'copy'
@@ -164,6 +174,7 @@ process qualityControl {
   """
 
 }
+
 
 process regenieStep1 {
 
@@ -203,6 +214,7 @@ process regenieStep1 {
 
 }
 
+
 process parseRegenieLogStep1 {
 
 publishDir "$params.output/04_regenie_log", mode: 'copy'
@@ -216,9 +228,6 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
   """
   jbang ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
   """
-
-}
-
 
 
 process regenieStep2 {
@@ -239,8 +248,8 @@ process regenieStep2 {
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
     def bgen_sample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
-    def test = params.test_model != 'additive' ? "--test $params.test_model" : ''
-    def range = params.range != '' ? "--range $params.range" : ''
+    def test = params.regenie_step2_test_model != 'additive' ? "--test $params.regenie_step2_test_model" : ''
+    def range = params.regenie_step2_range != '' ? "--range $params.regenie_step2_range" : ''
     def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
     def deleteMissingData = params.phenotypes_delete_missing_data  ? "--strict" : ''
     def predictions = params.regenie_step2_predictions  ? "" : '--ignore-pred'
@@ -256,8 +265,8 @@ process regenieStep2 {
     ${params.phenotypes_binary_trait ? '--bt  --firth 0.01 --approx' : ''} \
     --pred fit_bin_out_pred.list \
     --threads ${params.threads} \
-    --minMAC ${params.regenie_min_mac} \
-    --minINFO ${params.regenie_min_imputation_score} \
+    --minMAC ${params.regenie_step2_min_mac} \
+    --minINFO ${params.regenie_step2_min_imputation_score} \
     --gz \
     $test \
     $bgen_sample \
