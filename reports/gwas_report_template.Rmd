@@ -46,11 +46,14 @@ This report has been created with a GWAS Nextflow Pipeline (https://github.com/l
 
 ### Step 1
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, results='asis'}
 
-step1_log <- read.table(params$regenie_step1_log,
-                      sep ="\t", header = TRUE, dec =".")
+if(file.info(params$regenie_step1_log)$size != 0) {
+step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
 kable(step1_log)
+} else {
+    cat("*No log file available, since regenie step 1 is skipped.*")
+}
 ```
 
 ### Step 2

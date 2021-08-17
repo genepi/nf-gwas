@@ -124,6 +124,8 @@ if (params.genotypes_imputed_format == "vcf"){
 
 }
 
+if(params.prune_exec) {
+
 process snpPruning {
   publishDir "$params.output/01_quality_control", mode: 'copy'
 
@@ -147,6 +149,12 @@ process snpPruning {
     --make-bed \
     --out ${params.project}.pruned
   """
+
+}
+} else {
+
+  Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch}
+  Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch2}
 
 }
 
@@ -175,7 +183,7 @@ process qualityControl {
 
 }
 
-
+if (params.regenie_step2_predictions){
 process regenieStep1 {
 
   publishDir "$params.output/02_regenie_step1", mode: 'copy'
@@ -228,6 +236,14 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
   """
   jbang ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
   """
+  }
+  } else {
+
+    fit_bin_out_ch = Channel.from(["fit_bin_out_ch_dummy"]).collect()
+
+    logs_step1_ch = Channel.from([""]).collect()
+
+  }
 
 
 process regenieStep2 {
