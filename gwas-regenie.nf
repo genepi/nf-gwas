@@ -44,7 +44,7 @@ params.regenie_step1_bsize = 1000
 params.regenie_step2_bsize = 400
 params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
 // skip reading the file specified by --pred
-params.regenie_step2_predictions = false
+params.regenie_step2_predictions = true
 params.regenie_step2_min_imputation_score = 0.00
 params.regenie_step2_min_mac = 5
 //additive, dominant or recessive allowed. default is additive
