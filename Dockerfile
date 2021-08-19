@@ -6,7 +6,7 @@ RUN \
    conda env update -n root -f environment.yml \
 && conda clean -a
 
-RUN apt-get update && apt-get install -y procps unzip libgomp1
+RUN apt-get --allow-releaseinfo-change update && apt-get install -y procps unzip libgomp1
 
 # Install jbang (not as conda package available)
 WORKDIR "/opt"
