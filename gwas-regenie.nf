@@ -44,7 +44,7 @@ params.regenie_step1_bsize = 1000
 params.regenie_step2_bsize = 400
 params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
 // skip reading the file specified by --pred
-params.regenie_step2_predictions = true
+params.regenie_step2_skip_predictions = false
 params.regenie_step2_min_imputation_score = 0.00
 params.regenie_step2_min_mac = 5
 //additive, dominant or recessive allowed. default is additive
@@ -183,7 +183,7 @@ process qualityControl {
 
 }
 
-if (params.regenie_step2_predictions){
+if (!params.regenie_step2_skip_predictions){
 process regenieStep1 {
 
   publishDir "$params.output/02_regenie_step1", mode: 'copy'
@@ -268,7 +268,7 @@ process regenieStep2 {
     def range = params.regenie_step2_range != '' ? "--range $params.regenie_step2_range" : ''
     def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
     def deleteMissingData = params.phenotypes_delete_missing_data  ? "--strict" : ''
-    def predictions = params.regenie_step2_predictions  ? "" : '--ignore-pred'
+    def predictions = params.regenie_step2_skip_predictions  ? '--ignore-pred' : ""
 
 
   """
