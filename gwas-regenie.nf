@@ -13,6 +13,8 @@ params.phenotypes_columns = ["Y1","Y2"]
 params.covariates_filename = 'NO_COV_FILE'
 params.covariates_columns = []
 
+params.genes = "genes/genes.hg19.sorted.bed"
+
 //removing samples with missing data at any of the phenotypes
 params.phenotypes_delete_missing_data = false
 
@@ -345,9 +347,30 @@ publishDir "$params.output/06_regenie_filtered", mode: 'copy'
 
 
   """
-  #todo: replace by jbang script
+  #!/bin/bash
+  set -e
   (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
   zcat ${regenie_merged.baseName}.sorted.gz | head -n ${params.gwas_tophits} | gzip > ${regenie_merged.baseName}.sorted.filtered.gz
+  """
+
+}
+
+process annotateTophits {
+
+publishDir "$params.output/06_regenie_filtered", mode: 'copy'
+
+  input:
+  file tophits from filtered_ch
+
+  output:
+  file "${tophits.baseName}.sorted.filtered.annotated.txt.gz" into annotated_ch
+
+
+  """
+  #!/bin/bash
+  set -e
+  zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -n"}' > ${tophits.baseName}.sorted.filtered.sorted.txt
+  bedtools closest -a ${tophits.baseName}.sorted.filtered.sorted.txt -b ${params.genes} | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
   """
 
 }
