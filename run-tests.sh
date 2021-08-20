@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# defalult test to check dependencies
+# default test to check dependencies
 nextflow run gwas-regenie.nf
 
 # test all config files in tests folder
