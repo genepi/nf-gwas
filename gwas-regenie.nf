@@ -2,6 +2,7 @@ params.project = "test-gwas"
 params.project_date = "`date`"
 params.version = "v0.0.1"
 params.output = "tests/output/${params.project}"
+params.build = "hg38"
 
 params.genotypes_typed = "tests/input/example.{bim,bed,fam}"
 params.genotypes_imputed = "tests/input/example.bgen"
@@ -12,8 +13,6 @@ params.phenotypes_binary_trait = false
 params.phenotypes_columns = ["Y1","Y2"]
 params.covariates_filename = 'NO_COV_FILE'
 params.covariates_columns = []
-
-params.genes_filename = "genes/genes.hg19.sorted.bed"
 
 //removing samples with missing data at any of the phenotypes
 params.phenotypes_delete_missing_data = false
@@ -63,7 +62,8 @@ phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd
 
 
 //genes
-genes_file = file(params.genes_filename)
+genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed")
+genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed")
 
 //phenotypes
 phenotype_file = file(params.phenotypes_filename)
@@ -364,18 +364,20 @@ publishDir "$params.output/07_regenie_filtered_annotated", mode: 'copy'
 
   input:
   file tophits from filtered_ch
-  file genes_file
+  file genes_hg19
+  file genes_hg38
 
   output:
   file "${tophits.baseName}.sorted.filtered.annotated.txt.gz" into annotated_ch
 
+  def genes = params.build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
 
   """
   #!/bin/bash
   set -e
-  zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n"}' > ${tophits.baseName}.sorted.txt
+  zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n -n"}' > ${tophits.baseName}.sorted.txt
   sed -e 's/ /\t/g'  ${tophits.baseName}.sorted.txt > ${tophits.baseName}.sorted.tabs.txt
-  bedtools closest -a ${tophits.baseName}.sorted.tabs.txt -b ${genes_file} | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
+  bedtools closest -a ${tophits.baseName}.sorted.tabs.txt -b ${genes}  -d | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
   """
 
 }
