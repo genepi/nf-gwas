@@ -2,7 +2,7 @@ params.project = "test-gwas"
 params.project_date = "`date`"
 params.version = "v0.0.1"
 params.output = "tests/output/${params.project}"
-params.build = "hg38"
+params.build = "hg19"
 
 params.genotypes_typed = "tests/input/example.{bim,bed,fam}"
 params.genotypes_imputed = "tests/input/example.bgen"
@@ -375,9 +375,10 @@ publishDir "$params.output/07_regenie_filtered_annotated", mode: 'copy'
   """
   #!/bin/bash
   set -e
-  zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n -n"}' > ${tophits.baseName}.sorted.txt
+  zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n"}' > ${tophits.baseName}.sorted.txt
   sed -e 's/ /\t/g'  ${tophits.baseName}.sorted.txt > ${tophits.baseName}.sorted.tabs.txt
-  bedtools closest -a ${tophits.baseName}.sorted.tabs.txt -b ${genes}  -d | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
+  bedtools closest -a ${tophits.baseName}.sorted.tabs.txt -b ${genes} -header -d | gzip > ${tophits.baseName}.closest.txt
+    (zcat ${tophits.baseName}.closest.txt | head -n 1 && zcat ${tophits.baseName}.closest.txt | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
   """
 
 }
