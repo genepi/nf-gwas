@@ -132,7 +132,7 @@ if (params.genotypes_imputed_format == "vcf"){
 if(params.prune_exec) {
 
 process snpPruning {
-  publishDir "$params.output/01_quality_control", mode: 'copy'
+//  publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
     set genotyped_plink_filename, file(genotyped_plink_file) from genotyped_plink_files_ch
@@ -166,7 +166,7 @@ process snpPruning {
 
 process qualityControl {
 
-  publishDir "$params.output/01_quality_control", mode: 'copy'
+  //publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
     set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch
@@ -191,7 +191,7 @@ process qualityControl {
 if (!params.regenie_step2_skip_predictions){
 process regenieStep1 {
 
-  publishDir "$params.output/02_regenie_step1", mode: 'copy'
+  //publishDir "$params.output/02_regenie_step1", mode: 'copy'
 
   input:
     set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
@@ -230,7 +230,7 @@ process regenieStep1 {
 
 process parseRegenieLogStep1 {
 
-publishDir "$params.output/04_regenie_log", mode: 'copy'
+//publishDir "$params.output/04_regenie_log", mode: 'copy'
 
   input:
   file regenie_step1_log from fit_bin_log_ch.collect()
@@ -253,7 +253,7 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
 
 process regenieStep2 {
 	cpus "${params.threads}"
-  publishDir "$params.output/03_regenie_step2", mode: 'copy'
+  //publishDir "$params.output/03_regenie_step2", mode: 'copy'
 
   input:
     set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
@@ -302,7 +302,7 @@ process regenieStep2 {
 
 process parseRegenieLogStep2 {
 
-publishDir "$params.output/04_regenie_log", mode: 'copy'
+//publishDir "$params.output/04_regenie_log", mode: 'copy'
 
   input:
   file regenie_step2_logs from gwas_results_ch2.collect()
@@ -316,9 +316,9 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
 
 }
 
-process mergeRegenie {
+process mergeResults {
 
-publishDir "$params.output/05_regenie_merged", mode: 'copy'
+publishDir "$params.output/05_regenie_complete", mode: 'copy'
 
   input:
   file regenie_chromosomes from gwas_results_ch.collect()
@@ -339,8 +339,6 @@ publishDir "$params.output/05_regenie_merged", mode: 'copy'
 }
 
 process gwasTophits {
-
-publishDir "$params.output/06_regenie_filtered", mode: 'copy'
 
   input:
   file regenie_merged from regenie_merged_ch2
@@ -375,10 +373,14 @@ publishDir "$params.output/07_regenie_filtered_annotated", mode: 'copy'
   """
   #!/bin/bash
   set -e
+  # sort by chrom and pos
   zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n"}' > ${tophits.baseName}.sorted.txt
   sed -e 's/ /\t/g'  ${tophits.baseName}.sorted.txt > ${tophits.baseName}.sorted.tabs.txt
-  bedtools closest -a ${tophits.baseName}.sorted.tabs.txt -b ${genes} -header -d | gzip > ${tophits.baseName}.closest.txt
-    (zcat ${tophits.baseName}.closest.txt | head -n 1 && zcat ${tophits.baseName}.closest.txt | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
+  bedtools closest -a ${tophits.baseName}.sorted.tabs.txt -b ${genes} -header -d > ${tophits.baseName}.bedtools.out
+  # fix wrong bedtools closest header
+  sed ' 1 s/.*/&\tCHROM_NAME\tGENE_START\tGENE_END\tGENE_NAME\tDISTANCE/' ${tophits.baseName}.bedtools.out > ${tophits.baseName}.bedtools.fixed.txt
+  # sort by p-value again
+  (cat ${tophits.baseName}.bedtools.fixed.txt | head -n 1 && cat ${tophits.baseName}.bedtools.fixed.txt | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
   """
 
 }
@@ -413,9 +415,6 @@ publishDir "$params.output", mode: 'copy'
     ), knit_root_dir='\$PWD', output_file='\$PWD/07_${regenie_merged.baseName}.html')"
   """
 }
-
-
-//TODO: process annotate
 
 workflow.onComplete {
     println "Pipeline completed at: $workflow.complete"
