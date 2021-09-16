@@ -1,8 +1,8 @@
 
 
 //usr/bin/env jbang "$0" "$@" ; exit $?
-//REPOS jcenter,jfrog-genepi-maven=https://genepi.jfrog.io/artifactory/maven/
-//DEPS info.picocli:picocli:4.5.0
+//REPOS mavencentral, jfrog-genepi-maven=https://genepi.jfrog.io/artifactory/maven/
+//DEPS info.picocli:picocli:4.6.1
 //DEPS genepi:genepi-io:1.0.12
 //DEPS tech.tablesaw:tablesaw-core:0.38.1
 
