@@ -10,9 +10,10 @@ RUN apt-get --allow-releaseinfo-change update && apt-get install -y procps unzip
 
 # Install jbang (not as conda package available)
 WORKDIR "/opt"
-RUN wget https://github.com/jbangdev/jbang/releases/download/v0.59.0/jbang.zip && \
-    unzip -q jbang.zip && \
-    rm jbang.zip
+RUN wget https://github.com/jbangdev/jbang/releases/download/v0.79.0/jbang-0.79.0.zip && \
+    unzip -q jbang-*.zip && \
+    mv jbang-0.79.0 jbang  && \
+    rm jbang*.zip
 ENV PATH="/opt/jbang/bin:${PATH}"
 
 # Install regenie (not as conda package available)

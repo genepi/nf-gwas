@@ -24,3 +24,4 @@ dependencies:
   - java-jdk=8.0.112
   - unzip=6.0
   - bioconductor-ramwas=1.16.0
+  - bedtools=2.30.0
