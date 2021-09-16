@@ -1,5 +1,5 @@
 ---
-title: "Regenie Report"
+title: "Report: `r params$project`"
 output:
   rmdformats::robobook:
     self_contained: true
@@ -11,7 +11,7 @@ params:
   project: test-gwas
   date: 2021-08-09
   version: v0.0.1
-  regenie_merged: ../tests/output/test-gwas/05_regenie_merged/test-gwas.Y1.regenie.gz
+  regenie_merged: ../tests/output/test-gwas/05_regenie_complete/test-gwas.Y1.regenie.gz
   regenie_filename: test-gwas.Y1.regenie.gz
   phenotype: Y1
   covariates:
@@ -27,8 +27,6 @@ library(skimr)
 library(kableExtra)
 library(ramwas)
 ```
-
-This report has been created with a GWAS Nextflow Pipeline (https://github.com/lukfor/gwas-regenie) (**`r params$version`**) by Lukas Forer (lukas.forer@i-med.ac.at) and Sebastian Schönherr (sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
 
 ## Project Summary
 
@@ -95,3 +93,6 @@ manhattan(regenieTable, chr="CHROM", bp="GENPOS", snp="ID", p="LOG10P", logp= FA
 qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
 qqPlotFast(qqPrepare)
 ```
+
+## About 
+This report has been created with a GWAS Nextflow Pipeline (https://github.com/genepi/gwas-regenie) (**`r params$version`**) by Lukas Forer (lukas.forer@i-med.ac.at) and Sebastian Schönherr (sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.

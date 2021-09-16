@@ -1,5 +1,3 @@
-
-
 //usr/bin/env jbang "$0" "$@" ; exit $?
 //REPOS mavencentral, jfrog-genepi-maven=https://genepi.jfrog.io/artifactory/maven/
 //DEPS info.picocli:picocli:4.6.1

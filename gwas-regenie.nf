@@ -230,7 +230,7 @@ process regenieStep1 {
 
 process parseRegenieLogStep1 {
 
-//publishDir "$params.output/04_regenie_log", mode: 'copy'
+publishDir "$params.output/04_regenie_log", mode: 'copy'
 
   input:
   file regenie_step1_log from fit_bin_log_ch.collect()
@@ -302,7 +302,7 @@ process regenieStep2 {
 
 process parseRegenieLogStep2 {
 
-//publishDir "$params.output/04_regenie_log", mode: 'copy'
+publishDir "$params.output/04_regenie_log", mode: 'copy'
 
   input:
   file regenie_step2_logs from gwas_results_ch2.collect()
