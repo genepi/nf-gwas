@@ -1,6 +1,5 @@
 FROM continuumio/miniconda
-MAINTAINER Lukas Forer <lukas.forer@i-med.ac.at>
-
+MAINTAINER Lukas Forer <lukas.forer@i-med.ac.at> / Sebastian Schönherr <sebastian.schoenherr@i-med.ac.at>
 COPY environment.yml .
 RUN \
    conda env update -n root -f environment.yml \
@@ -25,3 +24,10 @@ RUN mkdir regenie && cd regenie && \
     mv regenie_v2.2.1.gz_x86_64_Linux regenie && \
     chmod +x regenie
 ENV PATH="/opt/regenie/:${PATH}"
+
+# Install regenie (not as conda package available)
+WORKDIR "/opt"
+RUN mkdir bedops && cd bedops && \
+    wget https://github.com/bedops/bedops/releases/download/v2.4.40/bedops_linux_x86_64-v2.4.40.tar.bz2 && \
+    tar xjf bedops_linux_x86_64-v*.tar.bz2
+ENV PATH="/opt/bedops/bin/:${PATH}"

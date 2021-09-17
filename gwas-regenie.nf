@@ -373,14 +373,19 @@ publishDir "$params.output/07_regenie_filtered_annotated", mode: 'copy'
   """
   #!/bin/bash
   set -e
-  # sort by chrom and pos
+  # sort lexicographically
   zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n"}' > ${tophits.baseName}.sorted.txt
   sed -e 's/ /\t/g'  ${tophits.baseName}.sorted.txt > ${tophits.baseName}.sorted.tabs.txt
-  bedtools closest -a ${tophits.baseName}.sorted.tabs.txt -b ${genes} -header -d > ${tophits.baseName}.bedtools.out
-  # fix wrong bedtools closest header
-  sed ' 1 s/.*/&\tCHROM_NAME\tGENE_START\tGENE_END\tGENE_NAME\tDISTANCE/' ${tophits.baseName}.bedtools.out > ${tophits.baseName}.bedtools.fixed.txt
+  # remove header line for cloest-features
+  sed 1,1d ${tophits.baseName}.sorted.tabs.txt > ${tophits.baseName}.sorted.tabs.fixed.txt
+  # save header line
+  head -n 1 ${tophits.baseName}.sorted.tabs.txt > ${tophits.baseName}.header.txt
+  # create final header
+  sed ' 1 s/.*/&\tGENE_CHROMOSOME\tGENE_START\tGENE_END\tGENE_NAME\tGENE_DISTANCE/' ${tophits.baseName}.header.txt > ${tophits.baseName}.header.fixed.txt
+  closest-features --dist --delim '\t' --shortest ${tophits.baseName}.sorted.tabs.fixed.txt ${genes} > ${tophits.baseName}.closest.txt
+  cat ${tophits.baseName}.header.fixed.txt ${tophits.baseName}.closest.txt > ${tophits.baseName}.closest.merged.txt
   # sort by p-value again
-  (cat ${tophits.baseName}.bedtools.fixed.txt | head -n 1 && cat ${tophits.baseName}.bedtools.fixed.txt | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
+  (cat ${tophits.baseName}.closest.merged.txt | head -n 1 && cat ${tophits.baseName}.closest.merged.txt | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
   """
 
 }
