@@ -1,5 +1,7 @@
+
+
 //usr/bin/env jbang "$0" "$@" ; exit $?
-//REPOS jcenter,bintry-genepi-maven=https://dl.bintray.com/genepi/maven
+//REPOS jcenter,jfrog-genepi-maven=https://genepi.jfrog.io/artifactory/maven/
 //DEPS info.picocli:picocli:4.6.1
 //DEPS genepi:genepi-io:1.1.1
 
@@ -11,7 +13,7 @@ import genepi.io.table.writer.CsvTableWriter;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
-public class FilterRegeniePValues implements Callable<Integer> {
+public class RegenieFilter implements Callable<Integer> {
 
 	@Option(names = "--input", description = "Regenie file", required = true)
 	private String input;
@@ -19,7 +21,7 @@ public class FilterRegeniePValues implements Callable<Integer> {
 	@Option(names = "--limit", description = "Specifiy under logp value", required = true)
 	private double limit;
 
-	@Option(names = "--output", description = "Fitlered Regenie file ", required = true)
+	@Option(names = "--output", description = "Filtered Regenie file ", required = true)
 	private String output;
 
 	public void setInput(String input) {
@@ -72,7 +74,7 @@ public class FilterRegeniePValues implements Callable<Integer> {
 	}
 
 	public static void main(String... args) {
-		int exitCode = new CommandLine(new FilterRegeniePValues()).execute(args);
+		int exitCode = new CommandLine(new RegenieFilter()).execute(args);
 		System.exit(exitCode);
 	}
 

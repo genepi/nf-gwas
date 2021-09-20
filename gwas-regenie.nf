@@ -23,6 +23,7 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
 RegenieLogParser = "$baseDir/bin/RegenieLogParser.java"
+RegenieFilter = "$baseDir/bin/RegenieFilter.java"
 
 /** params step snpPruning **/
 params.prune_exec = false
@@ -264,6 +265,7 @@ process regenieStep2 {
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
+    file "gwas_results.*regenie.gz" into test_ch
     file "gwas_results.${filename}*log" into gwas_results_ch2
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
@@ -298,6 +300,23 @@ process regenieStep2 {
     --out gwas_results.${filename}
 
   """
+}
+
+process filterResults {
+
+publishDir "$params.output/05_regenie_complete", mode: 'copy'
+
+  input:
+  file regenie_chromosomes from test_ch.flatten()
+
+  output:
+  file "${regenie_chromosomes.baseName}.txt" into gwas_results_filtered_ch
+
+  """
+  # jbang ${RegenieFilter} --input ${regenie_chromosomes} --limit 2 --output ${regenie_chromosomes.baseName}.txt
+  cat ${regenie_chromosomes} > ${regenie_chromosomes.baseName}.txt
+  """
+
 }
 
 process parseRegenieLogStep2 {
@@ -394,7 +413,7 @@ process gwasReport {
 
 publishDir "$params.output", mode: 'copy'
 
-  memory '10 GB'
+  memory '10  GB'
 
   input:
   set phenotype, regenie_merged_name, regenie_merged from regenie_merged_ch
