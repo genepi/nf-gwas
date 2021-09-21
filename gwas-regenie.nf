@@ -55,7 +55,7 @@ params.regenie_step2_test_model = 'additive'
 params.regenie_step2_range = ''
 
 /** params step filterResults **/
-params.gwas_filter_pvalue = 2
+params.gwas_pvalue_limit = 2
 
 /** params step gwasTophits **/
 params.gwas_tophits = 50
@@ -75,6 +75,7 @@ if (!phenotype_file.exists()){
   exit 1, "Phenotype file ${params.phenotypes_filename} not found."
 }
 phenotypes_ch = Channel.from(params.phenotypes_columns)
+phenotypes_ch2 = Channel.from(params.phenotypes_columns)
 
 //optional covariates
 covariate_file = file(params.covariates_filename)
@@ -318,7 +319,6 @@ process regenieStep2 {
     $deleteMissingData \
     $predictions \
     --out gwas_results.${filename}
-
   """
 }
 
@@ -332,9 +332,10 @@ process filterResults {
 
   output:
   file "${regenie_chromosomes.baseName}.filtered*" into gwas_results_filtered_ch
+  file "${regenie_chromosomes}" into gwas_results_unfiltered_ch
 
   """
-  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.gwas_filter_pvalue} --output ${regenie_chromosomes.baseName}.filtered
+  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.gwas_pvalue_limit} --output ${regenie_chromosomes.baseName}.filtered
   #todo: CSVWriter for gzip
   gzip ${regenie_chromosomes.baseName}.filtered
   """
@@ -358,7 +359,7 @@ publishDir "$params.output/regenie_logs", mode: 'copy'
 
 }
 
-process mergeResults {
+process mergeResultsFiltered {
 
 publishDir "$params.output/regenie_results", mode: 'copy'
 
@@ -367,16 +368,38 @@ publishDir "$params.output/regenie_results", mode: 'copy'
   val phenotype from phenotypes_ch
 
   output:
-  tuple  phenotype, val("${params.project}.${phenotype}.regenie.final.gz"), "${params.project}.${phenotype}.regenie.final.gz" into regenie_merged_ch
-  file "${params.project}.*.regenie.final.gz" into regenie_merged_ch2
+  tuple  phenotype, val("${params.project}.${phenotype}.regenie.filtered.gz"), "${params.project}.${phenotype}.regenie.filtered.gz" into regenie_merged_ch
+  file "${params.project}.*.regenie.filtered.gz" into regenie_merged_ch2
 
 
   """
   # static header due to split
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
-  ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.filtered.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.filtered.gz
-  cat header.gz chromosomes_data_${phenotype}.regenie.filtered.gz > ${params.project}.${phenotype}.regenie.final.gz
-  rm chromosomes_data_${phenotype}.regenie.filtered.gz
+  ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.filtered.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.tmp.gz
+  cat header.gz chromosomes_data_${phenotype}.regenie.tmp.gz > ${params.project}.${phenotype}.regenie.filtered.gz
+  rm chromosomes_data_${phenotype}.regenie.tmp.gz
+  """
+
+}
+
+process mergeResultsUnfiltered {
+
+publishDir "$params.output/regenie_results", mode: 'copy'
+
+  input:
+  file regenie_chromosomes from gwas_results_unfiltered_ch.collect()
+  val phenotype from phenotypes_ch2
+
+  output:
+  file "${params.project}.*.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch
+
+
+  """
+  # static header due to split
+  ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
+  ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.tmp.gz
+  cat header.gz chromosomes_data_${phenotype}.regenie.tmp.gz > ${params.project}.${phenotype}.regenie.unfiltered.gz
+  rm chromosomes_data_${phenotype}.regenie.tmp.gz
   """
 
 }
@@ -469,7 +492,7 @@ publishDir "$params.output", mode: 'copy'
       covariates='${params.covariates_columns.join(',')}',
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}'
-    ), knit_root_dir='\$PWD', output_file='\$PWD/07_${regenie_merged.baseName}.html')"
+    ), knit_root_dir='\$PWD', output_file='\$PWD/${regenie_merged.baseName}.html')"
   """
 }
 
