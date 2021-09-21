@@ -54,6 +54,9 @@ params.regenie_step2_test_model = 'additive'
 //range for variants to test: CHR:MINPOS-MAXPOS
 params.regenie_step2_range = ''
 
+/** params step filterResults **/
+params.gwas_filter_pvalue = 2
+
 /** params step gwasTophits **/
 params.gwas_tophits = 50
 
@@ -248,7 +251,7 @@ process regenieStep1 {
 
 process parseRegenieLogStep1 {
 
-publishDir "$params.output/04_regenie_log", mode: 'copy'
+publishDir "$params.output/regenie_logs", mode: 'copy'
 
   input:
   file regenie_step1_log from fit_bin_log_ch.collect()
@@ -321,7 +324,7 @@ process regenieStep2 {
 
 process filterResults {
 
-publishDir "$params.output/05_regenie_complete", mode: 'copy'
+//publishDir "$params.output/regenie_results", mode: 'copy'
 
   input:
   file regenie_chromosomes from gwas_results_ch.flatten()
@@ -331,7 +334,7 @@ publishDir "$params.output/05_regenie_complete", mode: 'copy'
   file "${regenie_chromosomes.baseName}.filtered*" into gwas_results_filtered_ch
 
   """
-  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit 2 --output ${regenie_chromosomes.baseName}.filtered
+  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.gwas_filter_pvalue} --output ${regenie_chromosomes.baseName}.filtered
   #todo: CSVWriter for gzip
   gzip ${regenie_chromosomes.baseName}.filtered
   """
@@ -340,7 +343,7 @@ publishDir "$params.output/05_regenie_complete", mode: 'copy'
 
 process parseRegenieLogStep2 {
 
-publishDir "$params.output/04_regenie_log", mode: 'copy'
+publishDir "$params.output/regenie_logs", mode: 'copy'
 
   input:
   file regenie_step2_logs from gwas_results_ch2.collect()
@@ -357,7 +360,7 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
 
 process mergeResults {
 
-publishDir "$params.output/05_regenie_complete", mode: 'copy'
+publishDir "$params.output/regenie_results", mode: 'copy'
 
   input:
   file regenie_chromosomes from gwas_results_filtered_ch.collect()
