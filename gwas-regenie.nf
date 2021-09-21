@@ -22,8 +22,8 @@ params.threads = (Runtime.runtime.availableProcessors() - 1)
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
-RegenieLogParser = "$baseDir/bin/RegenieLogParser.java"
-RegenieFilter = "$baseDir/bin/RegenieFilter.java"
+RegenieLogParser_java  = file("$baseDir/bin/RegenieLogParser.java");
+RegenieFilter_java = file("$baseDir/bin/RegenieFilter.java");
 
 /** params step snpPruning **/
 params.prune_exec = false
@@ -93,6 +93,23 @@ if (params.regenie_step2_test_model != 'additive' && params.regenie_step2_test_m
 //check imputed file format
 if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
   exit 1, "File format ${params.genotypes_imputed_format} not supported."
+}
+
+process cacheJBangScripts {
+
+  input:
+    file RegenieLogParser_java
+    file RegenieFilter_java
+
+  output:
+    file "RegenieLogParser.jar" into RegenieLogParser
+    file "RegenieFilter.jar" into RegenieFilter
+
+  """
+  jbang export portable -O=RegenieLogParser.jar ${RegenieLogParser_java}
+  jbang export portable -O=RegenieFilter.jar ${RegenieFilter_java}
+  """
+
 }
 
 //convert vcf files to plink2 format
@@ -235,12 +252,13 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
 
   input:
   file regenie_step1_log from fit_bin_log_ch.collect()
+  file RegenieLogParser
 
   output:
   file "${params.project}.step1.log" into logs_step1_ch
 
   """
-  jbang ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
+  java -jar ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
   """
   }
   } else {
@@ -308,13 +326,14 @@ publishDir "$params.output/05_regenie_complete", mode: 'copy'
 
   input:
   file regenie_chromosomes from test_ch.flatten()
+  file RegenieFilter
 
   output:
-  file "${regenie_chromosomes.baseName}.txt" into gwas_results_filtered_ch
+  file "${regenie_chromosomes.baseName}.filtered*" into gwas_results_filtered_ch
 
   """
-  # jbang ${RegenieFilter} --input ${regenie_chromosomes} --limit 2 --output ${regenie_chromosomes.baseName}.txt
-  cat ${regenie_chromosomes} > ${regenie_chromosomes.baseName}.txt
+  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit 2 --output ${regenie_chromosomes.baseName}.filtered
+  gzip ${regenie_chromosomes.baseName}.filtered
   """
 
 }
@@ -325,12 +344,13 @@ publishDir "$params.output/04_regenie_log", mode: 'copy'
 
   input:
   file regenie_step2_logs from gwas_results_ch2.collect()
+  file RegenieLogParser
 
   output:
   file "${params.project}.step2.log" into logs_step2_ch
 
   """
-  jbang ${RegenieLogParser} ${regenie_step2_logs} --output ${params.project}.step2.log
+  java -jar ${RegenieLogParser} ${regenie_step2_logs} --output ${params.project}.step2.log
   """
 
 }
@@ -340,19 +360,19 @@ process mergeResults {
 publishDir "$params.output/05_regenie_complete", mode: 'copy'
 
   input:
-  file regenie_chromosomes from gwas_results_ch.collect()
+  file regenie_chromosomes from gwas_results_filtered_ch.collect()
   val phenotype from phenotypes_ch
 
   output:
-  tuple  phenotype, val("${params.project}.${phenotype}.regenie.gz"), "${params.project}.${phenotype}.regenie.gz" into regenie_merged_ch
-  file "${params.project}.*.regenie.gz" into regenie_merged_ch2
+  tuple  phenotype, val("${params.project}.${phenotype}.regenie.final.gz"), "${params.project}.${phenotype}.regenie.final.gz" into regenie_merged_ch
+  file "${params.project}.*.regenie.final.gz" into regenie_merged_ch2
 
 
   """
   # static header due to split
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
-  ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.gz
-  cat header.gz chromosomes_data_${phenotype}.regenie.gz > ${params.project}.${phenotype}.regenie.gz
+  ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.filtered.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.filtered.gz
+  cat header.gz chromosomes_data_${phenotype}.regenie.filtered.gz > ${params.project}.${phenotype}.regenie.final.gz
   """
 
 }
