@@ -283,7 +283,6 @@ process regenieStep2 {
 
   output:
     file "gwas_results.*regenie.gz" into gwas_results_ch
-    file "gwas_results.*regenie.gz" into test_ch
     file "gwas_results.${filename}*log" into gwas_results_ch2
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
@@ -325,7 +324,7 @@ process filterResults {
 publishDir "$params.output/05_regenie_complete", mode: 'copy'
 
   input:
-  file regenie_chromosomes from test_ch.flatten()
+  file regenie_chromosomes from gwas_results_ch.flatten()
   file RegenieFilter
 
   output:
@@ -333,6 +332,7 @@ publishDir "$params.output/05_regenie_complete", mode: 'copy'
 
   """
   java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit 2 --output ${regenie_chromosomes.baseName}.filtered
+  #todo: CSVWriter for gzip
   gzip ${regenie_chromosomes.baseName}.filtered
   """
 
@@ -373,6 +373,7 @@ publishDir "$params.output/05_regenie_complete", mode: 'copy'
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
   ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.filtered.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.filtered.gz
   cat header.gz chromosomes_data_${phenotype}.regenie.filtered.gz > ${params.project}.${phenotype}.regenie.final.gz
+  rm chromosomes_data_${phenotype}.regenie.filtered.gz
   """
 
 }
@@ -383,29 +384,30 @@ process gwasTophits {
   file regenie_merged from regenie_merged_ch2
 
   output:
-  file "${regenie_merged.baseName}.sorted.filtered.gz" into filtered_ch
+  file "${regenie_merged.baseName}.tophits.gz" into tophits_ch
 
 
   """
   #!/bin/bash
   set -e
   (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -T $PWD/work -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
-  zcat ${regenie_merged.baseName}.sorted.gz | head -n ${params.gwas_tophits} | gzip > ${regenie_merged.baseName}.sorted.filtered.gz
+  zcat ${regenie_merged.baseName}.sorted.gz | head -n ${params.gwas_tophits} | gzip > ${regenie_merged.baseName}.tophits.gz
+  rm ${regenie_merged.baseName}.sorted.gz
   """
 
 }
 
 process annotateTophits {
 
-publishDir "$params.output/07_regenie_filtered_annotated", mode: 'copy'
+publishDir "$params.output/regenie_tophits_annotated", mode: 'copy'
 
   input:
-  file tophits from filtered_ch
+  file tophits from tophits_ch
   file genes_hg19
   file genes_hg38
 
   output:
-  file "${tophits.baseName}.sorted.filtered.annotated.txt.gz" into annotated_ch
+  file "${tophits.baseName}.annotated.txt.gz" into annotated_ch
 
   def genes = params.build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
 
@@ -415,16 +417,22 @@ publishDir "$params.output/07_regenie_filtered_annotated", mode: 'copy'
   # sort lexicographically
   zcat ${tophits} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n"}' > ${tophits.baseName}.sorted.txt
   sed -e 's/ /\t/g'  ${tophits.baseName}.sorted.txt > ${tophits.baseName}.sorted.tabs.txt
+  rm ${tophits.baseName}.sorted.txt
   # remove header line for cloest-features
   sed 1,1d ${tophits.baseName}.sorted.tabs.txt > ${tophits.baseName}.sorted.tabs.fixed.txt
   # save header line
   head -n 1 ${tophits.baseName}.sorted.tabs.txt > ${tophits.baseName}.header.txt
+  rm ${tophits.baseName}.sorted.tabs.txt
   # create final header
   sed ' 1 s/.*/&\tGENE_CHROMOSOME\tGENE_START\tGENE_END\tGENE_NAME\tGENE_DISTANCE/' ${tophits.baseName}.header.txt > ${tophits.baseName}.header.fixed.txt
   closest-features --dist --delim '\t' --shortest ${tophits.baseName}.sorted.tabs.fixed.txt ${genes} > ${tophits.baseName}.closest.txt
   cat ${tophits.baseName}.header.fixed.txt ${tophits.baseName}.closest.txt > ${tophits.baseName}.closest.merged.txt
+  rm ${tophits.baseName}.sorted.tabs.fixed.txt
+  rm ${tophits.baseName}.header.fixed.txt
+  rm ${tophits.baseName}.header.txt
   # sort by p-value again
-  (cat ${tophits.baseName}.closest.merged.txt | head -n 1 && cat ${tophits.baseName}.closest.merged.txt | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${tophits.baseName}.sorted.filtered.annotated.txt.gz
+  (cat ${tophits.baseName}.closest.merged.txt | head -n 1 && cat ${tophits.baseName}.closest.merged.txt | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${tophits.baseName}.annotated.txt.gz
+  rm ${tophits.baseName}.closest.merged.txt
   """
 
 }
@@ -433,7 +441,7 @@ process gwasReport {
 
 publishDir "$params.output", mode: 'copy'
 
-  memory '10  GB'
+  memory '10 GB'
 
   input:
   set phenotype, regenie_merged_name, regenie_merged from regenie_merged_ch
