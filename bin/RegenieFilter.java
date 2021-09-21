@@ -37,15 +37,15 @@ public class RegenieFilter implements Callable<Integer> {
 		assert (input != null);
 		assert (output != null);
 
-		CsvTableWriter writer = new CsvTableWriter(new File(output).getAbsolutePath(), '\t', false);
+		CsvTableWriter writer = new CsvTableWriter(new File(output).getAbsolutePath(), ' ', false);
 
 			String[] columnsWrite = { "CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N",
 					"TEST", "BETA", "SE", "CHISQ", "LOG10P", "EXTRA" };
 			writer.setColumns(columnsWrite);
-	
+
 
 		CsvTableReader reader = new CsvTableReader(input, ' ');
-		
+
 		while (reader.next()) {
 
 			if (reader.getDouble("LOG10P") < limit) {
