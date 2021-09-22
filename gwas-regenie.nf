@@ -368,7 +368,7 @@ publishDir "$params.output/regenie_results", mode: 'copy'
   val phenotype from phenotypes_ch
 
   output:
-  tuple  phenotype, val("${params.project}.${phenotype}.regenie.filtered.gz"), "${params.project}.${phenotype}.regenie.filtered.gz" into regenie_merged_filtered_ch
+  tuple  phenotype, "${params.project}.${phenotype}.regenie.filtered.gz" into regenie_merged_filtered_ch
   file "${params.project}.*.regenie.filtered.gz" into regenie_merged_filtered_ch2
 
 
@@ -470,7 +470,7 @@ publishDir "$params.output", mode: 'copy'
   memory '7 GB'
 
   input:
-  set phenotype, regenie_merged_name, regenie_merged from regenie_merged_filtered_ch
+  set phenotype, regenie_merged from regenie_merged_filtered_ch
 	file phenotype_file
   file gwas_report_template
   file step1_log from logs_step1_ch
@@ -486,13 +486,13 @@ publishDir "$params.output", mode: 'copy'
       date = '${params.project_date}',
       version = '${params.version}',
       regenie_merged='${regenie_merged}',
-      regenie_filename='${regenie_merged_name}',
+      regenie_filename='${regenie_merged.baseName}',
       phenotype_file='${phenotype_file}',
       phenotype='${phenotype}',
       covariates='${params.covariates_columns.join(',')}',
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}'
-    ), knit_root_dir='\$PWD', output_file='\$PWD/${regenie_merged.baseName}.html')"
+    ), intermediates_dir='\$PWD', knit_root_dir='\$PWD', output_file='\$PWD/${regenie_merged.baseName}.html')"
   """
 }
 
