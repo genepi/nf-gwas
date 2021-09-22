@@ -11,17 +11,19 @@ params:
   project: test-gwas
   date: 2021-08-09
   version: v0.0.1
-  regenie_merged: ../tests/output/test-gwas/05_regenie_complete/test-gwas.Y1.regenie.gz
+  regenie_merged: ../tests/output/test-gwas/regenie_results/test-gwas.Y1.regenie.unfiltered.gz
   regenie_filename: test-gwas.Y1.regenie.gz
   phenotype: Y1
   covariates:
   phenotype_file: ../tests/input/phenotype.txt
-  regenie_step1_log: ../tests/output/test-gwas/04_regenie_log/test-gwas.step1.log
-  regenie_step2_log: ../tests/output/test-gwas/04_regenie_log/test-gwas.step2.log
+  regenie_step1_log: ../tests/output/test-gwas/regenie_logs/test-gwas.step1.log
+  regenie_step2_log: ../tests/output/test-gwas/regenie_logs/test-gwas.step2.log
 ---
 
 ```{r setup, include=FALSE}
 library(qqman)
+library(data.table)
+library(R.utils)
 library(ggplot2)
 library(skimr)
 library(kableExtra)
@@ -82,9 +84,10 @@ geom_histogram(color="black", fill="white",bins=30)
 ## Manhattan Plot
 
 ```{r, echo=FALSE}
-regenieTable <- read.table(params$regenie_merged, header=TRUE, sep=" ", dec = ".");
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE)
 pheno <- params$phenotype
-manhattan(regenieTable, chr="CHROM", bp="GENPOS", snp="ID", p="LOG10P", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+regenieTable
+manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
 ```
 
 ## QQ Plot

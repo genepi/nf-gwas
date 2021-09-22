@@ -368,8 +368,7 @@ publishDir "$params.output/regenie_results", mode: 'copy'
   val phenotype from phenotypes_ch
 
   output:
-  tuple  phenotype, "${params.project}.${phenotype}.regenie.filtered.gz" into regenie_merged_filtered_ch
-  file "${params.project}.*.regenie.filtered.gz" into regenie_merged_filtered_ch2
+    file "${params.project}.*.regenie.filtered.gz" into regenie_merged_filtered_ch
 
 
   """
@@ -391,7 +390,8 @@ publishDir "$params.output/regenie_results", mode: 'copy'
   val phenotype from phenotypes_ch2
 
   output:
-  file "${params.project}.*.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch
+  tuple  phenotype, "${params.project}.${phenotype}.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch
+  file "${params.project}.*.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch2
 
 
   """
@@ -407,7 +407,7 @@ publishDir "$params.output/regenie_results", mode: 'copy'
 process gwasTophits {
 
   input:
-  file regenie_merged from regenie_merged_filtered_ch2
+  file regenie_merged from regenie_merged_filtered_ch
 
   output:
   file "${regenie_merged.baseName}.tophits.gz" into tophits_ch
@@ -470,7 +470,7 @@ publishDir "$params.output", mode: 'copy'
   memory '7 GB'
 
   input:
-  set phenotype, regenie_merged from regenie_merged_filtered_ch
+  set phenotype, regenie_merged from regenie_merged_unfiltered_ch
 	file phenotype_file
   file gwas_report_template
   file step1_log from logs_step1_ch
