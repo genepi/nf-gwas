@@ -18,10 +18,10 @@ ENV PATH="/opt/jbang/bin:${PATH}"
 # Install regenie (not as conda package available)
 WORKDIR "/opt"
 RUN mkdir regenie && cd regenie && \
-    wget https://github.com/rgcgithub/regenie/releases/download/v2.2.1/regenie_v2.2.1.gz_x86_64_Linux.zip && \
-    unzip -q regenie_v2.2.1.gz_x86_64_Linux.zip && \
-    rm regenie_v2.2.1.gz_x86_64_Linux.zip && \
-    mv regenie_v2.2.1.gz_x86_64_Linux regenie && \
+    wget https://github.com/rgcgithub/regenie/releases/download/v2.2.4/regenie_v2.2.4.gz_x86_64_Linux.zip && \
+    unzip -q regenie_v2.*.gz_x86_64_Linux.zip && \
+    rm regenie_v2.*.gz_x86_64_Linux.zip && \
+    mv regenie_v2.*.gz_x86_64_Linux regenie && \
     chmod +x regenie
 ENV PATH="/opt/regenie/:${PATH}"
 
