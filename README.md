@@ -15,6 +15,33 @@ curl -s https://get.nextflow.io | bash
 ```
 nextflow run -c <config> genepi/gwas-regenie -r v0.1.1
 ```
+
+## Parameters
+
+### Required parameters
+
+
+| Option        |Description          | Value [default] |
+| ------------- |-------------| -------------| 
+| `params.project`     | Project name | my-gwas | 
+| `params.output`     | Output directory | output/${params.project}) |
+| `params.genotypes_typed`     | Path to the array genotypes (single merged file in plink format).  | /path/to/allChrs.{bim,bed,fam} |
+| `params.genotypes_imputed`     | Path to imputed genotypes in VCF or BGEN format) | /path/to/vcf/\*vcf.gz or /path/to/vcf/\*bgen |
+| `params.genotypes_imputed_format `     | Input file format of imputed genotypes   | vcf,bgen [bgen] |
+| `params.build`     | Imputed genotypes build format | hg19 / hg38 [hg19] |
+| `params.phenotypes_filename `     | Phenotype file | |
+| `params.phenotypes_columns`     | Phenotype columns | ["phenoColumn1","phenoColumn2","phenoColumn3",...] |
+| `params.phenotypes_binary_trait`     | Binary trait? | false, true [false] | 
+
+### Addtional phenotype parameters
+
+| Option        |Description          | Value |
+| ------------- |-------------| -------------| 
+| `params.covariates_filename`     | Covariate file | |
+| `params.covariates_columns`     | Covariate columns |  ["covar1","covar2","covar3",...] |
+| `params.phenotypes_delete_missing_data`     | Removing samples with missing data at any of the phenotypes | **false**, true |
+
+
 ## Profiles
 By default, the pipeline is executed using Docker. Add ` -profile singularity ` to run it with Singularity. 
 
