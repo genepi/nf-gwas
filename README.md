@@ -24,9 +24,9 @@ nextflow run -c <config> genepi/gwas-regenie -r v0.1.1
 | Option        |Description          | Value [default] |
 | ------------- |-------------| -------------| 
 | `params.project`     | Project name | my-gwas | 
-| `params.output`     | Output directory | output/${params.project}) |
+| `params.output`     | Output directory | output/${params.project} |
 | `params.genotypes_typed`     | Path to the array genotypes (single merged file in plink format).  | /path/to/allChrs.{bim,bed,fam} |
-| `params.genotypes_imputed`     | Path to imputed genotypes in VCF or BGEN format) | /path/to/vcf/\*vcf.gz or /path/to/vcf/\*bgen |
+| `params.genotypes_imputed`     | Path to imputed genotypes in VCF or BGEN format) | /path/to/vcf/\*vcf.gz or /path/to/bgen/\*bgen |
 | `params.genotypes_imputed_format `     | Input file format of imputed genotypes   | vcf,bgen [bgen] |
 | `params.build`     | Imputed genotypes build format | hg19 / hg38 [hg19] |
 | `params.phenotypes_filename `     | Phenotype file | |
