@@ -18,8 +18,8 @@ jobs:
     - name: Install Nextflow
       run: curl -s https://get.nextflow.io | bash
     - name: Set Nextflow Permissions
-      run: chmod +x nextflow
-    - name: Set Nextflow Permissions
+      run: chmod +x nextflow; export PATH=".:${PATH}"
+    - name: Run CI Tests
       run:  ./run-tests.sh
       
      
