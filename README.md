@@ -15,7 +15,7 @@ curl -s https://get.nextflow.io | bash
 ## Run Pipeline
 
 ```
-nextflow run -c <config> genepi/gwas-regenie -r v0.1.1
+nextflow run -c <config> genepi/gwas-regenie -r v0.1.2
 ```
 
 ## Parameters
