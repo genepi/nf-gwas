@@ -1,6 +1,6 @@
 params.project = "test-gwas"
 params.project_date = "`date`"
-params.version = "v0.0.1"
+params.version = "v0.1.2"
 params.output = "tests/output/${params.project}"
 params.build = "hg19"
 
