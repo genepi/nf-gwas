@@ -44,7 +44,7 @@ nextflow run -c <config> genepi/gwas-regenie -r v0.1.2
 | `params.phenotypes_delete_missing_data`     | Removing samples with missing data at any of the phenotypes | **false**, true |
 
 
-## Profiles
+## Profiles 
 By default, the pipeline is executed using Docker. Add ` -profile singularity ` to run it with Singularity. 
 
 ## Test Pipeline
