@@ -1,5 +1,4 @@
 
-
 //usr/bin/env jbang "$0" "$@" ; exit $?
 //REPOS jcenter,jfrog-genepi-maven=https://genepi.jfrog.io/artifactory/maven/
 //DEPS info.picocli:picocli:4.6.1
@@ -39,36 +38,20 @@ public class RegenieFilter implements Callable<Integer> {
 
 		CsvTableWriter writer = new CsvTableWriter(new File(output).getAbsolutePath(), ' ', false);
 
-			String[] columnsWrite = { "CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N",
-					"TEST", "BETA", "SE", "CHISQ", "LOG10P", "EXTRA" };
-			writer.setColumns(columnsWrite);
-
-
 		CsvTableReader reader = new CsvTableReader(input, ' ');
+
+		writer.setColumns(reader.getColumns());
 
 		while (reader.next()) {
 
 			if (reader.getDouble("LOG10P") < limit) {
 				continue;
 			}
-
-			writer.setInteger(0, reader.getInteger("CHROM"));
-			writer.setInteger(1, reader.getInteger("GENPOS"));
-			writer.setString(2, reader.getString("ID"));
-			writer.setString(3, reader.getString("ALLELE0"));
-			writer.setString(4, reader.getString("ALLELE1"));
-			writer.setDouble(5, reader.getDouble("A1FREQ"));
-			writer.setDouble(6, reader.getDouble("INFO"));
-			writer.setDouble(7, reader.getDouble("N"));
-			writer.setString(8, reader.getString("TEST"));
-			writer.setDouble(9, reader.getDouble("BETA"));
-			writer.setDouble(10, reader.getDouble("SE"));
-			writer.setDouble(11, reader.getDouble("CHISQ"));
-			writer.setDouble(12, reader.getDouble("LOG10P"));
-			writer.setString(13, reader.getString("EXTRA"));
+			writer.setRow(reader.getRow());
 			writer.next();
 		}
 
+		reader.close();
 		writer.close();
 		return 0;
 	}
