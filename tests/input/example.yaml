@@ -1,0 +1,8 @@
+name: Example Genotypes
+version: 1.0
+category: genotypes
+properties:
+  genotypes_typed: ${local_app_folder}/example.{bim,bed,fam}
+  genotypes_imputed: ${local_app_folder}/example.bgen
+  genotypes_imputed_format: bgen
+  build: "hg19"

@@ -1,0 +1,54 @@
+id: gwas-regenie
+name: GWAS Regenie
+version: 0.1.1
+description: Nextflow pipeline to execute Regenie, create Manhattan-Plots and annotate GWAS results
+author: Lukas Forer and Sebastian Schoenherr
+website: https://github.com/genepi/gwas-regenie
+logo: https://avatars.githubusercontent.com/u/930103?s=200&v=4
+
+workflow:
+
+  steps:
+
+    - name: Running GWAS Regenie
+      type: nextflow
+      script: gwas-regenie.nf
+      # params without UI
+      params.project: ${job_id}
+
+  inputs:
+
+    - id: genotypes
+      description: Genotypes
+      type: app_list
+      category: genotypes
+
+    - id: phenotypes_filename
+      description: Phenotypes File
+      type: local_file
+      required: true
+
+    - id: phenotypes_binary_trait
+      description: Phenotypes Type
+      type: list
+      required: true
+      value: false
+      values:
+        false: Quantitative
+        true: Binary
+
+    - id: regenie_step2_test_model
+      description: Test Model
+      type: list
+      required: true
+      value: additive
+      values:
+        additive: Additive
+        dominant: Dominant
+        recessive: Recessive
+
+  outputs:
+
+    - id: output
+      description: GWAS Results
+      type: local_folder
