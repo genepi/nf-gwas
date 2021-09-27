@@ -1,73 +1,15 @@
-params.project = "test-gwas"
-params.project_date = "`date`"
-params.version = "v0.1.2"
-params.output = "tests/output/${params.project}"
-params.build = "hg19"
-
-params.genotypes_typed = "tests/input/example.{bim,bed,fam}"
-params.genotypes_imputed = "tests/input/example.bgen"
-params.genotypes_imputed_format = "bgen"
-
-params.phenotypes_filename = "tests/input/phenotype.txt"
-params.phenotypes_binary_trait = false
-params.phenotypes_columns = ["Y1","Y2"]
-params.covariates_filename = 'NO_COV_FILE'
-params.covariates_columns = []
-
-//removing samples with missing data at any of the phenotypes
-params.phenotypes_delete_missing_data = false
-
-params.threads = (Runtime.runtime.availableProcessors() - 1)
-
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
+gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
+phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd")
 
 RegenieLogParser_java  = file("$baseDir/bin/RegenieLogParser.java");
 RegenieFilter_java = file("$baseDir/bin/RegenieFilter.java");
 
-/** params step snpPruning **/
-params.prune_exec = false
-params.prune_maf = 0.01
-params.prune_window_kbsize = 50
-params.prune_step_size = 5
-params.prune_r2_threshold = 0.2
-
-/** params step qualityControl **/
-params.qc_maf = "0.01"
-params.qc_mac = "100"
-params.qc_geno = "0.1"
-params.qc_hwe = "1e-15"
-params.qc_mind = "0.1"
-
-/** params step regenieStep1 **/
-params.regenie_step1_bsize = 1000
-
-/** params step regenieStep2 **/
-params.regenie_step2_bsize = 400
-params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
-// skip reading the file specified by --pred
-params.regenie_step2_skip_predictions = false
-params.regenie_step2_min_imputation_score = 0.00
-params.regenie_step2_min_mac = 5
-//additive, dominant or recessive allowed. default is additive
-params.regenie_step2_test_model = 'additive'
-//range for variants to test: CHR:MINPOS-MAXPOS
-params.regenie_step2_range = ''
-
-/** params step filterResults **/
-params.gwas_pvalue_limit = 2
-
-/** params step gwasTophits **/
-params.gwas_tophits = 50
-
-/** params step gwasReport **/
-gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
-phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd")
-
-
-//genes
 genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed")
 genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed")
+
+
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
 //phenotypes
 phenotype_file = file(params.phenotypes_filename)
@@ -484,7 +426,7 @@ publishDir "$params.output", mode: 'copy'
     params = list(
       project = '${params.project}',
       date = '${params.project_date}',
-      version = '${params.version}',
+      version = '$workflow.manifest.version',
       regenie_merged='${regenie_merged}',
       regenie_filename='${regenie_merged.baseName}',
       phenotype_file='${phenotype_file}',
