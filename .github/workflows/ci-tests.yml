@@ -16,9 +16,9 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - name: Install Nextflow
-      run: curl -s https://get.nextflow.io | bash
+      run: sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v21.04.3/nextflow; chmod +x nextflow
     - name: Set Nextflow Permissions
-      run: chmod +x nextflow; export PATH=".:${PATH}"
+      run: export PATH="/opt/nextflow/:${PATH}"
     - name: Run CI Tests
       run:  ./run-tests.sh
       
