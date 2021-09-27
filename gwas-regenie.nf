@@ -1,58 +1,59 @@
 
+checkRequiredParams = [
+    params.project, params.genotypes_typed,
+    params.genotypes_imputed, params.genotypes_build,
+    params.genotypes_imputed_format, params.phenotypes_filename,
+    params.phenotypes_columns, params.phenotypes_binary_trait,
+    params.regenie_test
+]
 
-if( params.project == null) error "Please specify the project name."
-if( !params.genotypes_typed == null) error "Please specify the array genotypes path."
-if( !params.genotypes_imputed == null) error "Please specify the imputed genotypes path."
-if( !params.genotypes_build == null) error "Please specify the genotype build."
-if( !params.genotypes_imputed_format == null) error "Please specify the imputed genotypes format."
-if( !params.phenotypes_filename == null) error "Please specify the phenotype filename."
-if( !params.phenotypes_columns == null) error "Please specify the phenotype columns."
-if( params.phenotypes_binary_trait == null) error "Please specify if trait is binary."
-if( !params.regenie_test == null) error "Please specify the applied test."
+for (param in checkRequiredParams) {
+    if (param == null) {
+      exit 1, "Please specify all required parameters."
+    }
+  }
 
+gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 
-gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
-phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd")
+//JBang scripts
+RegenieLogParser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
+RegenieFilter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
 
-RegenieLogParser_java  = file("$baseDir/bin/RegenieLogParser.java");
-RegenieFilter_java = file("$baseDir/bin/RegenieFilter.java");
+//Annotation files
+genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
+genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed", checkIfExists: true)
 
-genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed")
-genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed")
-
-
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
-
-//phenotypes
-phenotype_file = file(params.phenotypes_filename)
-if (!phenotype_file.exists()){
-  exit 1, "Phenotype file ${params.phenotypes_filename} not found."
-}
+//Phenotypes
+phenotype_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes_ch = Channel.from(params.phenotypes_columns)
 phenotypes_ch2 = Channel.from(params.phenotypes_columns)
 
-//optional covariates
+//Covariates
 covariate_file = file(params.covariates_filename)
 if (params.covariates_filename != 'NO_COV_FILE' && !covariate_file.exists()){
   exit 1, "Covariate file ${params.covariates_filename} not found."
 }
 
-//optional sample file
+//Optional sample file
 sample_file = file(params.regenie_sample_file)
 if (params.regenie_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists()){
   exit 1, "Sample file ${params.regenie_sample_file} not found."
 }
 
-//check test model
+//Check specified test
 if (params.regenie_test != 'additive' && params.regenie_test != 'recessive' && params.regenie_test != 'dominant'){
-  exit 1, "Test model ${params.regenie_test} not supported."
+  exit 1, "Test ${params.regenie_test} not supported."
 }
 
-//check imputed file format
+//Check imputed file format
 if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
   exit 1, "File format ${params.genotypes_imputed_format} not supported."
 }
+
+//Array genotypes
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
+
 
 process cacheJBangScripts {
 
@@ -77,7 +78,6 @@ if (params.genotypes_imputed_format == "vcf"){
   imputed_vcf_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
 
   process vcfToPlink2 {
-
     cpus "${params.threads}"
     publishDir "$params.outdir/01_quality_control", mode: 'copy'
 
@@ -231,6 +231,7 @@ publishDir "$params.outdir/regenie_logs", mode: 'copy'
 
 process regenieStep2 {
 	cpus "${params.threads}"
+  tag "${filename}"
   //publishDir "$params.output/03_regenie_step2", mode: 'copy'
 
   input:
@@ -280,6 +281,7 @@ process regenieStep2 {
 process filterResults {
 
 //publishDir "$params.output/regenie_results", mode: 'copy'
+tag "${regenie_chromosomes.baseName}"
 
   input:
   file regenie_chromosomes from gwas_results_ch.flatten()
@@ -317,6 +319,7 @@ publishDir "$params.outdir/regenie_logs", mode: 'copy'
 process mergeResultsFiltered {
 
 publishDir "$params.outdir/regenie_results", mode: 'copy'
+tag "${phenotype}"
 
   input:
   file regenie_chromosomes from gwas_results_filtered_ch.collect()
@@ -339,21 +342,22 @@ publishDir "$params.outdir/regenie_results", mode: 'copy'
 process mergeResultsUnfiltered {
 
 publishDir "$params.outdir/regenie_results", mode: 'copy'
+tag "${phenotype}"
 
   input:
   file regenie_chromosomes from gwas_results_unfiltered_ch.collect()
   val phenotype from phenotypes_ch2
 
   output:
-  tuple  phenotype, "${params.project}.${phenotype}.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch
-  file "${params.project}.*.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch2
+  tuple  phenotype, "${params.project}.${phenotype}.regenie.all.gz" into regenie_merged_unfiltered_ch
+  file "${params.project}.*.regenie.all.gz" into regenie_merged_unfiltered_ch2
 
 
   """
   # static header due to split
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
   ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.tmp.gz
-  cat header.gz chromosomes_data_${phenotype}.regenie.tmp.gz > ${params.project}.${phenotype}.regenie.unfiltered.gz
+  cat header.gz chromosomes_data_${phenotype}.regenie.tmp.gz > ${params.project}.${phenotype}.regenie.all.gz
   rm chromosomes_data_${phenotype}.regenie.tmp.gz
   """
 
