@@ -467,7 +467,7 @@ process gwasReport {
 
 publishDir "$params.output", mode: 'copy'
 
-  memory '7 GB'
+  memory '5 GB'
 
   input:
   set phenotype, regenie_merged from regenie_merged_unfiltered_ch
