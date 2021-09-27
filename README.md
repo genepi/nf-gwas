@@ -2,6 +2,8 @@
 
 > Nextflow pipeline to execute Regenie, create Manhattan-Plots and annotate results
 
+[![GWAS_Regenie](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml)
+
 ## Requirements
 
 - Nextflow:
