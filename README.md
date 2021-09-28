@@ -37,7 +37,7 @@ Pleas click [here](tests) for different config files.
 
 | Option        | Value          | Description  |
 | ------------- |-----------------| -------------| 
-| `project`     | my-gwas | Name of the project | 
+| `project`     | my-project-name | Name of the project | 
 | `genotypes_typed`     |  /path/to/allChrs.{bim,bed,fam} | Path to the array genotypes (single merged file in plink format).  |
 | `genotypes_imputed`     |  /path/to/vcf/\*vcf.gz or /path/to/bgen/\*bgen | Path to imputed genotypes in VCF or BGEN format) |
 | `genotypes_imputed_format `     | vcf *or* bgen | Input file format of imputed genotypes   | 
