@@ -1,6 +1,6 @@
 
 checkRequiredParams = [
-    params.genotypes_typed,
+    params.project, params.genotypes_typed,
     params.genotypes_imputed, params.genotypes_build,
     params.genotypes_imputed_format, params.phenotypes_filename,
     params.phenotypes_columns, params.phenotypes_binary_trait,
