@@ -12,15 +12,7 @@ A nextflow pipeline to perform whole genome regression modelling using Regenie.
 curl -s https://get.nextflow.io | bash
 ```
 
-## Run Test Workflow
-
-```
-github pull https://github.com/genepi/gwas-regenie/
-docker build -t genepi/gwas-regenie .
-nextflow run gwas-regenie.nf -profile test,docker -c conf/test.config
-```
-
-## Run Workflow
+## Run
  
 ```
 nextflow run -c <config> genepi/gwas-regenie -r v0.1.3 -profile [docker,singularity]
@@ -28,6 +20,14 @@ nextflow run -c <config> genepi/gwas-regenie -r v0.1.3 -profile [docker,singular
 
 ## Profiles 
 You can run the pipeline using Docker or Singularity. Add ` -profile singularity ` to run it with Singularity. 
+
+## Build and run locally
+
+```
+github pull https://github.com/genepi/gwas-regenie/
+docker build -t genepi/gwas-regenie .
+nextflow run gwas-regenie.nf -profile test,docker -c conf/test.config
+```
 
 ## Parameters
 Pleas click [here](tests) for different config files. 
