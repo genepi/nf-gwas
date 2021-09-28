@@ -180,7 +180,7 @@ process qualityControl {
 if (!params.regenie_skip_predictions){
 process regenieStep1 {
 
-  publishDir "$outdir/02_regenie_step1", mode: 'copy'
+  //publishDir "$outdir/02_regenie_step1", mode: 'copy'
 
   input:
     set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
@@ -244,7 +244,7 @@ publishDir "$outdir/regenie_logs", mode: 'copy'
 process regenieStep2 {
 	cpus "${params.threads}"
   tag "${filename}"
-  publishDir "$outdir/03_regenie_step2", mode: 'copy'
+  //publishDir "$outdir/03_regenie_step2", mode: 'copy'
 
   input:
     set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
