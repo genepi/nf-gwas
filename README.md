@@ -2,7 +2,7 @@
 
 [![GWAS_Regenie](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml)
 
-A nextflow pipeline to perform whole genome regression modelling using Regenie.
+A nextflow pipeline to perform whole genome regression modelling using [Regenie](https://github.com/rgcgithub/regenie).
 
 ## Requirements
 
@@ -12,7 +12,16 @@ A nextflow pipeline to perform whole genome regression modelling using Regenie.
 curl -s https://get.nextflow.io | bash
 ```
 
-## Run test pipeline 
+## Run
+ 
+```
+nextflow run -c <nextflow.config> genepi/gwas-regenie -r v0.1.3 -profile [docker,singularity]
+```
+
+## Profiles 
+You can run the pipeline using Docker or Singularity. Add ` -profile singularity ` to run it with Singularity. 
+
+## Build and run locally
 
 ```
 github pull https://github.com/genepi/gwas-regenie/
@@ -20,32 +29,23 @@ docker build -t genepi/gwas-regenie .
 nextflow run gwas-regenie.nf -profile test,docker -c conf/test.config
 ```
 
-## Run pipeline
- 
-```
-nextflow run -c <config> genepi/gwas-regenie -r v0.1.2 -profile [docker,singularity]
-```
-
-## Profiles 
-You can run the pipeline using Docker or Singularity. Add ` -profile singularity ` to run it with Singularity. 
-
 ## Parameters
-Pleas click [here](tests) for different config files. 
+Pleas click [here](tests) for available config files. 
 
 ### Required parameters
 
 
 | Option        | Value          | Description  |
 | ------------- |-----------------| -------------| 
-| `project`     | my-gwas | Name of the project | 
+| `project`     | my-project-name | Name of the project | 
 | `genotypes_typed`     |  /path/to/allChrs.{bim,bed,fam} | Path to the array genotypes (single merged file in plink format).  |
 | `genotypes_imputed`     |  /path/to/vcf/\*vcf.gz or /path/to/bgen/\*bgen | Path to imputed genotypes in VCF or BGEN format) |
 | `genotypes_imputed_format `     | vcf *or* bgen | Input file format of imputed genotypes   | 
-| `build`     | hg19 *or* hg38 | Imputed genotypes build format | 
+| `genotypes_build`     | hg19 *or* hg38 | Imputed genotypes build format | 
 | `phenotypes_filename `     | /path/to/phenotype.txt | Path to phenotype file | 
 | `phenotypes_columns`     | 'phenoColumn1,phenoColumn2,phenoColumn3' | List of phenotypes | 
 | `phenotypes_binary_trait`     | false, true | Binary trait? | 
-| `regenie_test_model`     | additive, recessive *or* dominant |  Define test | 
+| `regenie_test`     | additive, recessive *or* dominant |  Define test | 
 
 ### Optional parameters
 
@@ -56,7 +56,7 @@ Pleas click [here](tests) for different config files.
 | `covariates_filename`     |  empty | path to covariates file | 
 | `covariates_columns`     | empty | List of covariates |  
 | `phenotypes_delete_missings`     | false | Removing samples with missing data at any of the phenotypes | 
-| `prune_enabled`     | prune_enabled | Enable pruning step | 
+| `prune_enabled`     | false | Enable pruning step | 
 | `prune_maf`     | 0.01 | MAF filter | 
 | `prune_window_kbsize`     |  50 | Window size |
 | `prune_step_size`     |   5 | Step size (variant ct) |
@@ -72,7 +72,7 @@ Pleas click [here](tests) for different config files.
 | `regenie_skip_predictions`     | false | Skip Regenie Step 1 predictions |  
 | `regenie_min_imputation_score`     |  0.00 | Minimum imputation info score (IMPUTE/MACH R^2)  | 
 | `regenie_min_mac`     |  5 | Minimum minor allele count  | 
-| `regenie_range`     |  '' [format=CHR:MINPOS-MAXPOS] | Apply Regenie only on specify region | 
+| `regenie_range`     |  ' ' [format=CHR:MINPOS-MAXPOS] | Apply Regenie only on specify region | 
 | `min_pvalue`     |   2 | Filter results with logp10 < 2 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 
@@ -80,12 +80,18 @@ Pleas click [here](tests) for different config files.
 ## Pipeline steps
 
 1) Convert imputed data into [pgen](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (VCF only).
-2) Prune genotyped data (optional).
-3) Filter genotyped data based on MAF, MAC, HWE, genotype missingess and sample missingness. 
-4) Run Regenie Step 1 and Step 2
-5) Filter by pvalue
-6) Annotate top hits
-7) Create Rmarkdown report
+2) Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
+3) Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness. 
+4) Run [Regenie](https://github.com/rgcgithub/regenie) Step 1 and Step 2
+5) Filter regenie results  by pvalue using [JBang](https://github.com/jbangdev/jbang).
+6) Annotate top hits using [bedops](https://bedops.readthedocs.io/en/latest/).
+7) Create [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype information, manhattan plot and qq plot.
 
 ## License
 gwas-regenie is MIT Licensed.
+
+## Contact
+If you have any questions about the regenie nextflow pipeline please contact
+* [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at)
+* [Lukas Forer](mailto:lukas.forer@i-med.ac.at)
+
