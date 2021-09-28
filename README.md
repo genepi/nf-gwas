@@ -72,7 +72,7 @@ Pleas click [here](tests) for available config files.
 | `regenie_skip_predictions`     | false | Skip Regenie Step 1 predictions |  
 | `regenie_min_imputation_score`     |  0.00 | Minimum imputation info score (IMPUTE/MACH R^2)  | 
 | `regenie_min_mac`     |  5 | Minimum minor allele count  | 
-| `regenie_range`     |  '' [format=CHR:MINPOS-MAXPOS] | Apply Regenie only on specify region | 
+| `regenie_range`     |  ' ' [format=CHR:MINPOS-MAXPOS] | Apply Regenie only on specify region | 
 | `min_pvalue`     |   2 | Filter results with logp10 < 2 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 
