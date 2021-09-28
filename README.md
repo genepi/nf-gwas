@@ -25,44 +25,44 @@ nextflow run -c <config> genepi/gwas-regenie -r v0.1.2
 
 | Option        |Description          | Value  |
 | ------------- |-----------------| -------------| 
-| `project`     | Project name | my-gwas | 
-| `genotypes_typed`     | Path to the array genotypes (single merged file in plink format).  | /path/to/allChrs.{bim,bed,fam} |
-| `genotypes_imputed`     | Path to imputed genotypes in VCF or BGEN format) | /path/to/vcf/\*vcf.gz or /path/to/bgen/\*bgen |
-| `genotypes_imputed_format `     | Input file format of imputed genotypes   | vcf *or* bgen |
-| `build`     | Imputed genotypes build format | hg19 *or* hg38 |
-| `phenotypes_filename `     | Path to phenotype file | /path/to/phenotype.txt |
-| `phenotypes_columns`     | List of phenotypes | 'phenoColumn1,phenoColumn2,phenoColumn3' |
-| `phenotypes_binary_trait`     | Binary trait? | false, true | 
-| `regenie_test_model`     | Define test | additive, recessive *or* dominant | 
+| `project`     | my-gwas | Project name | 
+| `genotypes_typed`     |  /path/to/allChrs.{bim,bed,fam} | Path to the array genotypes (single merged file in plink format).  |
+| `genotypes_imputed`     |  /path/to/vcf/\*vcf.gz or /path/to/bgen/\*bgen | Path to imputed genotypes in VCF or BGEN format) |
+| `genotypes_imputed_format `     | vcf *or* bgen | Input file format of imputed genotypes   | 
+| `build`     | hg19 *or* hg38 | Imputed genotypes build format | 
+| `phenotypes_filename `     | /path/to/phenotype.txt | Path to phenotype file | 
+| `phenotypes_columns`     | 'phenoColumn1,phenoColumn2,phenoColumn3' | List of phenotypes | 
+| `phenotypes_binary_trait`     | false, true | Binary trait? | 
+| `regenie_test_model`     | additive, recessive *or* dominant |  Define test | 
 
 ### Addtional phenotype parameters
 
 | Option        |Description          | Default |
 | ------------- |-----------------| -------------| 
-| `date`     | Project data |  Today |
-| `outdir`     | Output directory |  "results/${params.project}" |
-| `covariates_filename`     | Specify covariates file |  empty |
-| `covariates_columns`     | List of covariates |  empty |
-| `phenotypes_delete_missings`     | Removing samples with missing data at any of the phenotypes | false |
-| `prune_enabled`     | Used threads | prune_enabled |
-| `prune_maf`     | MAF filter | 0.01 |
-| `prune_window_kbsize`     | Used threads |  50 |
-| `prune_step_size`     | Step Size |  5 |
-| `prune_r2_threshold`     | R2 threshold |  0.2 |
-| `qc_maf`     |  Minor allele frequency (MAF) filter |  0.01 |
-| `qc_mac`     |  Minor allele count (MAC) filter |  100 |
-| `qc_geno`     | Genotype missingess |  0.1 |
-| `qc_hwe`     | Hardy-Weinberg equilibrium (HWE) filter |  1e-15 |
-| `qc_mind`     | Sample missigness |  0.1 |
-| `regenie_bsize_step1`     | Size of the genotype blocks |  1000 |
-| `regenie_bsize_step2`     | Size of the genotype blocks |  400 |
-| `regenie_sample_file`     | Sample file corresponding to input BGEN file |  empty |
-| `regenie_skip_predictions`     | Skip Regenie Step 1 predictions |  false |
-| `regenie_min_imputation_score`     | Minimum imputation info score (IMPUTE/MACH R^2)  |  0.00 |
-| `regenie_min_mac`     | Minimum minor allele count  |  5 |
-| `regenie_range`     | Apply Regenie only on specify region |  '' [format=CHR:MINPOS-MAXPOS] |
-| `min_pvalue`     | Filter results with logp10 < 2 |  2 |
-| `tophits`     | # of tophits (sorted by pvalue) with annotation |  50 |
+| `date`     | Date of today | Project data |  
+| `outdir`     | "results/${params.project}" | Output directory   
+| `covariates_filename`     |  empty | Specify covariates file | 
+| `covariates_columns`     | empty | List of covariates |  
+| `phenotypes_delete_missings`     | false | Removing samples with missing data at any of the phenotypes | 
+| `prune_enabled`     | prune_enabled | Used threads | 
+| `prune_maf`     | 0.01 | MAF filter | 
+| `prune_window_kbsize`     |  50 | Used threads |
+| `prune_step_size`     |   5 | Step Size |
+| `prune_r2_threshold`     |   0.2 | R2 threshold |
+| `qc_maf`     |   0.01 | Minor allele frequency (MAF) filter | 
+| `qc_mac`     |  100 | Minor allele count (MAC) filter |  
+| `qc_geno`     | 0.1 | Genotype missingess |  
+| `qc_hwe`     | 1e-15 | Hardy-Weinberg equilibrium (HWE) filter |  
+| `qc_mind`     | 0.1 | Sample missigness |  
+| `regenie_bsize_step1`     | 1000 | Size of the genotype blocks |  
+| `regenie_bsize_step2`     | 400 | Size of the genotype blocks |  
+| `regenie_sample_file`     |  empty | Sample file corresponding to input BGEN file | 
+| `regenie_skip_predictions`     | false | Skip Regenie Step 1 predictions |  
+| `regenie_min_imputation_score`     |  0.00 | Minimum imputation info score (IMPUTE/MACH R^2)  | 
+| `regenie_min_mac`     |  5 | Minimum minor allele count  | 
+| `regenie_range`     |  '' [format=CHR:MINPOS-MAXPOS] | Apply Regenie only on specify region | 
+| `min_pvalue`     |   2 | Filter results with logp10 < 2 |
+| `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 
 
 ## Profiles 
