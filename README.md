@@ -2,7 +2,7 @@
 
 [![GWAS_Regenie](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml)
 
-A nextflow pipeline to perform whole genome regression modelling using Regenie.
+A nextflow pipeline to perform whole genome regression modelling using [Regenie](https://github.com/rgcgithub/regenie).
 
 ## Requirements
 
@@ -80,12 +80,18 @@ Pleas click [here](tests) for available config files.
 ## Pipeline steps
 
 1) Convert imputed data into [pgen](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (VCF only).
-2) Prune genotyped data (optional).
-3) Filter genotyped data based on MAF, MAC, HWE, genotype missingess and sample missingness. 
-4) Run Regenie Step 1 and Step 2
-5) Filter by pvalue
-6) Annotate top hits
-7) Create Rmarkdown report
+2) Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
+3) Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness. 
+4) Run [Regenie](https://github.com/rgcgithub/regenie) Step 1 and Step 2
+5) Filter regenie results  by pvalue using [JBang](https://github.com/jbangdev/jbang).
+6) Annotate top hits using [bedops](https://bedops.readthedocs.io/en/latest/).
+7) Create [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype information, manhattan plot and qq plot.
 
 ## License
 gwas-regenie is MIT Licensed.
+
+## Contact
+If you have any questions about the regenie nextflow pipeline please contact
+* [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at)
+* [Lukas Forer](mailto:lukas.forer@i-med.ac.at)
+
