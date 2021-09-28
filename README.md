@@ -12,26 +12,32 @@ A nextflow pipeline to perform whole genome regression modelling using Regenie.
 curl -s https://get.nextflow.io | bash
 ```
 
-## Run test pipeline
+## Run test pipeline 
 
 ```
 github pull https://github.com/genepi/gwas-regenie/
+docker build -t genepi/gwas-regenie .
 nextflow run gwas-regenie.nf -profile test,docker -c conf/test.config
 ```
 
 ## Run pipeline
+ 
 ```
-nextflow run -c <config> genepi/gwas-regenie -r v0.1.2
+nextflow run -c <config> genepi/gwas-regenie -r v0.1.2 -profile [docker,singularity]
 ```
 
+## Profiles 
+You can run the pipeline using Docker or Singularity. Add ` -profile singularity ` to run it with Singularity. 
+
 ## Parameters
+Pleas click [here](tests) for different config files. 
 
 ### Required parameters
 
 
-| Option        |Description          | Value  |
+| Option        | Value          | Description  |
 | ------------- |-----------------| -------------| 
-| `project`     | my-gwas | Project name | 
+| `project`     | my-gwas | Name of the project | 
 | `genotypes_typed`     |  /path/to/allChrs.{bim,bed,fam} | Path to the array genotypes (single merged file in plink format).  |
 | `genotypes_imputed`     |  /path/to/vcf/\*vcf.gz or /path/to/bgen/\*bgen | Path to imputed genotypes in VCF or BGEN format) |
 | `genotypes_imputed_format `     | vcf *or* bgen | Input file format of imputed genotypes   | 
@@ -41,20 +47,20 @@ nextflow run -c <config> genepi/gwas-regenie -r v0.1.2
 | `phenotypes_binary_trait`     | false, true | Binary trait? | 
 | `regenie_test_model`     | additive, recessive *or* dominant |  Define test | 
 
-### Addtional phenotype parameters
+### Optional parameters
 
-| Option        |Description          | Default |
+| Option        |Default          | Description |
 | ------------- |-----------------| -------------| 
-| `date`     | Date of today | Project data |  
+| `date`     | today | Date in report |  
 | `outdir`     | "results/${params.project}" | Output directory   
-| `covariates_filename`     |  empty | Specify covariates file | 
+| `covariates_filename`     |  empty | path to covariates file | 
 | `covariates_columns`     | empty | List of covariates |  
 | `phenotypes_delete_missings`     | false | Removing samples with missing data at any of the phenotypes | 
-| `prune_enabled`     | prune_enabled | Used threads | 
+| `prune_enabled`     | prune_enabled | Enable pruning step | 
 | `prune_maf`     | 0.01 | MAF filter | 
-| `prune_window_kbsize`     |  50 | Used threads |
-| `prune_step_size`     |   5 | Step Size |
-| `prune_r2_threshold`     |   0.2 | R2 threshold |
+| `prune_window_kbsize`     |  50 | Window size |
+| `prune_step_size`     |   5 | Step size (variant ct) |
+| `prune_r2_threshold`     |   0.2 | Unphased hardcall R2 threshold|
 | `qc_maf`     |   0.01 | Minor allele frequency (MAF) filter | 
 | `qc_mac`     |  100 | Minor allele count (MAC) filter |  
 | `qc_geno`     | 0.1 | Genotype missingess |  
@@ -71,16 +77,6 @@ nextflow run -c <config> genepi/gwas-regenie -r v0.1.2
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 
 
-## Profiles 
-By default, the pipeline is executed using Docker. Add ` -profile singularity ` to run it with Singularity. 
-
-## Test Pipeline
-Test the pipeline and the created docker image with test-data:
-
-```
-git pull https://github.com/genepi/gwas-regenie/
-nextflow run gwas-regenie.nf
-```
 ## Pipeline steps
 
 1) Convert imputed data into [pgen](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (VCF only).
@@ -90,14 +86,6 @@ nextflow run gwas-regenie.nf
 5) Filter by pvalue
 6) Annotate top hits
 7) Create Rmarkdown report
-
-
-## Build local image
-You can also build the image locally and set it in `ǹextflow.config`
-
-```
-docker build -t genepi/gwas-regenie . # don't ingore the dot here
-```
 
 ## License
 gwas-regenie is MIT Licensed.
