@@ -15,7 +15,7 @@ curl -s https://get.nextflow.io | bash
 ## Run
  
 ```
-nextflow run -c <config> genepi/gwas-regenie -r v0.1.3 -profile [docker,singularity]
+nextflow run -c <nextflow.config> genepi/gwas-regenie -r v0.1.3 -profile [docker,singularity]
 ```
 
 ## Profiles 
