@@ -1,103 +1,71 @@
-params.project = "test-gwas"
-params.project_date = "`date`"
-params.version = "v0.1.2"
-params.output = "tests/output/${params.project}"
-params.build = "hg19"
 
-params.genotypes_typed = "tests/input/example.{bim,bed,fam}"
-params.genotypes_imputed = "tests/input/example.bgen"
-params.genotypes_imputed_format = "bgen"
+checkRequiredParams = [
+    params.project, params.genotypes_typed,
+    params.genotypes_imputed, params.genotypes_build,
+    params.genotypes_imputed_format, params.phenotypes_filename,
+    params.phenotypes_columns, params.phenotypes_binary_trait,
+    params.regenie_test
+]
 
-params.phenotypes_filename = "tests/input/phenotype.txt"
-params.phenotypes_binary_trait = false
-params.phenotypes_columns = ["Y1","Y2"]
-params.covariates_filename = 'NO_COV_FILE'
-params.covariates_columns = []
-
-//removing samples with missing data at any of the phenotypes
-params.phenotypes_delete_missing_data = false
-
-params.threads = (Runtime.runtime.availableProcessors() - 1)
-
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
-
-RegenieLogParser_java  = file("$baseDir/bin/RegenieLogParser.java");
-RegenieFilter_java = file("$baseDir/bin/RegenieFilter.java");
-
-/** params step snpPruning **/
-params.prune_exec = false
-params.prune_maf = 0.01
-params.prune_window_kbsize = 50
-params.prune_step_size = 5
-params.prune_r2_threshold = 0.2
-
-/** params step qualityControl **/
-params.qc_maf = "0.01"
-params.qc_mac = "100"
-params.qc_geno = "0.1"
-params.qc_hwe = "1e-15"
-params.qc_mind = "0.1"
-
-/** params step regenieStep1 **/
-params.regenie_step1_bsize = 1000
-
-/** params step regenieStep2 **/
-params.regenie_step2_bsize = 400
-params.regenie_step2_sample_file = 'NO_SAMPLE_FILE'
-// skip reading the file specified by --pred
-params.regenie_step2_skip_predictions = false
-params.regenie_step2_min_imputation_score = 0.00
-params.regenie_step2_min_mac = 5
-//additive, dominant or recessive allowed. default is additive
-params.regenie_step2_test_model = 'additive'
-//range for variants to test: CHR:MINPOS-MAXPOS
-params.regenie_step2_range = ''
-
-/** params step filterResults **/
-params.gwas_pvalue_limit = 2
-
-/** params step gwasTophits **/
-params.gwas_tophits = 50
-
-/** params step gwasReport **/
-gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd")
-phenotype_report_template = file("$baseDir/reports/phenotype_report_template.Rmd")
-
-
-//genes
-genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed")
-genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed")
-
-//phenotypes
-phenotype_file = file(params.phenotypes_filename)
-if (!phenotype_file.exists()){
-  exit 1, "Phenotype file ${params.phenotypes_filename} not found."
+for (param in checkRequiredParams) {
+    if (param == null) {
+      exit 1, "Please specify all required parameters."
+    }
 }
-phenotypes_ch = Channel.from(params.phenotypes_columns)
-phenotypes_ch2 = Channel.from(params.phenotypes_columns)
 
-//optional covariates
+if(params.outdir == null) {
+  outdir = "results/${params.project}"
+} else {
+  outdir = params.outdir
+}
+
+phenotypes_array = params.phenotypes_columns.trim().split(',')
+
+if(!params.covariates_columns.isEmpty()){
+  covariates_array = params.covariates_columns.trim().split(',')
+}
+
+gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+
+//JBang scripts
+RegenieLogParser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
+RegenieFilter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
+
+//Annotation files
+genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
+genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed", checkIfExists: true)
+
+//Phenotypes
+phenotype_file = file(params.phenotypes_filename, checkIfExists: true)
+phenotypes_ch = Channel.from(phenotypes_array)
+phenotypes_ch2 = Channel.from(phenotypes_array)
+
+//Covariates
 covariate_file = file(params.covariates_filename)
 if (params.covariates_filename != 'NO_COV_FILE' && !covariate_file.exists()){
   exit 1, "Covariate file ${params.covariates_filename} not found."
 }
 
-//optional sample file
-sample_file = file(params.regenie_step2_sample_file)
-if (params.regenie_step2_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists()){
-  exit 1, "Sample file ${params.regenie_step2_sample_file} not found."
+//Optional sample file
+sample_file = file(params.regenie_sample_file)
+if (params.regenie_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists()){
+  exit 1, "Sample file ${params.regenie_sample_file} not found."
 }
 
-//check test model
-if (params.regenie_step2_test_model != 'additive' && params.regenie_step2_test_model != 'recessive' && params.regenie_step2_test_model != 'dominant'){
-  exit 1, "Test model ${params.regenie_step2_test_model} not supported."
+//Check specified test
+if (params.regenie_test != 'additive' && params.regenie_test != 'recessive' && params.regenie_test != 'dominant'){
+  exit 1, "Test ${params.regenie_test} not supported."
 }
 
-//check imputed file format
+//Check imputed file format
 if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
   exit 1, "File format ${params.genotypes_imputed_format} not supported."
 }
+
+//Array genotypes
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
+
 
 process cacheJBangScripts {
 
@@ -122,9 +90,8 @@ if (params.genotypes_imputed_format == "vcf"){
   imputed_vcf_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
 
   process vcfToPlink2 {
-
     cpus "${params.threads}"
-    publishDir "$params.output/01_quality_control", mode: 'copy'
+    //publishDir "$outdir/01_quality_control", mode: 'copy'
 
     input:
       file(imputed_vcf_file) from imputed_vcf_files_ch
@@ -151,7 +118,7 @@ if (params.genotypes_imputed_format == "vcf"){
 
 }
 
-if(params.prune_exec) {
+if(params.prune_enabled) {
 
 process snpPruning {
 //  publishDir "$params.output/01_quality_control", mode: 'copy'
@@ -210,10 +177,10 @@ process qualityControl {
 
 }
 
-if (!params.regenie_step2_skip_predictions){
+if (!params.regenie_skip_predictions){
 process regenieStep1 {
 
-  //publishDir "$params.output/02_regenie_step1", mode: 'copy'
+  //publishDir "$outdir/02_regenie_step1", mode: 'copy'
 
   input:
     set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
@@ -226,8 +193,8 @@ process regenieStep1 {
     file "fit_bin_out*log" into fit_bin_log_ch
 
   script:
-  def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
-  def deleteMissingData = params.phenotypes_delete_missing_data  ? "--strict" : ''
+  def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${covariates_array.join(',')}" : ''
+  def deleteMissings = params.phenotypes_delete_missings  ? "--strict" : ''
   """
   regenie \
     --step 1 \
@@ -235,10 +202,10 @@ process regenieStep1 {
     --extract ${genotyped_plink_filename}.qc.snplist \
     --keep ${genotyped_plink_filename}.qc.id \
     --phenoFile ${phenotype_file} \
-    --phenoColList  ${params.phenotypes_columns.join(',')} \
+    --phenoColList  ${phenotypes_array.join(',')} \
     $covariants \
-    $deleteMissingData \
-    --bsize ${params.regenie_step1_bsize} \
+    $deleteMissings \
+    --bsize ${params.regenie_bsize_step1} \
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
     --gz \
@@ -252,7 +219,7 @@ process regenieStep1 {
 
 process parseRegenieLogStep1 {
 
-publishDir "$params.output/regenie_logs", mode: 'copy'
+publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
   file regenie_step1_log from fit_bin_log_ch.collect()
@@ -276,7 +243,8 @@ publishDir "$params.output/regenie_logs", mode: 'copy'
 
 process regenieStep2 {
 	cpus "${params.threads}"
-  //publishDir "$params.output/03_regenie_step2", mode: 'copy'
+  tag "${filename}"
+  //publishDir "$outdir/03_regenie_step2", mode: 'copy'
 
   input:
     set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
@@ -292,11 +260,11 @@ process regenieStep2 {
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
     def bgen_sample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
-    def test = params.regenie_step2_test_model != 'additive' ? "--test $params.regenie_step2_test_model" : ''
-    def range = params.regenie_step2_range != '' ? "--range $params.regenie_step2_range" : ''
-    def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns.join(',')}" : ''
-    def deleteMissingData = params.phenotypes_delete_missing_data  ? "--strict" : ''
-    def predictions = params.regenie_step2_skip_predictions  ? '--ignore-pred' : ""
+    def test = "--test $params.regenie_test"
+    def range = params.regenie_range != '' ? "--range $params.regenie_range" : ''
+    def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${covariates_array.join(',')}" : ''
+    def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
+    def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
 
 
   """
@@ -304,13 +272,13 @@ process regenieStep2 {
     --step 2 \
     $format ${filename}${extension} \
     --phenoFile ${phenotype_file} \
-    --phenoColList  ${params.phenotypes_columns.join(',')} \
-    --bsize ${params.regenie_step2_bsize} \
+    --phenoColList  ${phenotypes_array.join(',')} \
+    --bsize ${params.regenie_bsize_step2} \
     ${params.phenotypes_binary_trait ? '--bt  --firth 0.01 --approx' : ''} \
     --pred fit_bin_out_pred.list \
     --threads ${params.threads} \
-    --minMAC ${params.regenie_step2_min_mac} \
-    --minINFO ${params.regenie_step2_min_imputation_score} \
+    --minMAC ${params.regenie_min_mac} \
+    --minINFO ${params.regenie_min_imputation_score} \
     --gz \
     $test \
     $bgen_sample \
@@ -325,6 +293,7 @@ process regenieStep2 {
 process filterResults {
 
 //publishDir "$params.output/regenie_results", mode: 'copy'
+tag "${regenie_chromosomes.baseName}"
 
   input:
   file regenie_chromosomes from gwas_results_ch.flatten()
@@ -335,7 +304,7 @@ process filterResults {
   file "${regenie_chromosomes}" into gwas_results_unfiltered_ch
 
   """
-  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.gwas_pvalue_limit} --output ${regenie_chromosomes.baseName}.filtered
+  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.min_pvalue} --output ${regenie_chromosomes.baseName}.filtered
   #todo: CSVWriter for gzip
   gzip ${regenie_chromosomes.baseName}.filtered
   """
@@ -344,7 +313,7 @@ process filterResults {
 
 process parseRegenieLogStep2 {
 
-publishDir "$params.output/regenie_logs", mode: 'copy'
+publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
   file regenie_step2_logs from gwas_results_ch2.collect()
@@ -361,7 +330,8 @@ publishDir "$params.output/regenie_logs", mode: 'copy'
 
 process mergeResultsFiltered {
 
-publishDir "$params.output/regenie_results", mode: 'copy'
+publishDir "$outdir/regenie_results", mode: 'copy'
+tag "${phenotype}"
 
   input:
   file regenie_chromosomes from gwas_results_filtered_ch.collect()
@@ -383,22 +353,23 @@ publishDir "$params.output/regenie_results", mode: 'copy'
 
 process mergeResultsUnfiltered {
 
-publishDir "$params.output/regenie_results", mode: 'copy'
+publishDir "$outdir/regenie_results", mode: 'copy'
+tag "${phenotype}"
 
   input:
   file regenie_chromosomes from gwas_results_unfiltered_ch.collect()
   val phenotype from phenotypes_ch2
 
   output:
-  tuple  phenotype, "${params.project}.${phenotype}.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch
-  file "${params.project}.*.regenie.unfiltered.gz" into regenie_merged_unfiltered_ch2
+  tuple  phenotype, "${params.project}.${phenotype}.regenie.all.gz" into regenie_merged_unfiltered_ch
+  file "${params.project}.*.regenie.all.gz" into regenie_merged_unfiltered_ch2
 
 
   """
   # static header due to split
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
   ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > chromosomes_data_${phenotype}.regenie.tmp.gz
-  cat header.gz chromosomes_data_${phenotype}.regenie.tmp.gz > ${params.project}.${phenotype}.regenie.unfiltered.gz
+  cat header.gz chromosomes_data_${phenotype}.regenie.tmp.gz > ${params.project}.${phenotype}.regenie.all.gz
   rm chromosomes_data_${phenotype}.regenie.tmp.gz
   """
 
@@ -417,7 +388,7 @@ process gwasTophits {
   #!/bin/bash
   set -e
   (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -T $PWD/work -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
-  zcat ${regenie_merged.baseName}.sorted.gz | head -n ${params.gwas_tophits} | gzip > ${regenie_merged.baseName}.tophits.gz
+  zcat ${regenie_merged.baseName}.sorted.gz | head -n ${params.tophits} | gzip > ${regenie_merged.baseName}.tophits.gz
   rm ${regenie_merged.baseName}.sorted.gz
   """
 
@@ -425,7 +396,7 @@ process gwasTophits {
 
 process annotateTophits {
 
-publishDir "$params.output/regenie_tophits_annotated", mode: 'copy'
+publishDir "$outdir/regenie_tophits_annotated", mode: 'copy'
 
   input:
   file tophits from tophits_ch
@@ -435,7 +406,7 @@ publishDir "$params.output/regenie_tophits_annotated", mode: 'copy'
   output:
   file "${tophits.baseName}.annotated.txt.gz" into annotated_ch
 
-  def genes = params.build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
+  def genes = params.genotypes_build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
 
   """
   #!/bin/bash
@@ -465,7 +436,7 @@ publishDir "$params.output/regenie_tophits_annotated", mode: 'copy'
 
 process gwasReport {
 
-publishDir "$params.output", mode: 'copy'
+publishDir "$outdir", mode: 'copy'
 
   memory '5 GB'
 
@@ -484,7 +455,7 @@ publishDir "$params.output", mode: 'copy'
     params = list(
       project = '${params.project}',
       date = '${params.project_date}',
-      version = '${params.version}',
+      version = '$workflow.manifest.version',
       regenie_merged='${regenie_merged}',
       regenie_filename='${regenie_merged.baseName}',
       phenotype_file='${phenotype_file}',

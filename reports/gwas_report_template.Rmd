@@ -11,13 +11,13 @@ params:
   project: test-gwas
   date: 2021-08-09
   version: v0.0.1
-  regenie_merged: ../tests/output/test-gwas/regenie_results/test-gwas.Y1.regenie.unfiltered.gz
-  regenie_filename: test-gwas.Y1.regenie.gz
-  phenotype: Y1
+  regenie_merged: ../results/test-gwas/regenie_results/test-gwas.Y1.regenie.all.gz
+  regenie_filename: test-gwas.Y1.regenie.all.gz
+  phenotype: lpa_cleaned_normal
   covariates:
-  phenotype_file: ../tests/input/phenotype.txt
-  regenie_step1_log: ../tests/output/test-gwas/regenie_logs/test-gwas.step1.log
-  regenie_step2_log: ../tests/output/test-gwas/regenie_logs/test-gwas.step2.log
+  phenotype_file: /home/seb/Desktop/lpa_phenotype.txt
+  regenie_step1_log: ../results/test-gwas/regenie_logs/test-gwas.step1.log
+  regenie_step2_log: ../results/test-gwas/regenie_logs/test-gwas.step2.log
 ---
 
 ```{r setup, include=FALSE}
@@ -69,7 +69,7 @@ kable(step2_log)
 ### Overview
 
 ```{r, echo=FALSE}
-phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".");
+phenotypeTable <- read.table(text = gsub(" ", "\t", readLines(params$phenotype_file)), header = TRUE)
 kable(skim(phenotypeTable) %>%
   dplyr::filter(skim_variable == params$phenotype)) %>%
   kableExtra::scroll_box(width = "100%")
@@ -77,6 +77,9 @@ kable(skim(phenotypeTable) %>%
 
 ### Histogram
 ```{r, echo=FALSE}
+params$phenotype
+phenotypeTable
+aes_string(x=params$phenotype)
 ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 geom_histogram(color="black", fill="white",bins=30)
 ```
