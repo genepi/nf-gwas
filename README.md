@@ -30,7 +30,7 @@ nextflow run gwas-regenie.nf -profile test,docker -c conf/test.config
 ```
 
 ## Parameters
-Pleas click [here](tests) for different config files. 
+Pleas click [here](tests) for available config files. 
 
 ### Required parameters
 
