@@ -41,11 +41,11 @@ Pleas click [here](tests) for different config files.
 | `genotypes_typed`     |  /path/to/allChrs.{bim,bed,fam} | Path to the array genotypes (single merged file in plink format).  |
 | `genotypes_imputed`     |  /path/to/vcf/\*vcf.gz or /path/to/bgen/\*bgen | Path to imputed genotypes in VCF or BGEN format) |
 | `genotypes_imputed_format `     | vcf *or* bgen | Input file format of imputed genotypes   | 
-| `build`     | hg19 *or* hg38 | Imputed genotypes build format | 
+| `genotypes_build`     | hg19 *or* hg38 | Imputed genotypes build format | 
 | `phenotypes_filename `     | /path/to/phenotype.txt | Path to phenotype file | 
 | `phenotypes_columns`     | 'phenoColumn1,phenoColumn2,phenoColumn3' | List of phenotypes | 
 | `phenotypes_binary_trait`     | false, true | Binary trait? | 
-| `regenie_test_model`     | additive, recessive *or* dominant |  Define test | 
+| `regenie_test`     | additive, recessive *or* dominant |  Define test | 
 
 ### Optional parameters
 
@@ -56,7 +56,7 @@ Pleas click [here](tests) for different config files.
 | `covariates_filename`     |  empty | path to covariates file | 
 | `covariates_columns`     | empty | List of covariates |  
 | `phenotypes_delete_missings`     | false | Removing samples with missing data at any of the phenotypes | 
-| `prune_enabled`     | prune_enabled | Enable pruning step | 
+| `prune_enabled`     | false | Enable pruning step | 
 | `prune_maf`     | 0.01 | MAF filter | 
 | `prune_window_kbsize`     |  50 | Window size |
 | `prune_step_size`     |   5 | Step size (variant ct) |
