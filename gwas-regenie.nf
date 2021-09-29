@@ -1,5 +1,5 @@
 
-checkRequiredParams = [
+requiredParams = [
     params.project, params.genotypes_typed,
     params.genotypes_imputed, params.genotypes_build,
     params.genotypes_imputed_format, params.phenotypes_filename,
@@ -7,14 +7,14 @@ checkRequiredParams = [
     params.regenie_test
 ]
 
-for (param in checkRequiredParams) {
+for (param in requiredParams) {
     if (param == null) {
       exit 1, "Please specify all required parameters."
     }
 }
 
 if(params.outdir == null) {
-  outdir = "results/${params.project}"
+  outdir = "output/${params.project}"
 } else {
   outdir = params.outdir
 }
