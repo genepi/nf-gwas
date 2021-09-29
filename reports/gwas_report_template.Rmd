@@ -15,7 +15,7 @@ params:
   regenie_filename: test-gwas.Y1.regenie.all.gz
   phenotype: lpa_cleaned_normal
   covariates:
-  phenotype_file: /home/seb/Desktop/lpa_phenotype.txt
+  phenotype_file: ../tests/input/phenotype.txt
   regenie_step1_log: ../results/test-gwas/regenie_logs/test-gwas.step1.log
   regenie_step2_log: ../results/test-gwas/regenie_logs/test-gwas.step2.log
 ---
@@ -69,7 +69,8 @@ kable(step2_log)
 ### Overview
 
 ```{r, echo=FALSE}
-phenotypeTable <- read.table(text = gsub(" ", "\t", readLines(params$phenotype_file)), header = TRUE)
+phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".")
+
 kable(skim(phenotypeTable) %>%
   dplyr::filter(skim_variable == params$phenotype)) %>%
   kableExtra::scroll_box(width = "100%")
@@ -77,9 +78,6 @@ kable(skim(phenotypeTable) %>%
 
 ### Histogram
 ```{r, echo=FALSE}
-params$phenotype
-phenotypeTable
-aes_string(x=params$phenotype)
 ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 geom_histogram(color="black", fill="white",bins=30)
 ```
@@ -89,7 +87,6 @@ geom_histogram(color="black", fill="white",bins=30)
 ```{r, echo=FALSE}
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE)
 pheno <- params$phenotype
-regenieTable
 manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
 ```
 
