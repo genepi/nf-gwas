@@ -15,7 +15,7 @@ curl -s https://get.nextflow.io | bash
 ## Run
  
 ```
-nextflow run -c <nextflow.config> genepi/gwas-regenie -r v0.1.3 -profile [docker,singularity]
+nextflow run -c <nextflow.config> genepi/gwas-regenie -r v0.1.4 -profile [docker,singularity]
 ```
 
 ## Profiles 
@@ -52,7 +52,7 @@ Pleas click [here](tests) for available config files.
 | Option        |Default          | Description |
 | ------------- |-----------------| -------------| 
 | `date`     | today | Date in report |  
-| `outdir`     | "results/${params.project}" | Output directory   
+| `outdir`     | "output/${params.project}" | Output directory   
 | `covariates_filename`     |  empty | path to covariates file | 
 | `covariates_columns`     | empty | List of covariates |  
 | `phenotypes_delete_missings`     | false | Removing samples with missing data at any of the phenotypes | 
