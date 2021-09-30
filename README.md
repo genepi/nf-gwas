@@ -11,6 +11,8 @@ A nextflow pipeline to perform whole genome regression modelling using [regenie]
 ```
 curl -s https://get.nextflow.io | bash
 ```
+## Status
+This pipeline is currently under development. 
 
 ## Run
  
