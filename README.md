@@ -27,8 +27,7 @@ You can run the pipeline using Docker or Singularity. Add ` -profile singularity
 
 ```
 github pull https://github.com/genepi/gwas-regenie/
-docker build -t genepi/gwas-regenie .
-nextflow run gwas-regenie.nf -profile test,docker -c conf/test.config
+nextflow run gwas-regenie/gwas-regenie.nf -profile test,docker -c conf/test.config
 ```
 
 ## Parameters
