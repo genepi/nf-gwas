@@ -87,38 +87,26 @@ process cacheJBangScripts {
 }
 
 //convert vcf files to plink2 format
-if (params.genotypes_imputed_format == "vcf"){
-
-  imputed_vcf_files_ch =  Channel.fromPath("${params.genotypes_imputed}")
-
   process vcfToPlink2 {
+
     cpus "${params.threads}"
-    //publishDir "$outdir/01_quality_control", mode: 'copy'
+    publishDir "$outdir/01_quality_control", mode: 'copy'
 
     input:
-      path(imputed_vcf_file) from imputed_vcf_files_ch
+      path imputed_vcf_file
 
     output:
-      tuple val("${imputed_vcf_file.baseName}"), "${imputed_vcf_file.baseName}.pgen", "${imputed_vcf_file.baseName}.psam","${imputed_vcf_file.baseName}.pvar" into imputed_files_ch
+      tuple val("${imputed_vcf_file.baseName}"), path("${imputed_vcf_file.baseName}.pgen"), path("${imputed_vcf_file.baseName}.psam"),path ("${imputed_vcf_file.baseName}.pvar")
 
     """
     plink2 \
-      --vcf ${imputed_vcf_file} dosage=DS \
+      --vcf $imputed_vcf_file dosage=DS \
       --threads ${params.threads} \
       --make-pgen \
       --double-id \
       --out ${imputed_vcf_file.baseName}
     """
-
   }
-
-} else {
-
-  Channel.fromPath(params.genotypes_imputed)
-    .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
-    .set {imputed_files_ch}
-
-}
 
 if(params.prune_enabled) {
 
@@ -470,7 +458,19 @@ publishDir "$outdir", mode: 'copy'
 }
 
 workflow {
-    cacheJBangScripts(RegenieLogParser_java, RegenieFilter_java)
+    cacheJBangScripts( RegenieLogParser_java, RegenieFilter_java )
+    //convert vcf files to plink2 format
+    if (params.genotypes_imputed_format == "vcf"){
+      println "Test"
+       imputed_data =  channel.fromPath("${params.genotypes_imputed}")
+        vcfToPlink2( imputed_data )
+    }  else {
+
+      channel.fromPath("${params.genotypes_imputed}")
+        .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
+        .set {imputed_files_ch}
+
+    }
 }
 
 workflow.onComplete {
