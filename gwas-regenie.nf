@@ -125,7 +125,7 @@ process snpPruning {
 //  publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, path(genotyped_plink_file) from genotyped_plink_files_ch
+    tuple genotyped_plink_filename, path(genotyped_plink_file) from genotyped_plink_files_ch
   output:
     tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch
     tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch2
@@ -159,7 +159,7 @@ process qualityControl {
   //publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch
+    tuple genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch
 
   output:
     file "${genotyped_plink_filename}.qc.*" into genotyped_plink_files_qc_ch
@@ -184,7 +184,7 @@ process regenieStep1 {
   //publishDir "$outdir/02_regenie_step1", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
+    tuple genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
     path phenotype_file
     path qcfiles from genotyped_plink_files_qc_ch.collect()
     path covariate_file
@@ -248,7 +248,7 @@ process regenieStep2 {
   //publishDir "$outdir/03_regenie_step2", mode: 'copy'
 
   input:
-    set filename, path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file) from imputed_files_ch
+    tuple filename, path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file) from imputed_files_ch
     path phenotype_file
     path sample_file
     path fit_bin_out from fit_bin_out_ch.collect()
@@ -442,7 +442,7 @@ publishDir "$outdir", mode: 'copy'
   memory '5 GB'
 
   input:
-  set phenotype, regenie_merged from regenie_merged_unfiltered_ch
+  tuple phenotype, regenie_merged from regenie_merged_unfiltered_ch
 	path phenotype_file
   path gwas_report_template
   path step1_log from logs_step1_ch
