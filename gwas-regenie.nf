@@ -95,7 +95,7 @@ process cacheJBangScripts {
       path imputed_vcf_file
 
     output:
-      tuple val("${imputed_vcf_file.baseName}"), path("${imputed_vcf_file.baseName}.pgen"), path("${imputed_vcf_file.baseName}.psam"),path ("${imputed_vcf_file.baseName}.pvar")
+      tuple val("${imputed_vcf_file.baseName}"), path("${imputed_vcf_file.baseName}.pgen"), path("${imputed_vcf_file.baseName}.psam"),path("${imputed_vcf_file.baseName}.pvar")
 
     """
     plink2 \
@@ -113,7 +113,7 @@ process snpPruning {
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_file)
   output:
-    tuple val("${params.project}.pruned"), path("${params.project}.pruned.bim"), path("${params.project}.pruned.bed"),path("${params.project}.pruned.fam")
+    tuple val("${params.project}.pruned"), path("${params.project}.pruned.bim"), path("${params.project}.pruned.bed"),path("${params.project}.pruned.fam"), emit: genotypes_pruned
 
   """
   # Prune, filter and convert to plink
@@ -463,7 +463,7 @@ workflow {
 
     if(params.prune_enabled) {
       snpPruning(genotyped_plink_files_ch)
-      genotyped_plink_files_pruned_ch = snpPruning.out
+      genotyped_plink_files_pruned_ch = snpPruning.out.genotypes_pruned
 
       } else {
         Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch}
