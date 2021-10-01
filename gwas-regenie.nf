@@ -95,7 +95,7 @@ process cacheJBangScripts {
       path imputed_vcf_file
 
     output:
-      tuple val("${imputed_vcf_file.baseName}"), path("${imputed_vcf_file.baseName}.pgen"), path("${imputed_vcf_file.baseName}.psam"),path("${imputed_vcf_file.baseName}.pvar")
+      tuple val("${imputed_vcf_file.baseName}"), path("${imputed_vcf_file.baseName}.pgen"), path("${imputed_vcf_file.baseName}.psam"),path("${imputed_vcf_file.baseName}.pvar"), emit: imputed_vcf
 
     """
     plink2 \
@@ -216,15 +216,15 @@ process regenieStep2 {
   //publishDir "$outdir/03_regenie_step2", mode: 'copy'
 
   input:
-    tuple filename, path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file) from imputed_files_ch
+    tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file)
     path phenotype_file
     path sample_file
-    path fit_bin_out from fit_bin_out_ch.collect()
+    path fit_bin_out
     path covariate_file
 
   output:
-    path "gwas_results.*regenie.gz" into gwas_results_ch
-    path "gwas_results.${filename}*log" into gwas_results_ch2
+    path "gwas_results.*regenie.gz"
+    path "gwas_results.${filename}*log"
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -443,6 +443,7 @@ workflow {
     if (params.genotypes_imputed_format == "vcf"){
         imputed_data =  channel.fromPath("${params.genotypes_imputed}")
         vcfToPlink2( imputed_data )
+        imputed_files_ch = vcfToPlink2.out.imputed_vcf
     }  else {
 
       channel.fromPath("${params.genotypes_imputed}")
@@ -473,6 +474,9 @@ workflow {
           logs_step1_ch = Channel.from([""]).collect()
 
         }
+
+
+        regenieStep2(imputed_files_ch,phenotype_file,sample_file,regenieStep1.out.fit_bin_out_ch.collect(),covariate_file)
 }
 
 workflow.onComplete {
