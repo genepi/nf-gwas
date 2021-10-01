@@ -1,4 +1,5 @@
 
+
 requiredParams = [
     params.project, params.genotypes_typed,
     params.genotypes_imputed, params.genotypes_build,
@@ -70,12 +71,12 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 process cacheJBangScripts {
 
   input:
-    file RegenieLogParser_java
-    file RegenieFilter_java
+    path RegenieLogParser_java
+    path RegenieFilter_java
 
   output:
-    file "RegenieLogParser.jar" into RegenieLogParser
-    file "RegenieFilter.jar" into RegenieFilter
+    path "RegenieLogParser.jar" into RegenieLogParser
+    path "RegenieFilter.jar" into RegenieFilter
 
   """
   jbang export portable -O=RegenieLogParser.jar ${RegenieLogParser_java}
@@ -94,7 +95,7 @@ if (params.genotypes_imputed_format == "vcf"){
     //publishDir "$outdir/01_quality_control", mode: 'copy'
 
     input:
-      file(imputed_vcf_file) from imputed_vcf_files_ch
+      path(imputed_vcf_file) from imputed_vcf_files_ch
 
     output:
       tuple val("${imputed_vcf_file.baseName}"), "${imputed_vcf_file.baseName}.pgen", "${imputed_vcf_file.baseName}.psam","${imputed_vcf_file.baseName}.pvar" into imputed_files_ch
@@ -124,7 +125,7 @@ process snpPruning {
 //  publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, file(genotyped_plink_file) from genotyped_plink_files_ch
+    set genotyped_plink_filename, path(genotyped_plink_file) from genotyped_plink_files_ch
   output:
     tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch
     tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch2
@@ -158,7 +159,7 @@ process qualityControl {
   //publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch
+    set genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch
 
   output:
     file "${genotyped_plink_filename}.qc.*" into genotyped_plink_files_qc_ch
@@ -183,14 +184,14 @@ process regenieStep1 {
   //publishDir "$outdir/02_regenie_step1", mode: 'copy'
 
   input:
-    set genotyped_plink_filename, file(genotyped_plink_bim_file), file(genotyped_plink_bed_file), file(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
-    file phenotype_file
-    file qcfiles from genotyped_plink_files_qc_ch.collect()
-    file covariate_file
+    set genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
+    path phenotype_file
+    path qcfiles from genotyped_plink_files_qc_ch.collect()
+    path covariate_file
 
   output:
-    file "fit_bin_out*" into fit_bin_out_ch
-    file "fit_bin_out*log" into fit_bin_log_ch
+    path "fit_bin_out*" into fit_bin_out_ch
+    path "fit_bin_out*log" into fit_bin_log_ch
 
   script:
   def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${covariates_array.join(',')}" : ''
@@ -222,11 +223,11 @@ process parseRegenieLogStep1 {
 publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
-  file regenie_step1_log from fit_bin_log_ch.collect()
-  file RegenieLogParser
+  path regenie_step1_log from fit_bin_log_ch.collect()
+  path RegenieLogParser
 
   output:
-  file "${params.project}.step1.log" into logs_step1_ch
+  path "${params.project}.step1.log" into logs_step1_ch
 
   """
   java -jar ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
@@ -247,15 +248,15 @@ process regenieStep2 {
   //publishDir "$outdir/03_regenie_step2", mode: 'copy'
 
   input:
-    set filename, file(plink2_pgen_file), file(plink2_psam_file), file(plink2_pvar_file) from imputed_files_ch
-    file phenotype_file
-    file sample_file
-    file fit_bin_out from fit_bin_out_ch.collect()
-    file covariate_file
+    set filename, path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file) from imputed_files_ch
+    path phenotype_file
+    path sample_file
+    path fit_bin_out from fit_bin_out_ch.collect()
+    path covariate_file
 
   output:
-    file "gwas_results.*regenie.gz" into gwas_results_ch
-    file "gwas_results.${filename}*log" into gwas_results_ch2
+    path "gwas_results.*regenie.gz" into gwas_results_ch
+    path "gwas_results.${filename}*log" into gwas_results_ch2
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -296,12 +297,12 @@ process filterResults {
 tag "${regenie_chromosomes.baseName}"
 
   input:
-  file regenie_chromosomes from gwas_results_ch.flatten()
-  file RegenieFilter
+  path regenie_chromosomes from gwas_results_ch.flatten()
+  path RegenieFilter
 
   output:
-  file "${regenie_chromosomes.baseName}.filtered*" into gwas_results_filtered_ch
-  file "${regenie_chromosomes}" into gwas_results_unfiltered_ch
+  path "${regenie_chromosomes.baseName}.filtered*" into gwas_results_filtered_ch
+  path "${regenie_chromosomes}" into gwas_results_unfiltered_ch
 
   """
   java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.min_pvalue} --output ${regenie_chromosomes.baseName}.filtered
@@ -316,11 +317,11 @@ process parseRegenieLogStep2 {
 publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
-  file regenie_step2_logs from gwas_results_ch2.collect()
-  file RegenieLogParser
+  path regenie_step2_logs from gwas_results_ch2.collect()
+  path RegenieLogParser
 
   output:
-  file "${params.project}.step2.log" into logs_step2_ch
+  path "${params.project}.step2.log" into logs_step2_ch
 
   """
   java -jar ${RegenieLogParser} ${regenie_step2_logs} --output ${params.project}.step2.log
@@ -334,11 +335,11 @@ publishDir "$outdir/regenie_results", mode: 'copy'
 tag "${phenotype}"
 
   input:
-  file regenie_chromosomes from gwas_results_filtered_ch.collect()
+  path regenie_chromosomes from gwas_results_filtered_ch.collect()
   val phenotype from phenotypes_ch
 
   output:
-    file "${params.project}.*.regenie.filtered.gz" into regenie_merged_filtered_ch
+    path "${params.project}.*.regenie.filtered.gz" into regenie_merged_filtered_ch
 
 
   """
@@ -357,12 +358,12 @@ publishDir "$outdir/regenie_results", mode: 'copy'
 tag "${phenotype}"
 
   input:
-  file regenie_chromosomes from gwas_results_unfiltered_ch.collect()
+  path regenie_chromosomes from gwas_results_unfiltered_ch.collect()
   val phenotype from phenotypes_ch2
 
   output:
   tuple  phenotype, "${params.project}.${phenotype}.regenie.all.gz" into regenie_merged_unfiltered_ch
-  file "${params.project}.*.regenie.all.gz" into regenie_merged_unfiltered_ch2
+  path "${params.project}.*.regenie.all.gz" into regenie_merged_unfiltered_ch2
 
 
   """
@@ -378,7 +379,7 @@ tag "${phenotype}"
 process gwasTophits {
 
   input:
-  file regenie_merged from regenie_merged_filtered_ch
+  path regenie_merged from regenie_merged_filtered_ch
 
   output:
   file "${regenie_merged.baseName}.tophits.gz" into tophits_ch
@@ -399,9 +400,9 @@ process annotateTophits {
 publishDir "$outdir/regenie_tophits_annotated", mode: 'copy'
 
   input:
-  file tophits from tophits_ch
-  file genes_hg19
-  file genes_hg38
+  path tophits from tophits_ch
+  path genes_hg19
+  path genes_hg38
 
   output:
   file "${tophits.baseName}.annotated.txt.gz" into annotated_ch
@@ -442,13 +443,13 @@ publishDir "$outdir", mode: 'copy'
 
   input:
   set phenotype, regenie_merged from regenie_merged_unfiltered_ch
-	file phenotype_file
-  file gwas_report_template
-  file step1_log from logs_step1_ch
-  file step2_log from logs_step2_ch
+	path phenotype_file
+  path gwas_report_template
+  path step1_log from logs_step1_ch
+  path step2_log from logs_step2_ch
 
   output:
-  file "*.html"
+  path "*.html"
 
   """
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
