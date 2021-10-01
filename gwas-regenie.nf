@@ -108,16 +108,14 @@ process cacheJBangScripts {
     """
   }
 
-if(params.prune_enabled) {
-
 process snpPruning {
 //  publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    tuple genotyped_plink_filename, path(genotyped_plink_file) from genotyped_plink_files_ch
+    tuple genotyped_plink_filename, path genotyped_plink_file
   output:
-    tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch
-    tuple val("${params.project}.pruned"), "${params.project}.pruned.bim", "${params.project}.pruned.bed","${params.project}.pruned.fam" into genotyped_plink_files_pruned_ch2
+    tuple val("${params.project}.pruned"), path("${params.project}.pruned.bim"), path("${params.project}.pruned.bed"),path("${params.project}.pruned.fam")
+    tuple val("${params.project}.pruned"), path("${params.project}.pruned.bim"), path("${params.project}.pruned.bed"),path("${params.project}.pruned.fam")
 
   """
   # Prune, filter and convert to plink
@@ -135,13 +133,6 @@ process snpPruning {
   """
 
 }
-} else {
-
-  Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch}
-  Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch2}
-
-}
-
 
 process qualityControl {
 
@@ -471,6 +462,16 @@ workflow {
         .set {imputed_files_ch}
 
     }
+
+    if(params.prune_enabled) {
+      snpPruning(genotyped_plink_files_ch)
+
+      } else {
+        Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch}
+        Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch2}
+
+      }
+
 }
 
 workflow.onComplete {
