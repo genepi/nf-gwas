@@ -75,8 +75,8 @@ process cacheJBangScripts {
     path RegenieFilter_java
 
   output:
-    path "RegenieLogParser.jar"
-    path "RegenieFilter.jar"
+    path "RegenieLogParser.jar", emit: RegenieLogParser
+    path "RegenieFilter.jar", emit: RegenieFilter
 
   """
   jbang export portable -O=RegenieLogParser.jar ${RegenieLogParser_java}
@@ -140,7 +140,7 @@ process qualityControl {
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
 
   output:
-    file "${genotyped_plink_filename}.qc.*"
+    path "${genotyped_plink_filename}.qc.*", emit: genotyped_qc
 
   """
   plink2 \
@@ -156,20 +156,19 @@ process qualityControl {
 
 }
 
-if (!params.regenie_skip_predictions){
 process regenieStep1 {
 
   //publishDir "$outdir/02_regenie_step1", mode: 'copy'
 
   input:
-    tuple genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch2
+    tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
     path phenotype_file
-    path qcfiles from genotyped_plink_files_qc_ch.collect()
+    path qcfiles
     path covariate_file
 
   output:
-    path "fit_bin_out*" into fit_bin_out_ch
-    path "fit_bin_out*log" into fit_bin_log_ch
+    path "fit_bin_out*", emit: fit_bin_out_ch
+    path "fit_bin_out*log", emit: fit_bin_log_ch
 
   script:
   def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${covariates_array.join(',')}" : ''
@@ -195,30 +194,21 @@ process regenieStep1 {
 
 }
 
-
 process parseRegenieLogStep1 {
 
 publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
-  path regenie_step1_log from fit_bin_log_ch.collect()
+  path regenie_step1_log
   path RegenieLogParser
 
   output:
-  path "${params.project}.step1.log" into logs_step1_ch
+  path "${params.project}.step1.log", emit: logs_step1_ch
 
   """
   java -jar ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
   """
   }
-  } else {
-
-    fit_bin_out_ch = Channel.from(["fit_bin_out_ch_dummy"]).collect()
-
-    logs_step1_ch = Channel.from([""]).collect()
-
-  }
-
 
 process regenieStep2 {
 	cpus "${params.threads}"
@@ -471,6 +461,18 @@ workflow {
       }
 
       qualityControl(genotyped_plink_files_pruned_ch)
+
+
+      if (!params.regenie_skip_predictions){
+        regenieStep1(genotyped_plink_files_pruned_ch,phenotype_file,qualityControl.out.genotyped_qc,covariate_file)
+        parseRegenieLogStep1(regenieStep1.out.fit_bin_log_ch.collect(), cacheJBangScripts.out.RegenieLogParser)
+      }   else {
+
+          fit_bin_out_ch = Channel.from(["fit_bin_out_ch_dummy"]).collect()
+
+          logs_step1_ch = Channel.from([""]).collect()
+
+        }
 }
 
 workflow.onComplete {
