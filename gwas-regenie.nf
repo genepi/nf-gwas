@@ -1,4 +1,5 @@
 
+nextflow.enable.dsl=2
 
 requiredParams = [
     params.project, params.genotypes_typed,
@@ -75,8 +76,8 @@ process cacheJBangScripts {
     path RegenieFilter_java
 
   output:
-    path "RegenieLogParser.jar" into RegenieLogParser
-    path "RegenieFilter.jar" into RegenieFilter
+    path "RegenieLogParser.jar"
+    path "RegenieFilter.jar"
 
   """
   jbang export portable -O=RegenieLogParser.jar ${RegenieLogParser_java}
@@ -466,6 +467,10 @@ publishDir "$outdir", mode: 'copy'
       regenie_step2_log='${step2_log}'
     ), intermediates_dir='\$PWD', knit_root_dir='\$PWD', output_file='\$PWD/${regenie_merged.baseName}.html')"
   """
+}
+
+workflow {
+    cacheJBangScripts(RegenieLogParser_java, RegenieFilter_java)
 }
 
 workflow.onComplete {
