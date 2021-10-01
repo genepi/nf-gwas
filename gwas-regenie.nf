@@ -40,7 +40,6 @@ genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed", checkIfExists: true)
 //Phenotypes
 phenotype_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes_ch = Channel.from(phenotypes_array)
-phenotypes_ch2 = Channel.from(phenotypes_array)
 
 //Covariates
 covariate_file = file(params.covariates_filename)
@@ -223,8 +222,8 @@ process regenieStep2 {
     path covariate_file
 
   output:
-    path "gwas_results.*regenie.gz"
-    path "gwas_results.${filename}*log"
+    path "gwas_results.*regenie.gz", emit: gwas_results_ch
+    path "gwas_results.${filename}*log", emit: gwas_results_ch2
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -265,12 +264,12 @@ process filterResults {
 tag "${regenie_chromosomes.baseName}"
 
   input:
-  path regenie_chromosomes from gwas_results_ch.flatten()
+  path regenie_chromosomes
   path RegenieFilter
 
   output:
-  path "${regenie_chromosomes.baseName}.filtered*" into gwas_results_filtered_ch
-  path "${regenie_chromosomes}" into gwas_results_unfiltered_ch
+  path "${regenie_chromosomes.baseName}.filtered*", emit: gwas_results_filtered_ch
+  path "${regenie_chromosomes}", emit: gwas_results_unfiltered_ch
 
   """
   java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.min_pvalue} --output ${regenie_chromosomes.baseName}.filtered
@@ -285,11 +284,11 @@ process parseRegenieLogStep2 {
 publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
-  path regenie_step2_logs from gwas_results_ch2.collect()
+  path regenie_step2_logs
   path RegenieLogParser
 
   output:
-  path "${params.project}.step2.log" into logs_step2_ch
+  path "${params.project}.step2.log", emit: logs_step2_ch
 
   """
   java -jar ${RegenieLogParser} ${regenie_step2_logs} --output ${params.project}.step2.log
@@ -303,11 +302,11 @@ publishDir "$outdir/regenie_results", mode: 'copy'
 tag "${phenotype}"
 
   input:
-  path regenie_chromosomes from gwas_results_filtered_ch.collect()
-  val phenotype from phenotypes_ch
+  path regenie_chromosomes
+  val phenotype
 
   output:
-    path "${params.project}.*.regenie.filtered.gz" into regenie_merged_filtered_ch
+    path "${params.project}.*.regenie.filtered.gz", emit: regenie_merged_filtered_ch
 
 
   """
@@ -326,12 +325,11 @@ publishDir "$outdir/regenie_results", mode: 'copy'
 tag "${phenotype}"
 
   input:
-  path regenie_chromosomes from gwas_results_unfiltered_ch.collect()
-  val phenotype from phenotypes_ch2
+  path regenie_chromosomes
+  val phenotype
 
   output:
-  tuple  phenotype, "${params.project}.${phenotype}.regenie.all.gz" into regenie_merged_unfiltered_ch
-  path "${params.project}.*.regenie.all.gz" into regenie_merged_unfiltered_ch2
+  tuple val(phenotype), path ("${params.project}.${phenotype}.regenie.all.gz"), emit: regenie_merged_unfiltered_ch
 
 
   """
@@ -347,10 +345,10 @@ tag "${phenotype}"
 process gwasTophits {
 
   input:
-  path regenie_merged from regenie_merged_filtered_ch
+  path regenie_merged
 
   output:
-  file "${regenie_merged.baseName}.tophits.gz" into tophits_ch
+  path "${regenie_merged.baseName}.tophits.gz", emit: tophits_ch
 
 
   """
@@ -368,12 +366,12 @@ process annotateTophits {
 publishDir "$outdir/regenie_tophits_annotated", mode: 'copy'
 
   input:
-  path tophits from tophits_ch
+  path tophits
   path genes_hg19
   path genes_hg38
 
   output:
-  file "${tophits.baseName}.annotated.txt.gz" into annotated_ch
+  path "${tophits.baseName}.annotated.txt.gz", emit: annotated_ch
 
   def genes = params.genotypes_build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
 
@@ -410,11 +408,11 @@ publishDir "$outdir", mode: 'copy'
   memory '5 GB'
 
   input:
-  tuple phenotype, regenie_merged from regenie_merged_unfiltered_ch
+  tuple val(phenotype), path(regenie_merged)
 	path phenotype_file
   path gwas_report_template
-  path step1_log from logs_step1_ch
-  path step2_log from logs_step2_ch
+  path step1_log
+  path step2_log
 
   output:
   path "*.html"
@@ -477,6 +475,22 @@ workflow {
 
 
         regenieStep2(imputed_files_ch,phenotype_file,sample_file,regenieStep1.out.fit_bin_out_ch.collect(),covariate_file)
+
+        parseRegenieLogStep2(regenieStep2.out.gwas_results_ch2.collect(), cacheJBangScripts.out.RegenieLogParser)
+
+        filterResults(regenieStep2.out.gwas_results_ch.flatten(), cacheJBangScripts.out.RegenieFilter)
+
+        mergeResultsFiltered(filterResults.out.gwas_results_filtered_ch.collect(),phenotypes_ch)
+
+        mergeResultsUnfiltered(filterResults.out.gwas_results_unfiltered_ch.collect(),phenotypes_ch)
+
+        gwasTophits(mergeResultsFiltered.out.regenie_merged_filtered_ch)
+
+        annotateTophits(gwasTophits.out.tophits_ch,genes_hg19,genes_hg38)
+
+        gwasReport(mergeResultsUnfiltered.out.regenie_merged_unfiltered_ch,phenotype_file, gwas_report_template,parseRegenieLogStep1.out.logs_step1_ch, parseRegenieLogStep2.out.logs_step2_ch)
+
+
 }
 
 workflow.onComplete {
