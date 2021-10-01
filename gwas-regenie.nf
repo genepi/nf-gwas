@@ -66,7 +66,6 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 
 //Array genotypes
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch2}
 
 
 process cacheJBangScripts {
@@ -112,9 +111,8 @@ process snpPruning {
 //  publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    tuple genotyped_plink_filename, path genotyped_plink_file
+    tuple val(genotyped_plink_filename), path(genotyped_plink_file)
   output:
-    tuple val("${params.project}.pruned"), path("${params.project}.pruned.bim"), path("${params.project}.pruned.bed"),path("${params.project}.pruned.fam")
     tuple val("${params.project}.pruned"), path("${params.project}.pruned.bim"), path("${params.project}.pruned.bed"),path("${params.project}.pruned.fam")
 
   """
@@ -139,10 +137,10 @@ process qualityControl {
   //publishDir "$params.output/01_quality_control", mode: 'copy'
 
   input:
-    tuple genotyped_plink_filename, path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file) from genotyped_plink_files_pruned_ch
+    tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
 
   output:
-    file "${genotyped_plink_filename}.qc.*" into genotyped_plink_files_qc_ch
+    file "${genotyped_plink_filename}.qc.*"
 
   """
   plink2 \
@@ -450,10 +448,10 @@ publishDir "$outdir", mode: 'copy'
 
 workflow {
     cacheJBangScripts( RegenieLogParser_java, RegenieFilter_java )
+
     //convert vcf files to plink2 format
     if (params.genotypes_imputed_format == "vcf"){
-      println "Test"
-       imputed_data =  channel.fromPath("${params.genotypes_imputed}")
+        imputed_data =  channel.fromPath("${params.genotypes_imputed}")
         vcfToPlink2( imputed_data )
     }  else {
 
@@ -465,13 +463,14 @@ workflow {
 
     if(params.prune_enabled) {
       snpPruning(genotyped_plink_files_ch)
+      genotyped_plink_files_pruned_ch = snpPruning.out
 
       } else {
         Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch}
-        Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch2}
 
       }
 
+      qualityControl(genotyped_plink_files_pruned_ch)
 }
 
 workflow.onComplete {
