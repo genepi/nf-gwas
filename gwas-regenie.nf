@@ -1,4 +1,3 @@
-
 nextflow.enable.dsl=2
 
 requiredParams = [
@@ -30,8 +29,8 @@ if(!params.covariates_columns.isEmpty()){
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 
 //JBang scripts
-RegenieLogParser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
-RegenieFilter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
+regenie_log_parser  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
+regenie_filter = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
 
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
@@ -39,7 +38,7 @@ genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed", checkIfExists: true)
 
 //Phenotypes
 phenotype_file = file(params.phenotypes_filename, checkIfExists: true)
-phenotypes_ch = Channel.from(phenotypes_array)
+phenotypes = Channel.from(phenotypes_array)
 
 //Covariates
 covariate_file = file(params.covariates_filename)
@@ -64,22 +63,22 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 }
 
 //Array genotypes
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_files_ch}
+Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_ch}
 
 
 process CACHE_JBANG_SCRIPTS {
 
   input:
-    path RegenieLogParser_java
-    path RegenieFilter_java
+    path regenie_log_parser
+    path regenie_filter
 
   output:
-    path "RegenieLogParser.jar", emit: RegenieLogParser
-    path "RegenieFilter.jar", emit: RegenieFilter
+    path "RegenieLogParser.jar", emit: regenie_log_parser_jar
+    path "RegenieFilter.jar", emit: regenie_filter_jar
 
   """
-  jbang export portable -O=RegenieLogParser.jar ${RegenieLogParser_java}
-  jbang export portable -O=RegenieFilter.jar ${RegenieFilter_java}
+  jbang export portable -O=RegenieLogParser.jar ${regenie_log_parser}
+  jbang export portable -O=RegenieFilter.jar ${regenie_filter}
   """
 
 }
@@ -94,7 +93,7 @@ process CACHE_JBANG_SCRIPTS {
       path imputed_vcf_file
 
     output:
-      tuple val("${imputed_vcf_file.baseName}"), path("${imputed_vcf_file.baseName}.pgen"), path("${imputed_vcf_file.baseName}.psam"),path("${imputed_vcf_file.baseName}.pvar"), emit: imputed_vcf
+      tuple val("${imputed_vcf_file.baseName}"), path("${imputed_vcf_file.baseName}.pgen"), path("${imputed_vcf_file.baseName}.psam"),path("${imputed_vcf_file.baseName}.pvar"), emit: imputed_plink
 
     """
     plink2 \
@@ -199,13 +198,13 @@ publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
   path regenie_step1_log
-  path RegenieLogParser
+  path regenie_log_parser_jar
 
   output:
   path "${params.project}.step1.log", emit: logs_step1_ch
 
   """
-  java -jar ${RegenieLogParser} ${regenie_step1_log} --output ${params.project}.step1.log
+  java -jar ${regenie_log_parser_jar} ${regenie_step1_log} --output ${params.project}.step1.log
   """
   }
 
@@ -265,14 +264,14 @@ tag "${regenie_chromosomes.baseName}"
 
   input:
   path regenie_chromosomes
-  path RegenieFilter
+  path regenie_filter_jar
 
   output:
   path "${regenie_chromosomes.baseName}.filtered*", emit: gwas_results_filtered_ch
   path "${regenie_chromosomes}", emit: gwas_results_unfiltered_ch
 
   """
-  java -jar ${RegenieFilter} --input ${regenie_chromosomes} --limit ${params.min_pvalue} --output ${regenie_chromosomes.baseName}.filtered
+  java -jar ${regenie_filter_jar} --input ${regenie_chromosomes} --limit ${params.min_pvalue} --output ${regenie_chromosomes.baseName}.filtered
   #todo: CSVWriter for gzip
   gzip ${regenie_chromosomes.baseName}.filtered
   """
@@ -285,13 +284,13 @@ publishDir "$outdir/regenie_logs", mode: 'copy'
 
   input:
   path regenie_step2_logs
-  path RegenieLogParser
+  path regenie_log_parser_jar
 
   output:
   path "${params.project}.step2.log", emit: logs_step2_ch
 
   """
-  java -jar ${RegenieLogParser} ${regenie_step2_logs} --output ${params.project}.step2.log
+  java -jar ${regenie_log_parser_jar} ${regenie_step2_logs} --output ${params.project}.step2.log
   """
 
 }
@@ -437,11 +436,11 @@ publishDir "$outdir", mode: 'copy'
 workflow {
 
     CACHE_JBANG_SCRIPTS (
-        RegenieLogParser_java,
-        RegenieFilter_java
+        regenie_log_parser,
+        regenie_filter
     )
 
-    //convert vcf files to plink2 format
+    //convert vcf files to plink2 format (not bgen!)
     if (params.genotypes_imputed_format == "vcf"){
         imputed_data =  channel.fromPath("${params.genotypes_imputed}")
 
@@ -449,34 +448,37 @@ workflow {
             imputed_data
         )
 
-        imputed_files_ch = VCF_TO_PLINK2.out.imputed_vcf
+        imputed_plink_ch = VCF_TO_PLINK2.out.imputed_plink
 
     }  else {
+
+        //nothing to do, forward imputed into same channel
         channel.fromPath("${params.genotypes_imputed}")
         .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
-        .set {imputed_files_ch}
+        .set {imputed_plink_ch}
     }
 
     if(params.prune_enabled) {
 
         SNP_PRUNING (
-            genotyped_plink_files_ch
+            genotyped_plink_ch
         )
 
-        genotyped_plink_files_pruned_ch = SNP_PRUNING.out.genotypes_pruned
+        genotyped_plink_pruned_ch = SNP_PRUNING.out.genotypes_pruned
 
       } else {
-          Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_files_pruned_ch}
+          //no pruning, forward genotyped into same channel
+          Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
       }
 
     QUALITY_CONTROL_FILTERS (
-        genotyped_plink_files_pruned_ch
+        genotyped_plink_pruned_ch
     )
 
     if (!params.regenie_skip_predictions){
 
         REGENIE_STEP1 (
-            genotyped_plink_files_pruned_ch,
+            genotyped_plink_pruned_ch,
             phenotype_file,
             QUALITY_CONTROL_FILTERS.out.genotyped_qc,
             covariate_file
@@ -484,7 +486,7 @@ workflow {
 
         PARSE_REGENIE_LOG_STEP1 (
             REGENIE_STEP1.out.fit_bin_log_ch.collect(),
-            CACHE_JBANG_SCRIPTS.out.RegenieLogParser
+            CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
         )
 
         fit_bin_out_ch = REGENIE_STEP1.out.fit_bin_out_ch
@@ -494,11 +496,12 @@ workflow {
 
           fit_bin_out_ch = Channel.of('/')
 
-            logs_step1_ch = Channel.fromPath("NO_LOG")
+          logs_step1_ch = Channel.fromPath("NO_LOG")
+
         }
 
         REGENIE_STEP2 (
-            imputed_files_ch,
+            imputed_plink_ch,
             phenotype_file,
             sample_file,
             fit_bin_out_ch.collect(),
@@ -507,22 +510,22 @@ workflow {
 
         PARSE_REGENIE_LOG_STEP2 (
             REGENIE_STEP2.out.gwas_results_ch2.collect(),
-            CACHE_JBANG_SCRIPTS.out.RegenieLogParser
+            CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
         )
 
         FILTER_RESULTS (
             REGENIE_STEP2.out.gwas_results_ch.flatten(),
-            CACHE_JBANG_SCRIPTS.out.RegenieFilter
+            CACHE_JBANG_SCRIPTS.out.regenie_filter_jar
         )
 
         MERGE_RESULTS_FILTERED (
             FILTER_RESULTS.out.gwas_results_filtered_ch.collect(),
-            phenotypes_ch
+            phenotypes
         )
 
         MERGE_RESULTS_UNFILTERED (
             FILTER_RESULTS.out.gwas_results_unfiltered_ch.collect(),
-            phenotypes_ch
+            phenotypes
         )
 
         GWAS_TOPHITS (
@@ -542,7 +545,6 @@ workflow {
             logs_step1_ch.collect(),
             PARSE_REGENIE_LOG_STEP2.out.logs_step2_ch
         )
-
 
 }
 
