@@ -14,20 +14,18 @@ curl -s https://get.nextflow.io | bash
 ## Status
 This pipeline is currently under development. 
 
-## Run
+## Run with Docker/Singularity
  
 ```
 nextflow run -c <nextflow.config> genepi/gwas-regenie -r v0.1.4 -profile [docker,singularity]
 ```
 
-## Profiles 
-You can run the pipeline using Docker or Singularity. Add ` -profile singularity ` to run it with Singularity. 
-
-## Build and run locally
-
+## Run locally
 ```
-github pull https://github.com/genepi/gwas-regenie/
-nextflow run gwas-regenie/gwas-regenie.nf -profile test,docker -c conf/test.config
+github clone https://github.com/genepi/gwas-regenie/
+cd gwas-regenie/
+docker build -t genepi/gwas-regenie .
+nextflow run main.nf -profile test,standard
 ```
 
 ## Parameters
