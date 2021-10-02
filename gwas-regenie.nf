@@ -181,11 +181,11 @@ workflow {
         MERGE_RESULTS_FILTERED.out.regenie_merged_filtered_ch
     )
 
-  //  ANNOTATE_TOPHITS (
-  //      GWAS_TOPHITS.out.tophits_ch,
-  //      genes_hg19,
-  //      genes_hg38
-  //  )
+    ANNOTATE_TOPHITS (
+        GWAS_TOPHITS.out.tophits_ch,
+        genes_hg19,
+        genes_hg38
+    )
 
     GWAS_REPORT (
         MERGE_RESULTS_UNFILTERED.out.regenie_merged_unfiltered_ch,

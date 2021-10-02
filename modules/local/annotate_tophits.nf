@@ -10,6 +10,7 @@ publishDir "${params.outdir}/regenie_tophits_annotated", mode: 'copy'
   output:
   path "${tophits.baseName}.annotated.txt.gz", emit: annotated_ch
 
+  script:
   def genes = params.genotypes_build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
 
   """
