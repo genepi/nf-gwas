@@ -10,14 +10,14 @@ output:
 params:
   project: test-gwas
   date: 2021-08-09
-  version: v0.0.1
-  regenie_merged: ../results/test-gwas/regenie_results/test-gwas.Y1.regenie.all.gz
+  version: v0.1.4
+  regenie_merged: ../output/test-gwas/regenie_results/test-gwas.Y1.regenie.all.gz
   regenie_filename: test-gwas.Y1.regenie.all.gz
-  phenotype: lpa_cleaned_normal
+  phenotype: Y1
   covariates:
   phenotype_file: ../tests/input/phenotype.txt
-  regenie_step1_log: ../results/test-gwas/regenie_logs/test-gwas.step1.log
-  regenie_step2_log: ../results/test-gwas/regenie_logs/test-gwas.step2.log
+  regenie_step1_log: NO_LOG
+  regenie_step2_log: ../output/test-gwas/regenie_logs/test-gwas.step2.log
 ---
 
 ```{r setup, include=FALSE}
@@ -46,9 +46,8 @@ library(ramwas)
 
 ### Step 1
 
-```{r, echo=FALSE, results='asis'}
-
-if(file.info(params$regenie_step1_log)$size != 0) {
+```{r, results='asis'}
+if(file.exists(params$regenie_step1_log)) {
 step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
 kable(step1_log)
 } else {
@@ -97,5 +96,5 @@ qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
 qqPlotFast(qqPrepare)
 ```
 
-## About 
+## About
 This report has been created with a GWAS Nextflow Pipeline (https://github.com/genepi/gwas-regenie) (**`r params$version`**) by Lukas Forer (lukas.forer@i-med.ac.at) and Sebastian Schönherr (sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.

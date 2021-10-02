@@ -465,16 +465,20 @@ workflow {
       if (!params.regenie_skip_predictions){
         regenieStep1(genotyped_plink_files_pruned_ch,phenotype_file,qualityControl.out.genotyped_qc,covariate_file)
         parseRegenieLogStep1(regenieStep1.out.fit_bin_log_ch.collect(), cacheJBangScripts.out.RegenieLogParser)
+
+        fit_bin_out_ch = regenieStep1.out.fit_bin_out_ch
+        logs_step1_ch = parseRegenieLogStep1.out.logs_step1_ch
+
       }   else {
 
-          fit_bin_out_ch = Channel.from(["fit_bin_out_ch_dummy"]).collect()
+          fit_bin_out_ch = Channel.of('/')
 
-          logs_step1_ch = Channel.from([""]).collect()
+          logs_step1_ch = Channel.fromPath("NO_LOG")
 
         }
 
 
-        regenieStep2(imputed_files_ch,phenotype_file,sample_file,regenieStep1.out.fit_bin_out_ch.collect(),covariate_file)
+        regenieStep2(imputed_files_ch,phenotype_file,sample_file,fit_bin_out_ch.collect(),covariate_file)
 
         parseRegenieLogStep2(regenieStep2.out.gwas_results_ch2.collect(), cacheJBangScripts.out.RegenieLogParser)
 
@@ -488,7 +492,7 @@ workflow {
 
         annotateTophits(gwasTophits.out.tophits_ch,genes_hg19,genes_hg38)
 
-        gwasReport(mergeResultsUnfiltered.out.regenie_merged_unfiltered_ch,phenotype_file, gwas_report_template,parseRegenieLogStep1.out.logs_step1_ch, parseRegenieLogStep2.out.logs_step2_ch)
+        gwasReport(mergeResultsUnfiltered.out.regenie_merged_unfiltered_ch,phenotype_file, gwas_report_template,logs_step1_ch.collect(), parseRegenieLogStep2.out.logs_step2_ch)
 
 
 }
