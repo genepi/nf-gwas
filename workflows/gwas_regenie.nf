@@ -1,4 +1,3 @@
-nextflow.enable.dsl=2
 
 requiredParams = [
     params.project, params.genotypes_typed,
@@ -66,22 +65,22 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 //Array genotypes
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_ch}
 
-include { CACHE_JBANG_SCRIPTS      } from './modules/local/cache_jbang_scripts'
-include { VCF_TO_PLINK2            } from './modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
-include { SNP_PRUNING              } from './modules/local/snp_pruning'
-include { QUALITY_CONTROL_FILTERS  } from './modules/local/quality_control_filters'
-include { REGENIE_STEP1            } from './modules/local/regenie_step1'
-include { PARSE_REGENIE_LOG_STEP1  } from './modules/local/parse_regenie_log_step1'  addParams(outdir: "$outdir")
-include { REGENIE_STEP2            } from './modules/local/regenie_step2'
-include { PARSE_REGENIE_LOG_STEP2  } from './modules/local/parse_regenie_log_step2'  addParams(outdir: "$outdir")
-include { FILTER_RESULTS           } from './modules/local/filter_results'
-include { MERGE_RESULTS_FILTERED   } from './modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
-include { MERGE_RESULTS_UNFILTERED } from './modules/local/merge_results_unfiltered'  addParams(outdir: "$outdir")
-include { GWAS_TOPHITS             } from './modules/local/gwas_tophits'
-include { ANNOTATE_TOPHITS         } from './modules/local/annotate_tophits'  addParams(outdir: "$outdir")
-include { GWAS_REPORT              } from './modules/local/gwas_report'  addParams(outdir: "$outdir")
+include { CACHE_JBANG_SCRIPTS      } from '../modules/local/cache_jbang_scripts'
+include { VCF_TO_PLINK2            } from '../modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
+include { SNP_PRUNING              } from '../modules/local/snp_pruning'
+include { QUALITY_CONTROL_FILTERS  } from '../modules/local/quality_control_filters'
+include { REGENIE_STEP1            } from '../modules/local/regenie_step1'
+include { PARSE_REGENIE_LOG_STEP1  } from '../modules/local/parse_regenie_log_step1'  addParams(outdir: "$outdir")
+include { REGENIE_STEP2            } from '../modules/local/regenie_step2'
+include { PARSE_REGENIE_LOG_STEP2  } from '../modules/local/parse_regenie_log_step2'  addParams(outdir: "$outdir")
+include { FILTER_RESULTS           } from '../modules/local/filter_results'
+include { MERGE_RESULTS_FILTERED   } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
+include { MERGE_RESULTS_UNFILTERED } from '../modules/local/merge_results_unfiltered'  addParams(outdir: "$outdir")
+include { GWAS_TOPHITS             } from '../modules/local/gwas_tophits'
+include { ANNOTATE_TOPHITS         } from '../modules/local/annotate_tophits'  addParams(outdir: "$outdir")
+include { GWAS_REPORT              } from '../modules/local/gwas_report'  addParams(outdir: "$outdir")
 
-workflow {
+workflow GWAS_REGENIE {
 
     CACHE_JBANG_SCRIPTS (
         regenie_log_parser,
