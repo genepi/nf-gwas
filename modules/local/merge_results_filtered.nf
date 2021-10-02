@@ -8,7 +8,7 @@ tag "${phenotype}"
   val phenotype
 
   output:
-    path "${params.project}.*.regenie.filtered.gz", emit: regenie_merged_filtered_ch
+    path "${params.project}.*.regenie.filtered.gz", emit: results_filtered_merged
 
 
   """

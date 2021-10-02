@@ -1,4 +1,4 @@
-process PARSE_REGENIE_LOG_STEP1 {
+process REGENIE_LOG_PARSER_STEP1 {
 
 publishDir "${params.outdir}/regenie_logs", mode: 'copy'
 
@@ -7,7 +7,7 @@ publishDir "${params.outdir}/regenie_logs", mode: 'copy'
   path regenie_log_parser_jar
 
   output:
-  path "${params.project}.step1.log", emit: logs_step1_ch
+  path "${params.project}.step1.log", emit: regenie_step1_parsed_logs
 
   """
   java -jar ${regenie_log_parser_jar} ${regenie_step1_log} --output ${params.project}.step1.log

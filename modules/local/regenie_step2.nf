@@ -4,15 +4,15 @@ process REGENIE_STEP2 {
   //publishDir "$outdir/03_regenie_step2", mode: 'copy'
 
   input:
+	  path fit_bin_out
     tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file)
     path phenotype_file
     path sample_file
-    path fit_bin_out
     path covariate_file
 
   output:
-    path "gwas_results.*regenie.gz", emit: gwas_results_ch
-    path "gwas_results.${filename}*log", emit: gwas_results_ch2
+    path "gwas_results.*regenie.gz", emit: regenie_step2_out
+    path "gwas_results.${filename}*log", emit: regenie_step2_log_out
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''

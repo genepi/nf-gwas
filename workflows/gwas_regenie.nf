@@ -70,12 +70,12 @@ include { VCF_TO_PLINK2            } from '../modules/local/vcf_to_plink2' addPa
 include { SNP_PRUNING              } from '../modules/local/snp_pruning'
 include { QUALITY_CONTROL_FILTERS  } from '../modules/local/quality_control_filters'
 include { REGENIE_STEP1            } from '../modules/local/regenie_step1'
-include { PARSE_REGENIE_LOG_STEP1  } from '../modules/local/parse_regenie_log_step1'  addParams(outdir: "$outdir")
+include { REGENIE_LOG_PARSER_STEP1  } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
 include { REGENIE_STEP2            } from '../modules/local/regenie_step2'
-include { PARSE_REGENIE_LOG_STEP2  } from '../modules/local/parse_regenie_log_step2'  addParams(outdir: "$outdir")
+include { REGENIE_LOG_PARSER_STEP2  } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
 include { FILTER_RESULTS           } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED   } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
-include { MERGE_RESULTS_UNFILTERED } from '../modules/local/merge_results_unfiltered'  addParams(outdir: "$outdir")
+include { MERGE_RESULTS            } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
 include { GWAS_TOPHITS             } from '../modules/local/gwas_tophits'
 include { ANNOTATE_TOPHITS         } from '../modules/local/annotate_tophits'  addParams(outdir: "$outdir")
 include { GWAS_REPORT              } from '../modules/local/gwas_report'  addParams(outdir: "$outdir")
@@ -89,20 +89,20 @@ workflow GWAS_REGENIE {
 
     //convert vcf files to plink2 format (not bgen!)
     if (params.genotypes_imputed_format == "vcf"){
-        imputed_data =  channel.fromPath("${params.genotypes_imputed}")
+        imputed_files =  channel.fromPath("${params.genotypes_imputed}")
 
         VCF_TO_PLINK2 (
-            imputed_data
+            imputed_files
         )
 
-        imputed_plink_ch = VCF_TO_PLINK2.out.imputed_plink
+        imputed_plink2_ch = VCF_TO_PLINK2.out.imputed_plink2
 
     }  else {
 
-        //nothing to do, forward imputed into same channel
+        //nothing to do, forward imputed into imputed_plink2_ch channel
         channel.fromPath("${params.genotypes_imputed}")
         .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
-        .set {imputed_plink_ch}
+        .set {imputed_plink2_ch}
     }
 
 
@@ -115,7 +115,7 @@ workflow GWAS_REGENIE {
         genotyped_plink_pruned_ch = SNP_PRUNING.out.genotypes_pruned
 
       } else {
-          //no pruning, forward genotyped into same channel
+          //no pruning, forward raw genotyped directly into genotyped_plink_pruned_ch
           Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
       }
 
@@ -128,56 +128,56 @@ workflow GWAS_REGENIE {
             REGENIE_STEP1 (
                 genotyped_plink_pruned_ch,
                 phenotype_file,
-                QUALITY_CONTROL_FILTERS.out.genotyped_qc,
+                QUALITY_CONTROL_FILTERS.out.genotyped_filtered,
                 covariate_file
             )
 
-            PARSE_REGENIE_LOG_STEP1 (
-                REGENIE_STEP1.out.fit_bin_log_ch.collect(),
+            REGENIE_LOG_PARSER_STEP1 (
+                REGENIE_STEP1.out.regenie_step1_out.collect(),
                 CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
             )
 
-            fit_bin_out_ch = REGENIE_STEP1.out.fit_bin_out_ch
-            logs_step1_ch = PARSE_REGENIE_LOG_STEP1.out.logs_step1_ch
+            regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out
+            regenie_step1_parsed_logs_ch = REGENIE_LOG_PARSER_STEP1.out.regenie_step1_parsed_logs
 
           } else {
 
-              fit_bin_out_ch = Channel.of('/')
+              regenie_step1_out_ch = Channel.of('/')
 
-              logs_step1_ch = Channel.fromPath("NO_LOG")
+              regenie_step1_parsed_logs_ch = Channel.fromPath("NO_LOG")
 
             }
 
     REGENIE_STEP2 (
-        imputed_plink_ch,
+        regenie_step1_out_ch.collect(),
+        imputed_plink2_ch,
         phenotype_file,
         sample_file,
-        fit_bin_out_ch.collect(),
         covariate_file
     )
 
-    PARSE_REGENIE_LOG_STEP2 (
-        REGENIE_STEP2.out.gwas_results_ch2.collect(),
+    REGENIE_LOG_PARSER_STEP2 (
+        REGENIE_STEP2.out.regenie_step2_log_out.collect(),
         CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
     )
 
     FILTER_RESULTS (
-        REGENIE_STEP2.out.gwas_results_ch.flatten(),
+        REGENIE_STEP2.out.regenie_step2_out.flatten(),
         CACHE_JBANG_SCRIPTS.out.regenie_filter_jar
     )
 
     MERGE_RESULTS_FILTERED (
-        FILTER_RESULTS.out.gwas_results_filtered_ch.collect(),
+        FILTER_RESULTS.out.results_filtered.collect(),
         phenotypes
     )
 
-    MERGE_RESULTS_UNFILTERED (
-        FILTER_RESULTS.out.gwas_results_unfiltered_ch.collect(),
+    MERGE_RESULTS (
+        FILTER_RESULTS.out.results.collect(),
         phenotypes
     )
 
     GWAS_TOPHITS (
-        MERGE_RESULTS_FILTERED.out.regenie_merged_filtered_ch
+        MERGE_RESULTS_FILTERED.out.results_filtered_merged
     )
 
     ANNOTATE_TOPHITS (
@@ -187,11 +187,11 @@ workflow GWAS_REGENIE {
     )
 
     GWAS_REPORT (
-        MERGE_RESULTS_UNFILTERED.out.regenie_merged_unfiltered_ch,
+        MERGE_RESULTS.out.results_merged,
         phenotype_file,
         gwas_report_template,
-        logs_step1_ch.collect(),
-        PARSE_REGENIE_LOG_STEP2.out.logs_step2_ch
+        regenie_step1_parsed_logs_ch.collect(),
+        REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
 }
 

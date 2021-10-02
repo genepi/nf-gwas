@@ -6,7 +6,7 @@ process QUALITY_CONTROL_FILTERS {
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
 
   output:
-    path "${genotyped_plink_filename}.qc.*", emit: genotyped_qc
+    path "${genotyped_plink_filename}.qc.*", emit: genotyped_filtered
 
   """
   plink2 \

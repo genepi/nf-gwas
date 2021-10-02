@@ -8,8 +8,8 @@ tag "${regenie_chromosomes.baseName}"
   path regenie_filter_jar
 
   output:
-  path "${regenie_chromosomes.baseName}.filtered*", emit: gwas_results_filtered_ch
-  path "${regenie_chromosomes}", emit: gwas_results_unfiltered_ch
+  path "${regenie_chromosomes.baseName}.filtered*", emit: results_filtered
+  path "${regenie_chromosomes}", emit: results
 
   """
   java -jar ${regenie_filter_jar} --input ${regenie_chromosomes} --limit ${params.min_pvalue} --output ${regenie_chromosomes.baseName}.filtered
