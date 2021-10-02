@@ -29,8 +29,8 @@ if(!params.covariates_columns.isEmpty()){
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 
 //JBang scripts
-regenie_log_parser  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
-regenie_filter = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
+regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
+regenie_filter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
 
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
@@ -83,8 +83,8 @@ include { GWAS_REPORT              } from '../modules/local/gwas_report'  addPar
 workflow GWAS_REGENIE {
 
     CACHE_JBANG_SCRIPTS (
-        regenie_log_parser,
-        regenie_filter
+        regenie_log_parser_java,
+        regenie_filter_java
     )
 
     //convert vcf files to plink2 format (not bgen!)
@@ -99,7 +99,7 @@ workflow GWAS_REGENIE {
 
     }  else {
 
-        //nothing to do, forward imputed into imputed_plink2_ch channel
+        //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
         channel.fromPath("${params.genotypes_imputed}")
         .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
         .set {imputed_plink2_ch}
@@ -115,7 +115,7 @@ workflow GWAS_REGENIE {
         genotyped_plink_pruned_ch = SNP_PRUNING.out.genotypes_pruned
 
       } else {
-          //no pruning, forward raw genotyped directly into genotyped_plink_pruned_ch
+          //no pruning applied, set raw genotyped directly to genotyped_plink_pruned_ch
           Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
       }
 
