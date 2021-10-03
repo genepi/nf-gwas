@@ -24,13 +24,13 @@ The pipeline takes imputed BGEN or VCF files (e.g. from Michigan Imputation Serv
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/gwas-regenie -r v0.1.4 -profile test,<docker,singularity>
+nextflow run genepi/gwas-regenie -r v0.1.5 -profile test,<docker,singularity>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.4 -profile <docker,singularity>
+nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.5 -profile <docker,singularity>
 ```
 
 Pleas click [here](tests) for available config files. 
