@@ -6,6 +6,8 @@ A nextflow pipeline to perform whole genome regression modelling using [regenie]
 
 ## Pipeline Overview
 
+The pipeline takes imputed BGEN or VCF files (e.g. from Michigan Imputation Server) as an input and outputs association results, annotated tophits and a RMarkdown report including numerous plots and statistics. 
+
 1) Convert VCF imputed data into the [plink2 format](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf).
 2) Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
 3) Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness. 
@@ -24,6 +26,7 @@ A nextflow pipeline to perform whole genome regression modelling using [regenie]
 ```
 nextflow run genepi/gwas-regenie -r v0.1.4 -profile test,<docker,singularity>
 ```
+
 3) Run the pipeline on your data
 
 ```
@@ -31,7 +34,6 @@ nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.4 -profile <docker
 ```
 
 Pleas click [here](tests) for available config files. 
-
 
 ## Parameters
 
@@ -79,6 +81,14 @@ Pleas click [here](tests) for available config files.
 | `min_pvalue`     |   2 | Filter results with logp10 < 2 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 
+## Development
+
+```
+git clone https://github.com/genepi/gwas-regenie
+cd gwas-regenie
+docker build -t genepi/gwas-regenie . # don't ignore the dot
+nextflow run main.nf -profile test,standard
+```
 
 ## License
 gwas-regenie is MIT Licensed.
