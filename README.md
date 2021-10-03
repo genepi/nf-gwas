@@ -6,7 +6,7 @@ A nextflow pipeline to perform whole genome regression modelling using [regenie]
 
 ## Pipeline Overview
 
-The pipeline takes imputed BGEN or VCF files (e.g. from Michigan Imputation Server) as an input and outputs association results, annotated tophits and a RMarkdown report including numerous plots and statistics. 
+The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from Michigan Imputation Server) as an input and outputs association results, annotated tophits and an RMarkdown report including numerous plots and statistics. 
 
 1) Convert VCF imputed data into the [plink2 format](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf).
 2) Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
