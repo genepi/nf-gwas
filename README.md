@@ -16,6 +16,8 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from M
 6) Extract tophits and annotate them using [bedops](https://bedops.readthedocs.io/en/latest/).
 7) Create [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype statistics, manhattan plot and qq plot.
 
+## Status
+The pipeline is currently under development (v0.1.5). 
 
 ## Quick Start
 
