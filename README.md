@@ -6,12 +6,12 @@ A nextflow pipeline to perform whole genome regression modelling using [regenie]
 
 ## Pipeline Overview
 
-1) Convert imputed data into [pgen](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (VCF only).
+1) Convert VCF imputed data into the [plink2 format](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf).
 2) Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
 3) Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness. 
 4) Run [Regenie](https://github.com/rgcgithub/regenie) Step 1 and Step 2
-5) Filter regenie results  by pvalue using [JBang](https://github.com/jbangdev/jbang).
-6) Annotate top hits using [bedops](https://bedops.readthedocs.io/en/latest/).
+5) Filter regenie results by pvalue using [JBang](https://github.com/jbangdev/jbang).
+6) Extract tophits and annotate them using [bedops](https://bedops.readthedocs.io/en/latest/).
 7) Create [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype information, manhattan plot and qq plot.
 
 
