@@ -25,9 +25,3 @@ RUN mkdir regenie && cd regenie && \
     chmod +x regenie
 ENV PATH="/opt/regenie/:${PATH}"
 
-# Install bedops (not as conda package available)
-WORKDIR "/opt"
-RUN mkdir bedops && cd bedops && \
-    wget https://github.com/bedops/bedops/releases/download/v2.4.40/bedops_linux_x86_64-v2.4.40.tar.bz2 && \
-    tar xjf bedops_linux_x86_64-v*.tar.bz2
-ENV PATH="/opt/bedops/bin/:${PATH}"

@@ -26,3 +26,4 @@ dependencies:
   - openjdk=11.0.9
   - unzip=6.0
   - bioconductor-ramwas=1.16.0
+  - bedops=2.4.39
