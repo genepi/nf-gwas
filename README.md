@@ -4,32 +4,36 @@
 
 A nextflow pipeline to perform whole genome regression modelling using [regenie](https://github.com/rgcgithub/regenie).
 
-## Requirements
+## Pipeline Overview
 
-- Nextflow:
+1) Convert imputed data into [pgen](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (VCF only).
+2) Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
+3) Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness. 
+4) Run [Regenie](https://github.com/rgcgithub/regenie) Step 1 and Step 2
+5) Filter regenie results  by pvalue using [JBang](https://github.com/jbangdev/jbang).
+6) Annotate top hits using [bedops](https://bedops.readthedocs.io/en/latest/).
+7) Create [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype information, manhattan plot and qq plot.
+
+
+## Quick Start
+
+1) Install (Nextflow)[https://www.nextflow.io/docs/latest/getstarted.html#installation] (>=21.04.0)
+
+2) Run the pipeline on a test dataset
 
 ```
-curl -s https://get.nextflow.io | bash
+nextflow run genepi/gwas-regenie -r v0.1.4 -profile test,<docker,singularity>
 ```
-## Status
-This pipeline is currently under development. 
+3) Run the pipeline on your data
 
-## Run Pipeline
- 
 ```
-nextflow run -c <nextflow.config> genepi/gwas-regenie -r v0.1.4 -profile [docker,singularity]
+nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.4 -profile <docker,singularity>
 ```
 
-## Build and run locally
-```
-github clone https://github.com/genepi/gwas-regenie/
-cd gwas-regenie/
-docker build -t genepi/gwas-regenie .
-nextflow run main.nf -profile test,standard
-```
+Pleas click [here](tests) for available config files. 
+
 
 ## Parameters
-Pleas click [here](tests) for available config files. 
 
 ### Required parameters
 
@@ -75,16 +79,6 @@ Pleas click [here](tests) for available config files.
 | `min_pvalue`     |   2 | Filter results with logp10 < 2 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 
-
-## Pipeline steps
-
-1) Convert imputed data into [pgen](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (VCF only).
-2) Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
-3) Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness. 
-4) Run [Regenie](https://github.com/rgcgithub/regenie) Step 1 and Step 2
-5) Filter regenie results  by pvalue using [JBang](https://github.com/jbangdev/jbang).
-6) Annotate top hits using [bedops](https://bedops.readthedocs.io/en/latest/).
-7) Create [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype information, manhattan plot and qq plot.
 
 ## License
 gwas-regenie is MIT Licensed.
