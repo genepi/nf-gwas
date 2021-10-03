@@ -24,6 +24,7 @@ A nextflow pipeline to perform whole genome regression modelling using [regenie]
 ```
 nextflow run genepi/gwas-regenie -r v0.1.4 -profile test,<docker,singularity>
 ```
+
 3) Run the pipeline on your data
 
 ```
@@ -31,7 +32,6 @@ nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.4 -profile <docker
 ```
 
 Pleas click [here](tests) for available config files. 
-
 
 ## Parameters
 
@@ -79,6 +79,14 @@ Pleas click [here](tests) for available config files.
 | `min_pvalue`     |   2 | Filter results with logp10 < 2 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 
+## Development
+
+```
+git clone https://github.com/genepi/gwas-regenie
+cd gwas-regenie
+docker build -t genepi/gwas-regenie . # don't ignore the dot
+nextflow run main.nf -profile test,standard
+```
 
 ## License
 gwas-regenie is MIT Licensed.
