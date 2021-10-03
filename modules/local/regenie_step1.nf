@@ -1,7 +1,5 @@
 process REGENIE_STEP1 {
 
-  //publishDir "$outdir/02_regenie_step1", mode: 'copy'
-
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
     path phenotype_file

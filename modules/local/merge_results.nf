@@ -1,6 +1,6 @@
 process MERGE_RESULTS {
 
-publishDir "${params.outdir}/regenie_results", mode: 'copy'
+publishDir "${params.outdir}/results", mode: 'copy'
 tag "${phenotype}"
 
   input:

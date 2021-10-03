@@ -1,7 +1,6 @@
 process REGENIE_STEP2 {
 	cpus "${params.threads}"
   tag "${filename}"
-  //publishDir "$outdir/03_regenie_step2", mode: 'copy'
 
   input:
 	  path fit_bin_out

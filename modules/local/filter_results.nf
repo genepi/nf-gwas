@@ -1,6 +1,5 @@
 process FILTER_RESULTS {
 
-//publishDir "$params.output/regenie_results", mode: 'copy'
 tag "${regenie_chromosomes.baseName}"
 
   input:

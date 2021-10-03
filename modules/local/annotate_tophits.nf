@@ -1,6 +1,6 @@
 process ANNOTATE_TOPHITS {
 
-publishDir "${params.outdir}/regenie_tophits_annotated", mode: 'copy'
+publishDir "${params.outdir}/tophits", mode: 'copy'
 
   input:
   path tophits
