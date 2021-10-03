@@ -84,7 +84,7 @@ geom_histogram(color="black", fill="white",bins=30)
 ## Manhattan Plot
 
 ```{r, echo=FALSE}
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE)
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE,tmpdir="$PWD")
 pheno <- params$phenotype
 manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
 ```
