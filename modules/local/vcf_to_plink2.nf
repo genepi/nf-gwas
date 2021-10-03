@@ -1,7 +1,6 @@
   process VCF_TO_PLINK2 {
 
     cpus "${params.threads}"
-    publishDir "${params.outdir}/01_quality_control", mode: 'copy'
 
     input:
       path imputed_vcf_file
