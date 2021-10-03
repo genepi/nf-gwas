@@ -1,4 +1,4 @@
-process GWAS_REPORT {
+process REPORT {
 
 publishDir "${params.outdir}", mode: 'copy'
 

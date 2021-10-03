@@ -68,17 +68,17 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 include { CACHE_JBANG_SCRIPTS      } from '../modules/local/cache_jbang_scripts'
 include { VCF_TO_PLINK2            } from '../modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
 include { SNP_PRUNING              } from '../modules/local/snp_pruning'
-include { QUALITY_CONTROL_FILTERS  } from '../modules/local/quality_control_filters'
+include { QC_FILTER                } from '../modules/local/qc_filter'
 include { REGENIE_STEP1            } from '../modules/local/regenie_step1'
-include { REGENIE_LOG_PARSER_STEP1  } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
+include { REGENIE_LOG_PARSER_STEP1 } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
 include { REGENIE_STEP2            } from '../modules/local/regenie_step2'
-include { REGENIE_LOG_PARSER_STEP2  } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
+include { REGENIE_LOG_PARSER_STEP2 } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
 include { FILTER_RESULTS           } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED   } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS            } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { GWAS_TOPHITS             } from '../modules/local/gwas_tophits'
+include { TOPHITS                  } from '../modules/local/tophits'
 include { ANNOTATE_TOPHITS         } from '../modules/local/annotate_tophits'  addParams(outdir: "$outdir")
-include { GWAS_REPORT              } from '../modules/local/gwas_report'  addParams(outdir: "$outdir")
+include { REPORT                   } from '../modules/local/report'  addParams(outdir: "$outdir")
 
 workflow GWAS_REGENIE {
 
@@ -119,7 +119,7 @@ workflow GWAS_REGENIE {
           Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
       }
 
-    QUALITY_CONTROL_FILTERS (
+    QC_FILTER (
         genotyped_plink_pruned_ch
     )
 
@@ -128,7 +128,7 @@ workflow GWAS_REGENIE {
             REGENIE_STEP1 (
                 genotyped_plink_pruned_ch,
                 phenotype_file,
-                QUALITY_CONTROL_FILTERS.out.genotyped_filtered,
+                QC_FILTER.out.genotyped_filtered,
                 covariate_file
             )
 
@@ -176,17 +176,17 @@ workflow GWAS_REGENIE {
         phenotypes
     )
 
-    GWAS_TOPHITS (
+    TOPHITS (
         MERGE_RESULTS_FILTERED.out.results_filtered_merged
     )
 
     ANNOTATE_TOPHITS (
-        GWAS_TOPHITS.out.tophits_ch,
+        TOPHITS.out.tophits_ch,
         genes_hg19,
         genes_hg38
     )
 
-    GWAS_REPORT (
+    REPORT (
         MERGE_RESULTS.out.results_merged,
         phenotype_file,
         gwas_report_template,

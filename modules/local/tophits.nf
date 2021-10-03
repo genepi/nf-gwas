@@ -1,4 +1,4 @@
-process GWAS_TOPHITS {
+process TOPHITS {
 
   input:
   path regenie_merged

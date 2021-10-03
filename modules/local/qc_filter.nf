@@ -1,4 +1,4 @@
-process QUALITY_CONTROL_FILTERS {
+process QC_FILTER {
 
   //publishDir "$params.output/01_quality_control", mode: 'copy'
 
