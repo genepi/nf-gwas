@@ -17,7 +17,7 @@ A nextflow pipeline to perform whole genome regression modelling using [regenie]
 
 ## Quick Start
 
-1) Install (Nextflow)[https://www.nextflow.io/docs/latest/getstarted.html#installation] (>=21.04.0)
+1) Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0)
 
 2) Run the pipeline on a test dataset
 
