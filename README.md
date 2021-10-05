@@ -80,6 +80,7 @@ Pleas click [here](tests) for available config files.
 | `regenie_range`     |  ' ' [format=CHR:MINPOS-MAXPOS] | Apply Regenie only on specify region | 
 | `min_pvalue`     |   2 | Filter results with logp10 < 2 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
+| `manhattan_plot_ylimit`     |   0 | Limit y axis in Manhattan plot for large p-values |
 
 ## Development
 

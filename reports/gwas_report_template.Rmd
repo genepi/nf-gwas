@@ -11,13 +11,14 @@ params:
   project: test-gwas
   date: 2021-08-09
   version: v0.1.4
-  regenie_merged: ../output/test-gwas/regenie_results/test-gwas.Y1.regenie.all.gz
+  regenie_merged: ../output/test-gwas/results/test-gwas.Y1.regenie.gz
   regenie_filename: test-gwas.Y1.regenie.all.gz
   phenotype: Y1
   covariates:
   phenotype_file: ../tests/input/phenotype.txt
   regenie_step1_log: NO_LOG
-  regenie_step2_log: ../output/test-gwas/regenie_logs/test-gwas.step2.log
+  manhattan_plot_ylimit: 2
+  regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
 ---
 
 ```{r setup, include=FALSE}
@@ -86,7 +87,12 @@ geom_histogram(color="black", fill="white",bins=30)
 ```{r, echo=FALSE}
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE,tmpdir="$PWD")
 pheno <- params$phenotype
+if(params$manhattan_plot_ylimit == 0) {
 manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+} else {
+manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"),ylim = c(0, params$manhattan_plot_ylimit))
+}
+
 ```
 
 ## QQ Plot
