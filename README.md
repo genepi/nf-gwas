@@ -13,7 +13,7 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from M
 3) Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness. 
 4) Run [Regenie](https://github.com/rgcgithub/regenie).
 5) Filter regenie results by pvalue using a [JBang](https://github.com/jbangdev/jbang) script.
-6) Extract tophits and annotate them using [bedops](https://bedops.readthedocs.io/en/latest/).
+6) Extract tophits and annotate them using [bedtools closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html).
 7) Create [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype statistics, manhattan plot and qq plot.
 
 ## Status
