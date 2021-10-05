@@ -35,7 +35,7 @@ nextflow run genepi/gwas-regenie -r v0.1.6 -profile test,<docker,singularity>
 nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.6 -profile <docker,singularity>
 ```
 
-Pleas click [here](tests) for available config files. 
+Pleas click [here](tests) for available test config files. 
 
 ## Parameters
 
