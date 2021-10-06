@@ -1,15 +1,15 @@
 
 requiredParams = [
-    params.project, params.genotypes_typed,
-    params.genotypes_imputed, params.genotypes_build,
-    params.genotypes_imputed_format, params.phenotypes_filename,
-    params.phenotypes_columns, params.phenotypes_binary_trait,
-    params.regenie_test
+    'project', 'genotypes_typed',
+    'genotypes_imputed', 'genotypes_build',
+    'genotypes_imputed_format', 'phenotypes_filename',
+    'phenotypes_columns', 'phenotypes_binary_trait',
+    'regenie_test'
 ]
 
 for (param in requiredParams) {
-    if (param == null) {
-      exit 1, "Please specify all required parameters."
+    if (params[param] == null) {
+      exit 1, "Parameter ${param} is required."
     }
 }
 
