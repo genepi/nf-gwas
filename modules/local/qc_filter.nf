@@ -1,7 +1,5 @@
 process QC_FILTER {
 
-  //publishDir "$params.output/01_quality_control", mode: 'copy'
-
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
 

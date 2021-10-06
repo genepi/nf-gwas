@@ -10,8 +10,8 @@ process REGENIE_STEP2 {
     path covariate_file
 
   output:
-    path "gwas_results.*regenie.gz", emit: regenie_step2_out
-    path "gwas_results.${filename}*log", emit: regenie_step2_log_out
+    path "*regenie.gz", emit: regenie_step2_out
+    path "${filename}*log", emit: regenie_step2_log_out
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -42,6 +42,6 @@ process REGENIE_STEP2 {
     $covariants \
     $deleteMissingData \
     $predictions \
-    --out gwas_results.${filename}
+    --out ${filename}
   """
 }
