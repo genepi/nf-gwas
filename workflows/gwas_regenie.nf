@@ -123,30 +123,30 @@ workflow GWAS_REGENIE {
         genotyped_plink_pruned_ch
     )
 
-        if (!params.regenie_skip_predictions){
+    if (!params.regenie_skip_predictions){
 
-            REGENIE_STEP1 (
-                genotyped_plink_pruned_ch,
-                phenotype_file,
-                QC_FILTER.out.genotyped_filtered,
-                covariate_file
-            )
+        REGENIE_STEP1 (
+            genotyped_plink_pruned_ch,
+            phenotype_file,
+            QC_FILTER.out.genotyped_filtered,
+            covariate_file
+        )
 
-            REGENIE_LOG_PARSER_STEP1 (
-                REGENIE_STEP1.out.regenie_step1_out.collect(),
-                CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
-            )
+        REGENIE_LOG_PARSER_STEP1 (
+            REGENIE_STEP1.out.regenie_step1_out.collect(),
+            CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
+        )
 
-            regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out
-            regenie_step1_parsed_logs_ch = REGENIE_LOG_PARSER_STEP1.out.regenie_step1_parsed_logs
+        regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out
+        regenie_step1_parsed_logs_ch = REGENIE_LOG_PARSER_STEP1.out.regenie_step1_parsed_logs
 
-          } else {
+    } else {
 
-              regenie_step1_out_ch = Channel.of('/')
+        regenie_step1_out_ch = Channel.of('/')
 
-              regenie_step1_parsed_logs_ch = Channel.fromPath("NO_LOG")
+        regenie_step1_parsed_logs_ch = Channel.fromPath("NO_LOG")
 
-            }
+    }
 
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
