@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Schönherr"
+  given-names: "Sebastian"
+- family-names: "Forer"
+  given-names: "Lukas"
+title: "gwas-regenie - A nextflow pipeline to perform whole genome regression modelling using regenie."
+version: 0.1.4
+url: "https://github.com/genepi/gwas-regenie"

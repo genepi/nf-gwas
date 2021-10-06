@@ -10,14 +10,15 @@ output:
 params:
   project: test-gwas
   date: 2021-08-09
-  version: v0.0.1
-  regenie_merged: ../tests/output/test-gwas/regenie_results/test-gwas.Y1.regenie.unfiltered.gz
-  regenie_filename: test-gwas.Y1.regenie.gz
+  version: v0.1.4
+  regenie_merged: ../output/test-gwas/results/test-gwas.Y1.regenie.gz
+  regenie_filename: test-gwas.Y1.regenie.all.gz
   phenotype: Y1
   covariates:
   phenotype_file: ../tests/input/phenotype.txt
-  regenie_step1_log: ../tests/output/test-gwas/regenie_logs/test-gwas.step1.log
-  regenie_step2_log: ../tests/output/test-gwas/regenie_logs/test-gwas.step2.log
+  regenie_step1_log: NO_LOG
+  manhattan_plot_ylimit: 2
+  regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
 ---
 
 ```{r setup, include=FALSE}
@@ -47,8 +48,7 @@ library(ramwas)
 ### Step 1
 
 ```{r, echo=FALSE, results='asis'}
-
-if(file.info(params$regenie_step1_log)$size != 0) {
+if(file.exists(params$regenie_step1_log)) {
 step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
 kable(step1_log)
 } else {
@@ -69,7 +69,8 @@ kable(step2_log)
 ### Overview
 
 ```{r, echo=FALSE}
-phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".");
+phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".")
+
 kable(skim(phenotypeTable) %>%
   dplyr::filter(skim_variable == params$phenotype)) %>%
   kableExtra::scroll_box(width = "100%")
@@ -83,11 +84,16 @@ geom_histogram(color="black", fill="white",bins=30)
 
 ## Manhattan Plot
 
-```{r, echo=FALSE}
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE)
+```{r, echo=FALSE, results='asis'}
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE,tmpdir="$PWD")
 pheno <- params$phenotype
-regenieTable
+if(params$manhattan_plot_ylimit == 0) {
 manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+} else {
+manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"),ylim = c(0, params$manhattan_plot_ylimit))
+cat(paste("Please note that the Y-axis limit has been set to '", params$manhattan_plot_ylimit,"'. Please use the 'manhattan_plot_ylimit' parameter to adapt this behaviour."))
+  }
+
 ```
 
 ## QQ Plot
@@ -97,5 +103,5 @@ qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
 qqPlotFast(qqPrepare)
 ```
 
-## About 
+## About
 This report has been created with a GWAS Nextflow Pipeline (https://github.com/genepi/gwas-regenie) (**`r params$version`**) by Lukas Forer (lukas.forer@i-med.ac.at) and Sebastian Schönherr (sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
