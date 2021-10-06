@@ -67,7 +67,7 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 
 include { CACHE_JBANG_SCRIPTS      } from '../modules/local/cache_jbang_scripts'
 include { VCF_TO_PLINK2            } from '../modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
-include { SNP_PRUNING              } from '../modules/local/snp_pruning'
+include { SNP_PRUNING              } from '../modules/local/snp_pruning' addParams(outdir: "$outdir")
 include { QC_FILTER                } from '../modules/local/qc_filter'
 include { REGENIE_STEP1            } from '../modules/local/regenie_step1'
 include { REGENIE_LOG_PARSER_STEP1 } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
