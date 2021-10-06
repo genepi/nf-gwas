@@ -12,7 +12,7 @@ workflow:
 
     - name: Running GWAS Regenie
       type: nextflow
-      script: gwas-regenie.nf
+      script: main.nf
       # params without UI
       params.project: ${job_id}
 
@@ -28,6 +28,12 @@ workflow:
       type: local_file
       required: true
 
+    - id: phenotypes_columns
+      description: Phenotypes Columns
+      details: Multiple columns can be separated by comma (e.g. Pheno1,Pheno2)
+      type: text
+      required: true
+
     - id: phenotypes_binary_trait
       description: Phenotypes Type
       type: list
@@ -37,7 +43,7 @@ workflow:
         false: Quantitative
         true: Binary
 
-    - id: regenie_step2_test_model
+    - id: regenie_test
       description: Test Model
       type: list
       required: true
@@ -49,6 +55,6 @@ workflow:
 
   outputs:
 
-    - id: output
+    - id: outdir
       description: GWAS Results
       type: local_folder
