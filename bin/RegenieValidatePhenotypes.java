@@ -41,9 +41,14 @@ public class RegenieValidatePhenotypes implements Callable<Integer> {
 			reader = new CsvTableReader(input, ' ');
 
 			if (reader.getColumns().length == 1) {
-				System.err.println("Input file must be TAB or SPACE seperated.");
+				System.err.println("ERROR: Input file must be TAB or SPACE seperated.");
 				return -1;
 			}
+		}
+
+		if (!reader.getColumns()[0].equals("FID") || !reader.getColumns()[1].equals("IID")) {
+			System.err.println("ERROR: header of phenotype file must start with: FID IID.");
+			return -1;
 		}
 
 		writer.setColumns(reader.getColumns());
@@ -52,7 +57,7 @@ public class RegenieValidatePhenotypes implements Callable<Integer> {
 		while (reader.next()) {
 			line++;
 			if (reader.getRow().length != reader.getColumns().length) {
-				System.err.println("Input file parse error in line " + line + ". Detected columns: "
+				System.err.println("ERROR: Input file parse error in line " + line + ". Detected columns: "
 						+ reader.getRow().length + ". Expected columns: " + reader.getColumns().length + ".");
 				return -1;
 			}
