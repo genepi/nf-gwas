@@ -28,6 +28,6 @@ publishDir "${params.outdir}", mode: 'copy'
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}',
       manhattan_plot_ylimit=${params.manhattan_plot_ylimit}
-    ), intermediates_dir='\$PWD', knit_root_dir='\$PWD', output_file='\$PWD/${regenie_merged.baseName}.html')"
+    ), intermediates_dir='\$PWD', knit_root_dir='\$PWD', output_file='\$PWD/${params.project}.${regenie_merged.baseName}.html')"
   """
 }
