@@ -17,9 +17,9 @@ process REGENIE_STEP2 {
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
     def bgen_sample = sample_file.name != 'NO_SAMPLE_FILE' ? "--sample $sample_file" : ''
     def test = "--test $params.regenie_test"
-		def firthApprox = params.regenie_firth_approx ? "--approx" : ""
-		def firth = params.regenie_firth ? "--firth $firthApprox" : ""
-		def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
+    def firthApprox = params.regenie_firth_approx ? "--approx" : ""
+    def firth = params.regenie_firth ? "--firth $firthApprox" : ""
+    def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
     def range = params.regenie_range != '' ? "--range $params.regenie_range" : ''
     def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns}" : ''
     def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
