@@ -69,7 +69,7 @@ kable(step2_log)
 ### Overview
 
 ```{r, echo=FALSE}
-phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".")
+phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
 
 kable(skim(phenotypeTable) %>%
   dplyr::filter(skim_variable == params$phenotype)) %>%

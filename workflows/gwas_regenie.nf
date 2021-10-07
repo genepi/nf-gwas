@@ -31,6 +31,7 @@ gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfE
 //JBang scripts
 regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
 regenie_filter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
+regenie_validate_phenotypes = file("$baseDir/bin/RegenieValidatePhenotypes.java", checkIfExists: true)
 
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
@@ -65,26 +66,33 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 //Array genotypes
 Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_ch}
 
-include { CACHE_JBANG_SCRIPTS      } from '../modules/local/cache_jbang_scripts'
-include { VCF_TO_PLINK2            } from '../modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
-include { SNP_PRUNING              } from '../modules/local/snp_pruning'
-include { QC_FILTER                } from '../modules/local/qc_filter'
-include { REGENIE_STEP1            } from '../modules/local/regenie_step1'
-include { REGENIE_LOG_PARSER_STEP1 } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
-include { REGENIE_STEP2            } from '../modules/local/regenie_step2'
-include { REGENIE_LOG_PARSER_STEP2 } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
-include { FILTER_RESULTS           } from '../modules/local/filter_results' 
-include { MERGE_RESULTS_FILTERED   } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
-include { MERGE_RESULTS            } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { TOPHITS                  } from '../modules/local/tophits'
-include { ANNOTATE_TOPHITS         } from '../modules/local/annotate_tophits'  addParams(outdir: "$outdir")
-include { REPORT                   } from '../modules/local/report'  addParams(outdir: "$outdir")
+include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scripts'
+include { REGENIE_VALIDATE_PHENOTYPES } from '../modules/local/regenie_validate_phenotypes' addParams(outdir: "$outdir")
+include { VCF_TO_PLINK2               } from '../modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
+include { SNP_PRUNING                 } from '../modules/local/snp_pruning'
+include { QC_FILTER                   } from '../modules/local/qc_filter'
+include { REGENIE_STEP1               } from '../modules/local/regenie_step1'
+include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
+include { REGENIE_STEP2               } from '../modules/local/regenie_step2'
+include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
+include { FILTER_RESULTS              } from '../modules/local/filter_results'
+include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
+include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
+include { TOPHITS                     } from '../modules/local/tophits'
+include { ANNOTATE_TOPHITS            } from '../modules/local/annotate_tophits'  addParams(outdir: "$outdir")
+include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 
 workflow GWAS_REGENIE {
 
     CACHE_JBANG_SCRIPTS (
         regenie_log_parser_java,
-        regenie_filter_java
+        regenie_filter_java,
+        regenie_validate_phenotypes
+    )
+
+    REGENIE_VALIDATE_PHENOTYPES (
+        phenotype_file,
+        CACHE_JBANG_SCRIPTS.out.regenie_validate_phenotypes_jar
     )
 
     //convert vcf files to plink2 format (not bgen!)
@@ -127,7 +135,7 @@ workflow GWAS_REGENIE {
 
         REGENIE_STEP1 (
             genotyped_plink_pruned_ch,
-            phenotype_file,
+            REGENIE_VALIDATE_PHENOTYPES.out.phenotype_file_validated,
             QC_FILTER.out.genotyped_filtered,
             covariate_file
         )
@@ -151,7 +159,7 @@ workflow GWAS_REGENIE {
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
         imputed_plink2_ch,
-        phenotype_file,
+        REGENIE_VALIDATE_PHENOTYPES.out.phenotype_file_validated,
         sample_file,
         covariate_file
     )
@@ -188,7 +196,7 @@ workflow GWAS_REGENIE {
 
     REPORT (
         MERGE_RESULTS.out.results_merged,
-        phenotype_file,
+        REGENIE_VALIDATE_PHENOTYPES.out.phenotype_file_validated,
         gwas_report_template,
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs

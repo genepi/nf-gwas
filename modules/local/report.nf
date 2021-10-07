@@ -6,7 +6,7 @@ publishDir "${params.outdir}", mode: 'copy'
 
   input:
   tuple val(phenotype), path(regenie_merged)
-	path phenotype_file
+	path phenotype_file_validated
   path gwas_report_template
   path step1_log
   path step2_log
@@ -22,7 +22,7 @@ publishDir "${params.outdir}", mode: 'copy'
       version = '$workflow.manifest.version',
       regenie_merged='${regenie_merged}',
       regenie_filename='${regenie_merged.baseName}',
-      phenotype_file='${phenotype_file}',
+      phenotype_file='${phenotype_file_validated}',
       phenotype='${phenotype}',
       covariates='${params.covariates_columns.join(',')}',
       regenie_step1_log='${step1_log}',
