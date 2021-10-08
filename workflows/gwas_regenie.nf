@@ -38,12 +38,12 @@ genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
 genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed", checkIfExists: true)
 
 //Phenotypes
-phenotype_file = file(params.phenotypes_filename, checkIfExists: true)
+phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
 //Covariates
-covariate_file = file(params.covariates_filename)
-if (params.covariates_filename != 'NO_COV_FILE' && !covariate_file.exists()){
+covariates_file = file(params.covariates_filename)
+if (params.covariates_filename != 'NO_COV_FILE' && !covariates_file.exists()){
   exit 1, "Covariate file ${params.covariates_filename} not found."
 }
 
@@ -68,6 +68,7 @@ Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink
 
 include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scripts'
 include { REGENIE_VALIDATE_PHENOTYPES } from '../modules/local/regenie_validate_phenotypes' addParams(outdir: "$outdir")
+include { REGENIE_VALIDATE_COVARIATS  } from '../modules/local/regenie_validate_covariates' addParams(outdir: "$outdir")
 include { VCF_TO_PLINK2               } from '../modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
 include { SNP_PRUNING                 } from '../modules/local/snp_pruning'
 include { QC_FILTER                   } from '../modules/local/qc_filter'
@@ -91,9 +92,24 @@ workflow GWAS_REGENIE {
     )
 
     REGENIE_VALIDATE_PHENOTYPES (
-        phenotype_file,
+        phenotypes_file,
         CACHE_JBANG_SCRIPTS.out.regenie_validate_phenotypes_jar
     )
+
+    if(covariates_file.exists()) {
+        REGENIE_VALIDATE_COVARIATS (
+          covariates_file,
+          CACHE_JBANG_SCRIPTS.out.regenie_validate_phenotypes_jar
+        )
+
+        covariates_file_validated = REGENIE_VALIDATE_COVARIATS.out.covariates_file_validated
+
+   } else {
+
+     // set covariates_file to default value
+     covariates_file_validated = covariates_file
+
+   }
 
     //convert vcf files to plink2 format (not bgen!)
     if (params.genotypes_imputed_format == "vcf"){
@@ -135,9 +151,9 @@ workflow GWAS_REGENIE {
 
         REGENIE_STEP1 (
             genotyped_plink_pruned_ch,
-            REGENIE_VALIDATE_PHENOTYPES.out.phenotype_file_validated,
             QC_FILTER.out.genotyped_filtered,
-            covariate_file
+            REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+            covariates_file_validated
         )
 
         REGENIE_LOG_PARSER_STEP1 (
@@ -159,9 +175,9 @@ workflow GWAS_REGENIE {
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
         imputed_plink2_ch,
-        REGENIE_VALIDATE_PHENOTYPES.out.phenotype_file_validated,
+        REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         sample_file,
-        covariate_file
+        covariates_file_validated
     )
 
     REGENIE_LOG_PARSER_STEP2 (
@@ -196,7 +212,7 @@ workflow GWAS_REGENIE {
 
     REPORT (
         MERGE_RESULTS.out.results_merged,
-        REGENIE_VALIDATE_PHENOTYPES.out.phenotype_file_validated,
+        REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs

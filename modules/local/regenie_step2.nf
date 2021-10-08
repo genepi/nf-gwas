@@ -5,9 +5,9 @@ process REGENIE_STEP2 {
   input:
 	  path fit_bin_out
     tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file)
-    path phenotype_file
+    path phenotypes_file
     path sample_file
-    path covariate_file
+    path covariates_file
 
   output:
     path "*regenie.gz", emit: regenie_step2_out
@@ -21,7 +21,7 @@ process REGENIE_STEP2 {
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
     def range = params.regenie_range != '' ? "--range $params.regenie_range" : ''
-    def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns}" : ''
+    def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
     def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
 
@@ -30,7 +30,7 @@ process REGENIE_STEP2 {
   regenie \
     --step 2 \
     $format ${filename}${extension} \
-    --phenoFile ${phenotype_file} \
+    --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     --bsize ${params.regenie_bsize_step2} \
     --pred fit_bin_out_pred.list \
