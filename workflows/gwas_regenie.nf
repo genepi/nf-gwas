@@ -31,7 +31,7 @@ gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfE
 //JBang scripts
 regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
 regenie_filter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
-regenie_validate_phenotypes = file("$baseDir/bin/RegenieValidatePhenotypes.java", checkIfExists: true)
+regenie_validate_input_java = file("$baseDir/bin/RegenieValidateInput.java", checkIfExists: true)
 
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
@@ -88,18 +88,18 @@ workflow GWAS_REGENIE {
     CACHE_JBANG_SCRIPTS (
         regenie_log_parser_java,
         regenie_filter_java,
-        regenie_validate_phenotypes
+        regenie_validate_input_java
     )
 
     REGENIE_VALIDATE_PHENOTYPES (
         phenotypes_file,
-        CACHE_JBANG_SCRIPTS.out.regenie_validate_phenotypes_jar
+        CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
     )
 
     if(covariates_file.exists()) {
         REGENIE_VALIDATE_COVARIATS (
           covariates_file,
-          CACHE_JBANG_SCRIPTS.out.regenie_validate_phenotypes_jar
+          CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
         )
 
         covariates_file_validated = REGENIE_VALIDATE_COVARIATS.out.covariates_file_validated
