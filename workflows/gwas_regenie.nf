@@ -103,11 +103,13 @@ workflow GWAS_REGENIE {
         )
 
         covariates_file_validated = REGENIE_VALIDATE_COVARIATS.out.covariates_file_validated
+        covariates_file_validated_log = REGENIE_VALIDATE_COVARIATS.out.covariates_file_validated_log
 
    } else {
 
      // set covariates_file to default value
      covariates_file_validated = covariates_file
+     covariates_file_validated_log = Channel.fromPath("NO_LOG")
 
    }
 
@@ -214,6 +216,8 @@ workflow GWAS_REGENIE {
         MERGE_RESULTS.out.results_merged,
         REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
+        REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
+        covariates_file_validated_log,
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )

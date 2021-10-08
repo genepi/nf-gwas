@@ -8,6 +8,8 @@ publishDir "${params.outdir}", mode: 'copy'
   tuple val(phenotype), path(regenie_merged)
 	path phenotype_file_validated
   path gwas_report_template
+  path phenotype_log
+  path covariate_log
   path step1_log
   path step2_log
 
@@ -25,6 +27,8 @@ publishDir "${params.outdir}", mode: 'copy'
       phenotype_file='${phenotype_file_validated}',
       phenotype='${phenotype}',
       covariates='${params.covariates_columns.join(',')}',
+      phenotype_log='${phenotype_log}',
+      covariate_log='${covariate_log}',
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}',
       manhattan_plot_ylimit=${params.manhattan_plot_ylimit}
