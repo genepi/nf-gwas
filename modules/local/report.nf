@@ -10,6 +10,7 @@ publishDir "${params.outdir}", mode: 'copy'
   path gwas_report_template
   path step1_log
   path step2_log
+  path annotated_tophits
 
   output:
   path "*.html"
@@ -27,7 +28,12 @@ publishDir "${params.outdir}", mode: 'copy'
       covariates='${params.covariates_columns.join(',')}',
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}',
-      manhattan_plot_ylimit=${params.manhattan_plot_ylimit}
-    ), intermediates_dir='\$PWD', knit_root_dir='\$PWD', output_file='\$PWD/${params.project}.${regenie_merged.baseName}.html')"
+      manhattan_plot_ylimit=${params.manhattan_plot_ylimit},
+      annotated_tophits_filename='${annotated_tophits}'
+    ),
+    intermediates_dir='\$PWD',
+    knit_root_dir='\$PWD',
+    output_file='\$PWD/${params.project}.${regenie_merged.baseName}.html'
+  )"
   """
 }

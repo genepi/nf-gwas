@@ -73,7 +73,7 @@ include { REGENIE_STEP1            } from '../modules/local/regenie_step1'
 include { REGENIE_LOG_PARSER_STEP1 } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
 include { REGENIE_STEP2            } from '../modules/local/regenie_step2'
 include { REGENIE_LOG_PARSER_STEP2 } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
-include { FILTER_RESULTS           } from '../modules/local/filter_results' 
+include { FILTER_RESULTS           } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED   } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS            } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
 include { TOPHITS                  } from '../modules/local/tophits'
@@ -191,7 +191,8 @@ workflow GWAS_REGENIE {
         phenotype_file,
         gwas_report_template,
         regenie_step1_parsed_logs_ch.collect(),
-        REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+        REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs,
+        ANNOTATE_TOPHITS.out.annotated_ch
     )
 }
 
