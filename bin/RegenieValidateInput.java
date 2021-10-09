@@ -4,10 +4,9 @@
 //DEPS genepi:genepi-io:1.1.1
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
-
 import org.apache.commons.io.FilenameUtils;
-
 import genepi.io.table.reader.CsvTableReader;
 import genepi.io.table.writer.CsvTableWriter;
 import picocli.CommandLine;
@@ -15,10 +14,10 @@ import picocli.CommandLine.Option;
 
 public class RegenieValidateInput implements Callable<Integer> {
 
-	@Option(names = "--input", description = "Regenie input file", required = true)
+	@Option(names = "--input", description = "Input file", required = true)
 	private String input;
 
-	@Option(names = "--output", description = "Regenie input file validated", required = true)
+	@Option(names = "--output", description = "Validated output file", required = true)
 	private String output;
 
 	@Option(names = "--type", description = "File type", required = true)
@@ -35,6 +34,10 @@ public class RegenieValidateInput implements Callable<Integer> {
 
 	private static String REGENIE_MISSING = "NA";
 
+	enum TYPE {
+		phenotype, covariate
+	}
+
 	public Integer call() throws Exception {
 
 		assert (input != null);
@@ -43,35 +46,56 @@ public class RegenieValidateInput implements Callable<Integer> {
 		CsvTableWriter writer = new CsvTableWriter(new File(output).getAbsolutePath(), '\t', false);
 
 		String logFile = FilenameUtils.getFullPath(output) + FilenameUtils.getBaseName(output) + ".log";
+
 		CsvTableWriter logWriter = new CsvTableWriter(new File(logFile).getAbsolutePath(), '\t', false);
 
 		CsvTableReader reader = new CsvTableReader(input, '\t');
 
+		String[] columnsWrite = { "Name", "Value" };
+
+		logWriter.setColumns(columnsWrite);
+
 		if (reader.getColumns().length == 1) {
 
 			reader.close();
+
 			reader = new CsvTableReader(input, ' ');
 
 			if (reader.getColumns().length == 1) {
 				System.err.println("ERROR: Input file '" + input + "' must be TAB or SPACE seperated.");
 				return -1;
 			}
+
 		}
 
-		if (!reader.getColumns()[0].equals("FID") || !reader.getColumns()[1].equals("IID")) {
+		String[] columns = reader.getColumns();
+
+		columns[0] = columns[0].toUpperCase();
+		columns[1] = columns[1].toUpperCase();
+
+		writer.setColumns(columns);
+
+		Integer[] countEmptyValues = new Integer[columns.length];
+		Arrays.fill(countEmptyValues, 0);
+
+		Integer[] countNAValues = new Integer[columns.length];
+		Arrays.fill(countNAValues, 0);
+
+		if (columns.length < 3) {
+			System.err.println("ERROR: File only includes 2 columns.");
+			return -1;
+		}
+
+		if (!columns[0].equals("FID") || !columns[1].equals("IID")) {
 			System.err.println("ERROR: header of file '" + input + "' must start with 'FID IID'.");
 			return -1;
 		}
 
-		writer.setColumns(reader.getColumns());
-
-		String[] columnsWrite = { "Name", "Value" };
-		logWriter.setColumns(columnsWrite);
-
-		int line = 1;
-		int emptyValues = 0;
+		int line = 0;
 		while (reader.next()) {
+
 			line++;
+
 			if (reader.getRow().length != reader.getColumns().length) {
 				System.err.println(
 						"ERROR: Input file '" + input + "' parse error in line " + line + ". Detected columns: "
@@ -81,24 +105,35 @@ public class RegenieValidateInput implements Callable<Integer> {
 
 			String[] row = reader.getRow();
 
-			if (type.equals("phenotype")) {
+			RegenieValidateInput.TYPE typeEnum = TYPE.valueOf(type);
 
-				for (int i = 0; i < row.length; i++) {
+			if (typeEnum == TYPE.phenotype) {
 
-					// replace empty values WITH NA
-					if (row[i].isEmpty()) {
-						emptyValues++;
+				for (int i = 2; i < columns.length; i++) {
+
+					if (row[i].isEmpty() || row[i].equals(".")) {
+
+						countEmptyValues[i] = countEmptyValues[i] + 1;
+
 						row[i] = row[i].replace("", REGENIE_MISSING);
+
+					} else if (row[i].equals("NA")) {
+
+						countNAValues[i] = countNAValues[i] + 1;
+
 					}
 
 				}
-			} else if (type.equals("covariate")) {
+			}
+
+			if (typeEnum == TYPE.covariate) {
 
 				for (int i = 0; i < row.length; i++) {
 
-					// replace empty values WITH NA
+					// check for empty values
 					if (row[i].isEmpty()) {
-						throw new Exception("ERROR: Line " + line + " includes an empty value in column " + i + ".");
+						throw new Exception(
+								"ERROR: Sample " + row[0] + " includes an empty value in column " + i + ".");
 					}
 
 				}
@@ -109,21 +144,36 @@ public class RegenieValidateInput implements Callable<Integer> {
 			writer.next();
 		}
 
-		reader.close();
-		writer.close();
-
-		logWriter.setString(0, "Samples count");
-		logWriter.setInteger(1, line - 1);
+		logWriter.setString(0, "Samples");
+		logWriter.setInteger(1, line);
 		logWriter.next();
 
-		if (type.equals("phenotype")) {
-			logWriter.setString(0, "Empty values replaced with NA");
-			logWriter.setInteger(1, emptyValues);
+		for (int i = 0; i < countEmptyValues.length; i++) {
+
+			if (countEmptyValues[i] != 0) {
+
+				logWriter.setString(0,
+						"[Phenotype  " + reader.getColumns()[i] + "] NA-replaced empty values");
+				logWriter.setInteger(1, countEmptyValues[i]);
+				logWriter.next();
+
+			}
 		}
 
-		logWriter.next();
+		for (int i = 0; i < countNAValues.length; i++) {
+
+			if (countNAValues[i] != 0) {
+
+				logWriter.setString(0, "[Phenotype  " + reader.getColumns()[i] + "] NA values");
+				logWriter.setInteger(1, countNAValues[i]);
+				logWriter.next();
+
+			}
+		}
 
 		logWriter.close();
+		reader.close();
+		writer.close();
 
 		return 0;
 	}
