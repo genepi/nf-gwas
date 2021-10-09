@@ -1,10 +1,10 @@
 process TOPHITS {
 
   input:
-  path regenie_merged
+    tuple val(phenotype), path(regenie_merged)
 
   output:
-  path "${regenie_merged.baseName}.tophits.gz", emit: tophits_ch
+    tuple val(phenotype), path("${regenie_merged.baseName}.tophits.gz"), emit: tophits_ch
 
 
   """

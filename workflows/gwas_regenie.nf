@@ -186,13 +186,17 @@ workflow GWAS_REGENIE {
         genes_hg38
     )
 
+    //combined merge results and annotated tophits by phenotype (index 0)
+    merged_results_and_annotated_tophits =  MERGE_RESULTS.out.results_merged.combine(
+      ANNOTATE_TOPHITS.out.annotated_ch, by: 0
+    )
+
     REPORT (
-        MERGE_RESULTS.out.results_merged,
+        merged_results_and_annotated_tophits,
         phenotype_file,
         gwas_report_template,
         regenie_step1_parsed_logs_ch.collect(),
-        REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs,
-        ANNOTATE_TOPHITS.out.annotated_ch
+        REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
 }
 

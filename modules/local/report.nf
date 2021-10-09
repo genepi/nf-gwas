@@ -1,19 +1,18 @@
 process REPORT {
 
-publishDir "${params.outdir}", mode: 'copy'
+  publishDir "${params.outdir}", mode: 'copy'
 
   memory '5 GB'
 
   input:
-  tuple val(phenotype), path(regenie_merged)
-	path phenotype_file
-  path gwas_report_template
-  path step1_log
-  path step2_log
-  path annotated_tophits
+    tuple val(phenotype), path(regenie_merged), path(annotated_tophits)
+    path phenotype_file
+    path gwas_report_template
+    path step1_log
+    path step2_log
 
   output:
-  path "*.html"
+    path "*.html"
 
   """
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
