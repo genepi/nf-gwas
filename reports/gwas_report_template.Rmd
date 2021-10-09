@@ -79,21 +79,20 @@ kable(skim(phenotypeTable) %>%
 ### Histogram
 ```{r, echo=FALSE}
 ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
-geom_histogram(color="black", fill="white",bins=30)
+  geom_histogram(color="black", fill="white",bins=30)
 ```
 
 ## Manhattan Plot
 
 ```{r, echo=FALSE, results='asis'}
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE,tmpdir="$PWD")
-pheno <- params$phenotype
-if(params$manhattan_plot_ylimit == 0) {
-manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
-} else {
-manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"),ylim = c(0, params$manhattan_plot_ylimit))
-cat(paste("Please note that the Y-axis limit has been set to '", params$manhattan_plot_ylimit,"'. Please use the 'manhattan_plot_ylimit' parameter to adapt this behaviour."))
-  }
 
+if(params$manhattan_plot_ylimit == 0) {
+  manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+} else {
+  manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"), ylim = c(0, params$manhattan_plot_ylimit))
+  cat(paste("Please note that the Y-axis limit has been set to '", params$manhattan_plot_ylimit,"'. Please use the 'manhattan_plot_ylimit' parameter to adapt this behaviour."))
+}
 ```
 
 ## QQ Plot
@@ -101,6 +100,9 @@ cat(paste("Please note that the Y-axis limit has been set to '", params$manhatta
 ```{r, echo=FALSE}
 qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
 qqPlotFast(qqPrepare)
+
+rm(qqPrepare)
+rm(regenieTable)
 ```
 
 ## About
