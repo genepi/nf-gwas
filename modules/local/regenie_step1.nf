@@ -8,7 +8,7 @@ process REGENIE_STEP1 {
 
   output:
     path "fit_bin_out*", emit: regenie_step1_out
-    path "fit_bin_out*log", emit: regenie_step1_log_out
+    path "fit_bin_out.log", emit: regenie_step1_out_log
 
   script:
   def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''

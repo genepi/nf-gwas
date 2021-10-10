@@ -11,7 +11,7 @@ process REGENIE_STEP2 {
 
   output:
     path "*regenie.gz", emit: regenie_step2_out
-    path "${filename}*log", emit: regenie_step2_log_out
+    path "${filename}.log", emit: regenie_step2_out_log
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''

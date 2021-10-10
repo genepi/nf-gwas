@@ -159,7 +159,7 @@ workflow GWAS_REGENIE {
         )
 
         REGENIE_LOG_PARSER_STEP1 (
-            REGENIE_STEP1.out.regenie_step1_out.collect(),
+            REGENIE_STEP1.out.regenie_step1_out_log,
             CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
         )
 
@@ -183,7 +183,7 @@ workflow GWAS_REGENIE {
     )
 
     REGENIE_LOG_PARSER_STEP2 (
-        REGENIE_STEP2.out.regenie_step2_log_out.collect(),
+        REGENIE_STEP2.out.regenie_step2_out_log.collect(),
         CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
     )
 
