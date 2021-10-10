@@ -1,6 +1,6 @@
 
 requiredParams = [
-    'project', 'genotypes_typed',
+    'project', 'genotypes_array',
     'genotypes_imputed', 'genotypes_build',
     'genotypes_imputed_format', 'phenotypes_filename',
     'phenotypes_columns', 'phenotypes_binary_trait',
@@ -64,7 +64,7 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 }
 
 //Array genotypes
-Channel.fromFilePairs("${params.genotypes_typed}", size: 3).set {genotyped_plink_ch}
+Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
 
 include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scripts'
 include { REGENIE_VALIDATE_PHENOTYPES } from '../modules/local/regenie_validate_phenotypes' addParams(outdir: "$outdir")
@@ -142,7 +142,7 @@ workflow GWAS_REGENIE {
 
       } else {
           //no pruning applied, set raw genotyped directly to genotyped_plink_pruned_ch
-          Channel.fromFilePairs("${params.genotypes_typed}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
+          Channel.fromFilePairs("${params.genotypes_array}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
       }
 
     QC_FILTER (
