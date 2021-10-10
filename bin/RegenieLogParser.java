@@ -7,14 +7,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
-
-import org.apache.poi.util.SystemOutLogger;
-
 import genepi.io.table.writer.CsvTableWriter;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-
 
 public class RegenieLogParser implements Callable<Integer> {
 
@@ -22,6 +18,7 @@ public class RegenieLogParser implements Callable<Integer> {
 
 	@Parameters(description = "Regenie log file")
 	private List<String> files;
+
 	@Option(names = "--output", description = "Output file ", required = true)
 	private String output;
 
@@ -38,48 +35,55 @@ public class RegenieLogParser implements Callable<Integer> {
 
 		String[] columnsWrite = { "Name", "Value" };
 		writer.setColumns(columnsWrite);
-		int variants = 0;
+
 		StringBuilder warningMsgs = new StringBuilder();
-		int count = 0;
-		boolean isRegenieOption = false;
 		StringBuilder optionsInEffect = new StringBuilder();
+
+		int countVariants = 0;
+		int countFiles = 0;
 
 		for (String file : files) {
 
+			countFiles++;
+
+			boolean isRegenieCall = false;
 			Scanner s = new Scanner(new File(file));
+
 			while (s.hasNextLine()) {
 
 				String line = s.nextLine();
 
-				// identify regenie options and skip line
+				// identify regenie call line and skip it
 				if (line.contains(REGENIE_CALL_PATTERN)) {
-					isRegenieOption = true;
+					isRegenieCall = true;
+					continue;
+				}
+
+				if (line.contains("-summary : bgen file")) {
+					String value = line.split("\\s+")[14].trim();
+					countVariants += Integer.valueOf(value);
+				} else if (line.contains("n_snps") && line.contains("pvar")) {
+					String value = line.split("=")[1].trim();
+					countVariants += Integer.valueOf(value);
+				} else if (line.contains("WARNING:")) {
+					warningMsgs.append(line + "\n");
+				}
+
+				// Several log files produced (step 1+2), therefore skip everything from here.
+				if (countFiles > 1) {
 					continue;
 				}
 
 				// parse all lines with regenie option included
-				if (isRegenieOption) {
+				if (isRegenieCall) {
 					if (!line.endsWith("\\")) {
-						isRegenieOption = false;
+						isRegenieCall = false;
 					} else {
 						optionsInEffect.append(line.substring(0, line.indexOf('\\')));
 					}
 				}
 
-				if (line.contains("-summary : bgen file")) {
-					String value = line.split("\\s+")[14].trim();
-					variants += Integer.valueOf(value);
-				} else if (line.contains("n_snps") && line.contains("pvar")) {
-					String value = line.split("=")[1].trim();
-					variants += Integer.valueOf(value);
-				} else if (line.contains("WARNING:")) {
-					warningMsgs.append(line + "\n");
-				}
-
-				// Several log files produced (step 2), therefore skip everything from here.
-				if (count > 0) {
-					continue;
-				} else if (line.contains("REGENIE v")) {
+				if (line.contains("REGENIE v")) {
 					String value = line.split("\\s+")[3].trim();
 					writer.setString(0, "Regenie Version ");
 					writer.setString(1, value);
@@ -131,13 +135,12 @@ public class RegenieLogParser implements Callable<Integer> {
 					writer.next();
 				}
 			}
-			count++;
 			s.close();
 		}
 
-		if (variants > 0) {
+		if (countVariants > 0) {
 			writer.setString(0, "Variants used (\\*.bgen or \\*.pvar)");
-			writer.setInteger(1, Integer.valueOf(variants));
+			writer.setInteger(1, Integer.valueOf(countVariants));
 			writer.next();
 		}
 
