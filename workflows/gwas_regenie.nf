@@ -115,7 +115,7 @@ workflow GWAS_REGENIE {
 
     //convert vcf files to plink2 format (not bgen!)
     if (params.genotypes_imputed_format == "vcf"){
-        imputed_files =  channel.fromPath("${params.genotypes_imputed}")
+        imputed_files =  channel.fromPath("${params.genotypes_imputed}", checkIfExists: true)
 
         VCF_TO_PLINK2 (
             imputed_files
