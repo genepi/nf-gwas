@@ -92,7 +92,7 @@ Pleas click [here](tests) for available test config files.
 git clone https://github.com/genepi/gwas-regenie
 cd gwas-regenie
 docker build -t genepi/gwas-regenie . # don't ignore the dot
-nextflow run main.nf -profile test,standard
+nextflow run main.nf -profile test,development
 ```
 
 ## License
