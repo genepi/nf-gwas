@@ -67,8 +67,8 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
 
 include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scripts'
-include { REGENIE_VALIDATE_PHENOTYPES } from '../modules/local/regenie_validate_phenotypes' addParams(outdir: "$outdir")
-include { REGENIE_VALIDATE_COVARIATS  } from '../modules/local/regenie_validate_covariates' addParams(outdir: "$outdir")
+include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
+include { VALIDATE_COVARIATS          } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
 include { SNP_PRUNING                 } from '../modules/local/snp_pruning'
 include { QC_FILTER                   } from '../modules/local/qc_filter'
@@ -91,19 +91,19 @@ workflow GWAS_REGENIE {
         regenie_validate_input_java
     )
 
-    REGENIE_VALIDATE_PHENOTYPES (
+    VALIDATE_PHENOTYPES (
         phenotypes_file,
         CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
     )
 
     if(covariates_file.exists()) {
-        REGENIE_VALIDATE_COVARIATS (
+        VALIDATE_COVARIATS (
           covariates_file,
           CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
         )
 
-        covariates_file_validated = REGENIE_VALIDATE_COVARIATS.out.covariates_file_validated
-        covariates_file_validated_log = REGENIE_VALIDATE_COVARIATS.out.covariates_file_validated_log
+        covariates_file_validated = VALIDATE_COVARIATS.out.covariates_file_validated
+        covariates_file_validated_log = VALIDATE_COVARIATS.out.covariates_file_validated_log
 
    } else {
 
@@ -154,7 +154,7 @@ workflow GWAS_REGENIE {
         REGENIE_STEP1 (
             genotyped_plink_pruned_ch,
             QC_FILTER.out.genotyped_filtered,
-            REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+            VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
             covariates_file_validated
         )
 
@@ -177,7 +177,7 @@ workflow GWAS_REGENIE {
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
         imputed_plink2_ch,
-        REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+        VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         sample_file,
         covariates_file_validated
     )
@@ -219,9 +219,9 @@ workflow GWAS_REGENIE {
 
     REPORT (
         merged_results_and_annotated_tophits,
-        REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+        VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
-        REGENIE_VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
+        VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
         covariates_file_validated_log.collect(),
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
