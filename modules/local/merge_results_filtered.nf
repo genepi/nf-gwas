@@ -1,14 +1,14 @@
 process MERGE_RESULTS_FILTERED {
 
-publishDir "${params.outdir}/results", mode: 'copy'
-tag "${phenotype}"
+  publishDir "${params.outdir}/results", mode: 'copy'
+  tag "${phenotype}"
 
   input:
-  path regenie_chromosomes
-  val phenotype
+    path regenie_chromosomes
+    val phenotype
 
   output:
-    path "${phenotype}.regenie.filtered.gz", emit: results_filtered_merged
+    tuple val(phenotype), path("${phenotype}.regenie.filtered.gz"), emit: results_filtered_merged
 
 
   """
