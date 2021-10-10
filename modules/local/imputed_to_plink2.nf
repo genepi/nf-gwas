@@ -1,4 +1,4 @@
-  process VCF_TO_PLINK2 {
+  process IMPUTED_TO_PLINK2 {
 
     cpus "${params.threads}"
 

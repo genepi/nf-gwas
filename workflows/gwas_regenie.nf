@@ -69,7 +69,7 @@ Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink
 include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scripts'
 include { REGENIE_VALIDATE_PHENOTYPES } from '../modules/local/regenie_validate_phenotypes' addParams(outdir: "$outdir")
 include { REGENIE_VALIDATE_COVARIATS  } from '../modules/local/regenie_validate_covariates' addParams(outdir: "$outdir")
-include { VCF_TO_PLINK2               } from '../modules/local/vcf_to_plink2' addParams(outdir: "$outdir")
+include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
 include { SNP_PRUNING                 } from '../modules/local/snp_pruning'
 include { QC_FILTER                   } from '../modules/local/qc_filter'
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1'
@@ -117,11 +117,11 @@ workflow GWAS_REGENIE {
     if (params.genotypes_imputed_format == "vcf"){
         imputed_files =  channel.fromPath("${params.genotypes_imputed}", checkIfExists: true)
 
-        VCF_TO_PLINK2 (
+        IMPUTED_TO_PLINK2 (
             imputed_files
         )
 
-        imputed_plink2_ch = VCF_TO_PLINK2.out.imputed_plink2
+        imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
 
     }  else {
 
