@@ -3,12 +3,12 @@ process ANNOTATE_TOPHITS {
 publishDir "${params.outdir}/tophits", mode: 'copy'
 
   input:
-  path tophits
-  path genes_hg19
-  path genes_hg38
+    tuple val(phenotype), path(tophits)
+    path genes_hg19
+    path genes_hg38
 
   output:
-  path "${tophits.baseName}.annotated.txt.gz", emit: annotated_ch
+    tuple val(phenotype), path("${tophits.baseName}.annotated.txt.gz"), emit: annotated_ch
 
   script:
   def genes = params.genotypes_build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
