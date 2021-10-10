@@ -1,5 +1,5 @@
 process REGENIE_STEP2 {
-	cpus "${params.threads}"
+  cpus "${params.threads}"
   tag "${filename}"
 
   input:
