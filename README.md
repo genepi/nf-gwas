@@ -80,8 +80,8 @@ Pleas click [here](tests) for available test config files.
 | `regenie_min_imputation_score`     |  0.00 | Minimum imputation info score (IMPUTE/MACH R^2)  |
 | `regenie_min_mac`     |  5 | Minimum minor allele count  |
 | `regenie_range`     |  ' ' | Apply regenie only on a specify region [format=CHR:MINPOS-MAXPOS] |
-| `regenie_firth`     |  ' true ' | Use Firth likelihood ratio test (LRT) as fallback for p-values less than threshold |
-| `regenie_firth_approx`     |  ' true ' | Use approximate Firth LRT for computational speedup |
+| `regenie_firth`     |   true  | Use Firth likelihood ratio test (LRT) as fallback for p-values less than threshold |
+| `regenie_firth_approx`     |  true | Use approximate Firth LRT for computational speedup |
 | `min_pvalue`     |   2 | Filter results with logp10 < 2 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 | `manhattan_plot_ylimit`     |   0 | Limit y axis in Manhattan plot for large p-values |
