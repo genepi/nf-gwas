@@ -15,12 +15,12 @@ params:
   regenie_filename: test-gwas.Y1.regenie.all.gz
   phenotype: Y1
   covariates:
-  phenotype_file: ../tests/input/phenotype.txt
-  regenie_step1_log: NO_LOG
-  phenotype_log: ../output/test-gwas/logs/test-gwas.step2.log
-  covariate_log: ../output/test-gwas/logs/test-gwas.step2.log
-  manhattan_plot_ylimit: 2
+  phenotype_file: ../output/test-gwas/validated_input/phenotype.validated.txt
+  regenie_step1_log: ../output/test-gwas/logs/test-gwas.step1.log
   regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
+  phenotype_log: ../output/test-gwas/logs/phenotype.validated.log
+  covariate_log: NO_COV_LOG
+  manhattan_plot_ylimit: 2
   annotated_tophits_filename: ../output/test-gwas/tophits/Y1.regenie.filtered.tophits.annotated.txt.gz
 ---
 
@@ -96,7 +96,6 @@ kable(step2_log)
 
 ```{r, echo=FALSE}
 phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
-
 kable(skim(phenotypeTable) %>%
   dplyr::filter(skim_variable == params$phenotype)) %>%
   kableExtra::scroll_box(width = "100%")
