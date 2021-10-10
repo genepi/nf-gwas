@@ -2,24 +2,25 @@ process REGENIE_STEP1 {
 
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
-    path phenotype_file
     path qcfiles
-    path covariate_file
+    path phenotypes_file
+    path covariates_file
 
   output:
     path "fit_bin_out*", emit: regenie_step1_out
     path "fit_bin_out*log", emit: regenie_step1_log_out
 
   script:
-  def covariants = covariate_file.name != 'NO_COV_FILE' ? "--covarFile $covariate_file --covarColList ${params.covariates_columns}" : ''
+  def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
   def deleteMissings = params.phenotypes_delete_missings  ? "--strict" : ''
   """
+  # qcfiles path required for keep and extract (but not actually set below)
   regenie \
     --step 1 \
     --bed ${genotyped_plink_filename} \
     --extract ${genotyped_plink_filename}.qc.snplist \
     --keep ${genotyped_plink_filename}.qc.id \
-    --phenoFile ${phenotype_file} \
+    --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     $covariants \
     $deleteMissings \

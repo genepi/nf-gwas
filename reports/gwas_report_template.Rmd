@@ -17,6 +17,8 @@ params:
   covariates:
   phenotype_file: ../tests/input/phenotype.txt
   regenie_step1_log: NO_LOG
+  phenotype_log: ../output/test-gwas/logs/test-gwas.step2.log
+  covariate_log: ../output/test-gwas/logs/test-gwas.step2.log
   manhattan_plot_ylimit: 2
   regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
   annotated_tophits_filename: ../output/test-gwas/tophits/Y1.regenie.filtered.tophits.annotated.txt.gz
@@ -46,6 +48,27 @@ library(dplyr)
 | Covariates       | `r params$covariates`                     |
 | Regenie Output      | `r params$regenie_filename`             |
 
+## Validation
+
+### Phenotype File
+
+```{r, echo=FALSE}
+phenotype_log <- read.table(params$phenotype_log,
+                      sep ="\t", header = TRUE, dec =".")
+kable(phenotype_log)
+```
+
+### Covariate File
+
+```{r, echo=FALSE, results='asis'}
+if(file.exists(params$covariate_log)) {
+step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".")
+kable(step1_log)
+} else {
+    cat("*No covariates available.*")
+}
+```
+
 ## Regenie Log
 
 ### Step 1
@@ -55,7 +78,7 @@ if(file.exists(params$regenie_step1_log)) {
 step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
 kable(step1_log)
 } else {
-    cat("*No log file available, since regenie step 1 is skipped.*")
+    cat("*Regenie step 1 skipped.*")
 }
 ```
 
@@ -72,7 +95,7 @@ kable(step2_log)
 ### Overview
 
 ```{r, echo=FALSE}
-phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep=" ", dec = ".")
+phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
 
 kable(skim(phenotypeTable) %>%
   dplyr::filter(skim_variable == params$phenotype)) %>%
