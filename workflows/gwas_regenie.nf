@@ -34,8 +34,8 @@ regenie_filter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: tru
 regenie_validate_input_java = file("$baseDir/bin/RegenieValidateInput.java", checkIfExists: true)
 
 //Annotation files
-genes_hg19 = file("$baseDir/genes/genes.hg19.sorted.bed", checkIfExists: true)
-genes_hg38 = file("$baseDir/genes/genes.hg38.sorted.bed", checkIfExists: true)
+genes_hg19 = file("$baseDir/genes/nearest_gene.GRCh37.sorted.bed", checkIfExists: true)
+genes_hg38 = file("$baseDir/genes/nearest_gene.GRCh38.sorted.bed", checkIfExists: true)
 
 //Phenotypes
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
