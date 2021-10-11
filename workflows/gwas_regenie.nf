@@ -70,8 +70,8 @@ include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scrip
 include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
 include { VALIDATE_COVARIATS          } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
-include { SNP_PRUNING                 } from '../modules/local/snp_pruning'
-include { QC_FILTER                   } from '../modules/local/qc_filter'
+include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped'
+include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped'
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1'
 include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
 include { REGENIE_STEP2               } from '../modules/local/regenie_step2'
@@ -134,18 +134,18 @@ workflow GWAS_REGENIE {
 
     if(params.prune_enabled) {
 
-        SNP_PRUNING (
+        PRUNE_GENOTYPED (
             genotyped_plink_ch
         )
 
-        genotyped_plink_pruned_ch = SNP_PRUNING.out.genotypes_pruned
+        genotyped_plink_pruned_ch = PRUNE_GENOTYPED.out.genotypes_pruned
 
       } else {
           //no pruning applied, set raw genotyped directly to genotyped_plink_pruned_ch
           Channel.fromFilePairs("${params.genotypes_array}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
       }
 
-    QC_FILTER (
+    QC_FILTER_GENOTYPED (
         genotyped_plink_pruned_ch
     )
 
@@ -153,7 +153,7 @@ workflow GWAS_REGENIE {
 
         REGENIE_STEP1 (
             genotyped_plink_pruned_ch,
-            QC_FILTER.out.genotyped_filtered,
+            QC_FILTER_GENOTYPED.out.genotyped_filtered,
             VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
             covariates_file_validated
         )
