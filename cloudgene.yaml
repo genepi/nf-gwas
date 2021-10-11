@@ -1,6 +1,6 @@
 id: gwas-regenie
 name: GWAS Regenie
-version: 0.1.8
+version: 0.1.9
 description: Nextflow pipeline to execute Regenie, create Manhattan-Plots and annotate GWAS results
 author: Lukas Forer and Sebastian Schoenherr
 website: https://github.com/genepi/gwas-regenie
