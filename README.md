@@ -15,7 +15,7 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from M
 4) Run [regenie](https://github.com/rgcgithub/regenie).
 5) Parse regenie log and create summary statistics.
 7) Filter regenie results by pvalue using [JBang](https://github.com/jbangdev/jbang).
-8) Extract tophits and annotate them using [bedtools closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html).
+8) Annotate filtered results using [bedtools closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html).
 9) Create a [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype statistics, parsed log files manhattan plot, qq plot and top genes.
 
 ## Status
