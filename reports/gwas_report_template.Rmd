@@ -111,7 +111,7 @@ datatable(topHitsGroupedByGene)
 ```{r, echo=FALSE}
 phenotype_log <- read.table(params$phenotype_log,
                       sep ="\t", header = TRUE, dec =".")
-datatable(phenotype_log)
+kable(phenotype_log)
 ```
 
 ### Covariate File Validation
@@ -119,7 +119,7 @@ datatable(phenotype_log)
 ```{r, echo=FALSE, results='asis'}
 if(file.exists(params$covariate_log)) {
 step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".")
-datatable(step1_log)
+kable(step1_log)
 } else {
     cat("*No covariates available.*")
 }
