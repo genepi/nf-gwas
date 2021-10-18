@@ -79,8 +79,7 @@ include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parse
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { TOPHITS                     } from '../modules/local/tophits'
-include { ANNOTATE_TOPHITS            } from '../modules/local/annotate_tophits'  addParams(outdir: "$outdir")
+include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 
 workflow GWAS_REGENIE {
@@ -202,23 +201,19 @@ workflow GWAS_REGENIE {
         phenotypes
     )
 
-    TOPHITS (
-        MERGE_RESULTS_FILTERED.out.results_filtered_merged
-    )
-
-    ANNOTATE_TOPHITS (
-        TOPHITS.out.tophits_ch,
+    ANNOTATE_FILTERED (
+        MERGE_RESULTS_FILTERED.out.results_filtered_merged,
         genes_hg19,
         genes_hg38
     )
 
-    //combined merge results and annotated tophits by phenotype (index 0)
-    merged_results_and_annotated_tophits =  MERGE_RESULTS.out.results_merged.combine(
-      ANNOTATE_TOPHITS.out.annotated_ch, by: 0
+    //combined merge results and annotated filtered results by phenotype (index 0)
+    merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged.combine(
+      ANNOTATE_FILTERED.out.annotated_ch, by: 0
     )
 
     REPORT (
-        merged_results_and_annotated_tophits,
+        merged_results_and_annotated_filtered,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,

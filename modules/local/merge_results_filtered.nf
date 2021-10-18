@@ -1,6 +1,5 @@
 process MERGE_RESULTS_FILTERED {
 
-  publishDir "${params.outdir}/results", mode: 'copy'
   tag "${phenotype}"
 
   input:
