@@ -10,7 +10,7 @@ output:
 params:
   project: test-gwas
   date: 2021-08-09
-  version: v0.1.4
+  version: v0.1.9
   regenie_merged: ../output/test-gwas/results/Y1.regenie.gz
   regenie_filename: test-gwas.Y1.regenie.all.gz
   phenotype: Y1
@@ -20,8 +20,8 @@ params:
   regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
   phenotype_log: ../output/test-gwas/logs/phenotype.validated.log
   covariate_log: NO_COV_LOG
-  manhattan_plot_ylimit: 2
-  annotated_tophits_filename: ../output/test-gwas/tophits/Y1.regenie.filtered.tophits.annotated.txt.gz
+  manhattan_plot_ylimit: 0
+  annotated_tophits_filename: ../output/test-gwas/results/Y1.regenie.filtered.annotated.txt.gz
 ---
 
 ```{r setup, include=FALSE}
@@ -47,48 +47,6 @@ library(dplyr)
 | Phenotype       | `r params$phenotype`                     |
 | Covariates       | `r params$covariates`                     |
 | Regenie Output      | `r params$regenie_filename`             |
-
-## Validation
-
-### Phenotype File
-
-```{r, echo=FALSE}
-phenotype_log <- read.table(params$phenotype_log,
-                      sep ="\t", header = TRUE, dec =".")
-kable(phenotype_log)
-```
-
-### Covariate File
-
-```{r, echo=FALSE, results='asis'}
-if(file.exists(params$covariate_log)) {
-step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".")
-kable(step1_log)
-} else {
-    cat("*No covariates available.*")
-}
-```
-
-## Regenie Log
-
-### Step 1
-
-```{r, echo=FALSE, results='asis'}
-if(file.exists(params$regenie_step1_log)) {
-step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
-kable(step1_log)
-} else {
-    cat("*Regenie step 1 skipped.*")
-}
-```
-
-### Step 2
-
-```{r, echo=FALSE}
-step2_log <- read.table(params$regenie_step2_log,
-                      sep ="\t", header = TRUE, dec =".")
-kable(step2_log)
-```
 
 ## Phenotype Statistics
 
@@ -146,8 +104,49 @@ datatable(topHitsGroupedByGene)
 
 ```
 
+## Validation and Logs
+
+### Phenotype File Validation
+
+```{r, echo=FALSE}
+phenotype_log <- read.table(params$phenotype_log,
+                      sep ="\t", header = TRUE, dec =".")
+datatable(phenotype_log)
+```
+
+### Covariate File Validation
+
+```{r, echo=FALSE, results='asis'}
+if(file.exists(params$covariate_log)) {
+step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".")
+datatable(step1_log)
+} else {
+    cat("*No covariates available.*")
+}
+```
+
+### Regenie Step 1 Log
+
+```{r, echo=FALSE, results='asis'}
+if(file.exists(params$regenie_step1_log)) {
+step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
+kable(step1_log)
+} else {
+    cat("*Regenie step 1 skipped.*")
+}
+```
+
+### Regenie Step 2 Log
+
+```{r, echo=FALSE}
+step2_log <- read.table(params$regenie_step2_log,
+                      sep ="\t", header = TRUE, dec =".")
+kable(step2_log)
+```
+
+
 ---
 
 <small>
-This report has been created with **[GWAS-Regenie `r params$version`](https://github.com/genepi/gwas-regenie)**, a Nextflow Pipeline developed by [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Sebastian Schönherr](mailto:sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
+This report has been created with **[GWAS-Regenie `r params$version`](https://github.com/genepi/gwas-regenie)**, a nextflow pipeline developed by [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Sebastian Schönherr](mailto:sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
 </small>

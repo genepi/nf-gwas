@@ -11,7 +11,7 @@ tag "${regenie_chromosomes.baseName}"
   path "${regenie_chromosomes}", emit: results
 
   """
-  java -jar ${regenie_filter_jar} --input ${regenie_chromosomes} --limit ${params.annotation_min_pvalue} --output ${regenie_chromosomes.baseName}.filtered
+  java -jar ${regenie_filter_jar} --input ${regenie_chromosomes} --limit ${params.annotation_min_log10p} --output ${regenie_chromosomes.baseName}.filtered
   #todo: CSVWriter for gzip
   gzip ${regenie_chromosomes.baseName}.filtered
   """
