@@ -19,7 +19,7 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from M
 9) Create a [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype statistics, parsed log files manhattan plot, qq plot and top genes.
 
 ## Status
-The pipeline is currently under development (v0.1.9).
+The pipeline is currently under development (v0.1.10).
 
 ## Quick Start
 
@@ -28,13 +28,13 @@ The pipeline is currently under development (v0.1.9).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/gwas-regenie -r v0.1.9 -profile test,<docker,singularity>
+nextflow run genepi/gwas-regenie -r v0.1.10 -profile test,<docker,singularity>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.9 -profile <docker,singularity>
+nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.10 -profile <docker,singularity>
 ```
 
 Pleas click [here](tests) for available test config files.
