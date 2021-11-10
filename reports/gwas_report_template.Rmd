@@ -20,7 +20,7 @@ params:
   regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
   phenotype_log: ../output/test-gwas/logs/phenotype.validated.log
   covariate_log: NO_COV_LOG
-  manhattan_plot_ylimit: 0
+  plot_ylimit: 0
   annotated_tophits_filename: ../output/test-gwas/results/Y1.regenie.filtered.annotated.txt.gz
 ---
 
@@ -70,19 +70,29 @@ ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 ```{r, echo=FALSE, results='asis'}
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE,tmpdir="$PWD")
 
-if(params$manhattan_plot_ylimit == 0) {
+if(params$plot_ylimit == 0) {
   manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
 } else {
-  manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"), ylim = c(0, params$manhattan_plot_ylimit))
-  cat(paste("Please note that the Y-axis limit has been set to '", params$manhattan_plot_ylimit,"'. Please use the 'manhattan_plot_ylimit' parameter to adapt this behaviour."))
+    cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
+  manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"), ylim = c(0, params$plot_ylimit))
+
 }
+
 ```
 
 ## QQ Plot
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, results='asis'}
 qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
-qqPlotFast(qqPrepare)
+
+if(params$plot_ylimit == 0) {
+  limit = NULL
+} else {
+  limit = c(0, params$plot_ylimit )
+    cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
+}
+
+qqPlotFast(qqPrepare, ylim = limit)
 
 rm(qqPrepare)
 rm(regenieTable)

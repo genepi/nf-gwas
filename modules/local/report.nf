@@ -31,7 +31,7 @@ process REPORT {
       covariate_log='${covariate_log}',
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}',
-      manhattan_plot_ylimit=${params.manhattan_plot_ylimit},
+      plot_ylimit=${params.plot_ylimit},
       annotated_tophits_filename='${annotated_tophits}'
     ),
     intermediates_dir='\$PWD',
