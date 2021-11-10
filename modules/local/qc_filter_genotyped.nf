@@ -1,10 +1,13 @@
 process QC_FILTER_GENOTYPED {
 
   input:
-    tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
+    tuple val(genotyped_plink_filename), path(genotyped_plink_file)
 
   output:
-    path "${genotyped_plink_filename}.qc.*", emit: genotyped_filtered
+    path "${genotyped_plink_filename}.qc.snplist", emit: genotyped_filtered_snplist_ch
+    path "${genotyped_plink_filename}.qc.id", emit: genotyped_filtered_id_ch
+    tuple val("${genotyped_plink_filename}.qc"), path("${genotyped_plink_filename}.qc.bim"), path("${genotyped_plink_filename}.qc.bed"),path("${genotyped_plink_filename}.qc.fam"), emit: genotyped_filtered_files_ch
+
 
   """
   plink2 \
@@ -15,7 +18,8 @@ process QC_FILTER_GENOTYPED {
     --hwe ${params.qc_hwe} \
     --mind ${params.qc_mind} \
     --write-snplist --write-samples --no-id-header \
-    --out ${genotyped_plink_filename}.qc
+    --out ${genotyped_plink_filename}.qc \
+    --make-bed
   """
 
 }

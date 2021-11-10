@@ -2,7 +2,8 @@ process REGENIE_STEP1 {
 
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
-    path qcfiles
+    path snplist
+    path id
     path phenotypes_file
     path covariates_file
 
@@ -18,8 +19,8 @@ process REGENIE_STEP1 {
   regenie \
     --step 1 \
     --bed ${genotyped_plink_filename} \
-    --extract ${genotyped_plink_filename}.qc.snplist \
-    --keep ${genotyped_plink_filename}.qc.id \
+    --extract ${snplist} \
+    --keep ${id} \
     --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     $covariants \

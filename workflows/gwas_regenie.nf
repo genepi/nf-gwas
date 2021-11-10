@@ -130,29 +130,29 @@ workflow GWAS_REGENIE {
         .set {imputed_plink2_ch}
     }
 
+    QC_FILTER_GENOTYPED (
+        genotyped_plink_ch
+    )
 
     if(params.prune_enabled) {
 
         PRUNE_GENOTYPED (
-            genotyped_plink_ch
+            QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
         )
 
-        genotyped_plink_pruned_ch = PRUNE_GENOTYPED.out.genotypes_pruned
+        genotyped_final_ch = PRUNE_GENOTYPED.out.genotypes_pruned_ch
 
       } else {
-          //no pruning applied, set raw genotyped directly to genotyped_plink_pruned_ch
-          Channel.fromFilePairs("${params.genotypes_array}", size: 3, flat: true).set {genotyped_plink_pruned_ch}
+          //no pruning applied, set QCed directly to genotyped_final_ch
+          genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
       }
-
-    QC_FILTER_GENOTYPED (
-        genotyped_plink_pruned_ch
-    )
 
     if (!params.regenie_skip_predictions){
 
         REGENIE_STEP1 (
-            genotyped_plink_pruned_ch,
-            QC_FILTER_GENOTYPED.out.genotyped_filtered,
+            genotyped_final_ch,
+            QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
+            QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
             VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
             covariates_file_validated
         )
