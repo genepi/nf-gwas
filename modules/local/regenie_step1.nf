@@ -1,5 +1,7 @@
 process REGENIE_STEP1 {
 
+publishDir "${params.outdir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
+
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
     path snplist
@@ -8,8 +10,8 @@ process REGENIE_STEP1 {
     path covariates_file
 
   output:
-    path "fit_bin_out*", emit: regenie_step1_out
-    path "fit_bin_out.log", emit: regenie_step1_out_log
+    path "regenie_step1_out*", emit: regenie_step1_out
+    path "regenie_step1_out.log", emit: regenie_step1_out_log
 
   script:
   def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
@@ -31,7 +33,7 @@ process REGENIE_STEP1 {
     --gz \
     --lowmem-prefix tmp_rg \
     --threads ${params.threads} \
-    --out fit_bin_out
+    --out regenie_step1_out
   """
 
 }

@@ -1,9 +1,12 @@
 process REGENIE_STEP2 {
+
+  publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
+
   cpus "${params.threads}"
   tag "${filename}"
 
   input:
-	  path fit_bin_out
+	  path step1_out
     tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file)
     path phenotypes_file
     path sample_file
@@ -11,7 +14,7 @@ process REGENIE_STEP2 {
 
   output:
     path "*regenie.gz", emit: regenie_step2_out
-    path "${filename}.log", emit: regenie_step2_out_log
+    path "regenie_step2_${filename}.log", emit: regenie_step2_out_log
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -33,7 +36,7 @@ process REGENIE_STEP2 {
     --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     --bsize ${params.regenie_bsize_step2} \
-    --pred fit_bin_out_pred.list \
+    --pred regenie_step1_out_pred.list \
     --threads ${params.threads} \
     --minMAC ${params.regenie_min_mac} \
     --minINFO ${params.regenie_min_imputation_score} \
@@ -45,6 +48,6 @@ process REGENIE_STEP2 {
     $covariants \
     $deleteMissingData \
     $predictions \
-    --out ${filename}
+    --out regenie_step2_${filename}
   """
 }

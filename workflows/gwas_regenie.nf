@@ -71,10 +71,10 @@ include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotyp
 include { VALIDATE_COVARIATS          } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
 include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped'
-include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped'
-include { REGENIE_STEP1               } from '../modules/local/regenie_step1'
+include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
+include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
-include { REGENIE_STEP2               } from '../modules/local/regenie_step2'
+include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
