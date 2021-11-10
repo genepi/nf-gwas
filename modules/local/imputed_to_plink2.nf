@@ -1,6 +1,6 @@
   process IMPUTED_TO_PLINK2 {
 
-    cpus "${params.threads}"
+    cpus "${params.cpus}"
 
     input:
       path imputed_vcf_file
@@ -11,7 +11,7 @@
     """
     plink2 \
       --vcf $imputed_vcf_file dosage=DS \
-      --threads ${params.threads} \
+      --threads ${task.cpus} \
       --make-pgen \
       --double-id \
       --out ${imputed_vcf_file.baseName}

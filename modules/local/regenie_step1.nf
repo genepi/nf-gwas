@@ -1,6 +1,7 @@
 process REGENIE_STEP1 {
 
 publishDir "${params.outdir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
+cpus "${params.cpus}"
 
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
@@ -32,7 +33,7 @@ publishDir "${params.outdir}/logs", mode: 'copy', pattern: 'regenie_step1_out.lo
     --lowmem \
     --gz \
     --lowmem-prefix tmp_rg \
-    --threads ${params.threads} \
+    --threads ${task.cpus} \
     --out regenie_step1_out
   """
 

@@ -2,7 +2,7 @@ process REGENIE_STEP2 {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
 
-  cpus "${params.threads}"
+  cpus "${params.cpus}"
   tag "${filename}"
 
   input:
@@ -37,7 +37,7 @@ process REGENIE_STEP2 {
     --phenoColList  ${params.phenotypes_columns} \
     --bsize ${params.regenie_bsize_step2} \
     --pred regenie_step1_out_pred.list \
-    --threads ${params.threads} \
+    --threads ${task.cpus} \
     --minMAC ${params.regenie_min_mac} \
     --minINFO ${params.regenie_min_imputation_score} \
     --gz \
