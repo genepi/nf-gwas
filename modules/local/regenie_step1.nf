@@ -17,6 +17,7 @@ cpus "${params.cpus}"
   script:
   def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
   def deleteMissings = params.phenotypes_delete_missings  ? "--strict" : ''
+  def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
   """
   # qcfiles path required for keep and extract (but not actually set below)
   regenie \
@@ -28,6 +29,7 @@ cpus "${params.cpus}"
     --phenoColList  ${params.phenotypes_columns} \
     $covariants \
     $deleteMissings \
+    $forceStep1 \
     --bsize ${params.regenie_bsize_step1} \
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
