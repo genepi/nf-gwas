@@ -19,7 +19,7 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from M
 9) Create a [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype statistics, parsed log files manhattan plot, qq plot and top genes.
 
 ## Status
-The pipeline is currently under development (v0.1.12).
+The pipeline is currently under development (v0.1.13).
 
 ## Quick Start
 
@@ -28,13 +28,13 @@ The pipeline is currently under development (v0.1.12).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/gwas-regenie -r v0.1.12 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -r v0.1.13 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.12 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.13 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 **Note:** The slurm profiles require that (a) singularity is installed on all nodes and (b) a shared file system path as a working directory.
 
