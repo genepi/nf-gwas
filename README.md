@@ -86,7 +86,7 @@ Pleas click [here](tests) for available test config files.
 | `regenie_firth_approx`     |  true | Use approximate Firth LRT for computational speedup |
 | `annotation_min_log10p`     |   5 | Annotate results with logp10 >= 5 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
-| `manhattan_plot_ylimit`     |   0 | Limit y axis in Manhattan plot for large p-values |
+| `plot_ylimit`     |   0 | Limit y axis in Manhattan/QQ plot for large p-values |
 
 ## Development
 
