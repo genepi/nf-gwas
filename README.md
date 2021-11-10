@@ -60,6 +60,7 @@ Pleas click [here](tests) for available test config files.
 
 | Option        |Default          | Description |
 | ------------- |-----------------| -------------|
+| `cpus`     | 1 | This parameter sets the amount of threads in regenie and plink2. |  
 | `date`     | today | Date in report |  
 | `outdir`     | "output/${params.project}" | Output directory   
 | `covariates_filename`     |  empty | path to covariates file |
