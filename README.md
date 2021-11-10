@@ -79,6 +79,7 @@ Pleas click [here](tests) for available test config files.
 | `regenie_bsize_step1`     | 1000 | Size of the genotype blocks |  
 | `regenie_bsize_step2`     | 400 | Size of the genotype blocks |  
 | `regenie_sample_file`     |  empty | Sample file corresponding to input BGEN file |
+| `regenie_force_step1`     |  false | Run regenie step 1 when >1M genotyped variants are used (not recommended) |
 | `regenie_skip_predictions`     | false | Skip Regenie Step 1 predictions |  
 | `regenie_min_imputation_score`     |  0.00 | Minimum imputation info score (IMPUTE/MACH R^2)  |
 | `regenie_min_mac`     |  5 | Minimum minor allele count  |
