@@ -34,6 +34,7 @@ library(skimr)
 library(kableExtra)
 library(ramwas)
 library(dplyr)
+library(ggrepel)
 ```
 
 ## Project Summary
@@ -67,16 +68,98 @@ ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 
 ## Manhattan Plot
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, dpi=300}
+#sources: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
+
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE,tmpdir="$PWD")
 
-if(params$manhattan_plot_ylimit == 0) {
-  manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"))
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE)
+
+#merge gene names of tophits to regenieTable
+regenieTable_annotated <- left_join(regenieTable, annotatedTopHits[, c("ID",
+                                                                       "GENE_NAME")],
+                                    by = "ID")
+#prepare for plotting
+don <- regenieTable_annotated %>%
+
+  # Compute chromosome size
+  group_by(CHROM) %>%
+  summarise(CHROM_len=max(GENPOS)) %>%
+
+  # Calculate cumulative start position of each chromosome
+  mutate(tot=cumsum(as.numeric(CHROM_len))-CHROM_len) %>%
+  select(-CHROM_len) %>%
+
+  # Add this info to the initial dataset
+  left_join(regenieTable_annotated, ., by=c("CHROM"="CHROM")) %>%
+
+  # Add a cumulative position of each SNP
+  arrange(CHROM, GENPOS) %>%
+  mutate( GENPOScum=GENPOS+tot)
+
+rm(regenieTable_annotated)
+
+# Prepare X axis
+axisdf = don %>% group_by(CHROM) %>% summarize(center=( max(GENPOScum) + min(GENPOScum) ) / 2 )
+
+p <- ggplot(don, aes(x=GENPOScum, y=LOG10P)) +
+
+    # Show all points
+    geom_point(aes(color=as.factor(CHROM))) +
+    scale_color_manual(values = rep(c("#779ECB", "#03254c"), 22 )) +
+
+    # custom X axis:
+    scale_x_continuous(label = axisdf$CHROM,
+                       breaks= axisdf$center,
+                       name = "Chromosome",
+                       expand = c(0,0),
+                       guide = guide_axis(check.overlap = TRUE)) +
+  # custom y step 1
+    scale_y_continuous(expand = c(0, 0),
+                       name=expression(-log[10](italic(p))),
+                       limits = c(0, sum(max(regenieTable$LOG10P), 0.5))) +
+  geom_hline(yintercept = -log10(5e-08),
+             linetype ="longdash",
+             color ="firebrick") + # genomewide significance
+  geom_hline(yintercept = -log10(1e-5),
+             linetype ="longdash",
+             color ="darkgrey")  + # suggestive significance
+
+    # Custom the theme:
+    theme_classic() +
+    theme(
+      legend.position="none",
+      panel.border = element_blank(),
+      axis.text = element_text(size = 12,
+                               color = "black"),
+      axis.title = element_text(size = 14),
+      axis.ticks = element_line(color = "black")
+      ) +
+  ggrepel::geom_text_repel(data = . %>% group_by(GENE_NAME) %>%
+                             top_n(1, LOG10P) %>%
+                            slice(1) %>%
+                             filter(LOG10P > -log10(5e-08)),
+                            aes(label=GENE_NAME), color = 1)
+
+# custom y axis step 2 (depends if ymax is defined)
+
+ if(params$manhattan_plot_ylimit == 0) {
+  p + scale_y_continuous(expand = c(0, 0),
+                       name=expression(-log[10](italic(P))),
+                       limits = c(0, sum(max(regenieTable$LOG10P), 0.5)))
 } else {
-  manhattan(regenieTable, chr="CHROM", bp="GENPOS", p="LOG10P", snp="ID", logp= FALSE, cex = 0.3, col = c("blue4", "orange3"), ylim = c(0, params$manhattan_plot_ylimit))
-  cat(paste("Please note that the Y-axis limit has been set to '", params$manhattan_plot_ylimit,"'. Please use the 'manhattan_plot_ylimit' parameter to adapt this behaviour."))
+  p + scale_y_continuous(expand = c(0, 0),
+                       name=expression(-log[10](italic(P))),
+                       limits = c(0, params$manhattan_plot_ylimit))
 }
+
 ```
+
+The red dashed line indicates genome wide significance (*P*=5e-8).  
+The gray dashed line indicates suggestive significance (*P*=1e-5).  
+
+  In total, `r nrow(regenieTable[regenieTable$LOG10P > -log10(5e-8),])` SNPs are genome-wide significant.
+
 
 ## QQ Plot
 
@@ -92,8 +175,6 @@ rm(regenieTable)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE)
-
 topHitsGroupedByGene <-
   annotatedTopHits %>%
   group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END) %>%
@@ -103,6 +184,27 @@ topHitsGroupedByGene <-
 datatable(topHitsGroupedByGene)
 
 ```
+
+## Top Hits
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+TopHits <- fread(params$annotated_tophits_filename, select = c("ID",
+                                                               "ALLELE0",
+                                                               "ALLELE1",
+                                                               "A1FREQ",
+                                                               "BETA",
+                                                               "SE",
+                                                               "LOG10P",
+                                                               "GENE_NAME",
+                                                               "DISTANCE"), header=TRUE)
+
+
+TopHits <- TopHits[order(-LOG10P), ]
+
+datatable(TopHits)
+
+```
+
 
 ## Validation and Logs
 
