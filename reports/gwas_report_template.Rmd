@@ -233,5 +233,5 @@ kable(step2_log)
 ---
 
 <small>
-This report has been created with **[GWAS-Regenie `r params$version`](https://github.com/genepi/gwas-regenie)**, a nextflow pipeline developed by [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Sebastian Schönherr](mailto:sebatian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
+This report has been created with **[GWAS-Regenie `r params$version`](https://github.com/genepi/gwas-regenie)**, a nextflow pipeline developed by [Lukas Forer](mailto:lukas.forer@i-med.ac.at), [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at) and [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
 </small>
