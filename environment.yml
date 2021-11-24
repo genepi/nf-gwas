@@ -19,6 +19,7 @@ dependencies:
   - r-kableextra=1.3.4
   - r-data.table=1.14.0
   - r-r.utils=2.10.1
+  - r-ggrepel=0.9.1
   - pandoc=2.14.2
   - cairo=1.16.0
   - xorg-libxt=1.2.1
