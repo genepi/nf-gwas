@@ -19,8 +19,9 @@ jobs:
       run: sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v21.04.3/nextflow; chmod +x nextflow;
     - name: Add nextflow to path
       run: echo "/opt/nextflow" >> $GITHUB_PATH;
-    - name: Run CI Tests
-      run:  ./run-tests.sh
-      
-     
-
+    - name: Install nf-test
+      run: sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.3.0/nf-test-0.3.0.tar.gz; tar xvfz nf-test-0.3.0.tar.gz; chmod +x nf-test;
+    - name: Add nf-test to path
+      run: echo "/opt/nf-test" >> $GITHUB_PATH;
+    - name: Run tests
+      run:  nf-test test 
