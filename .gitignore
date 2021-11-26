@@ -1,0 +1,8 @@
+work
+.nextflow
+.nextflow.*
+tests/output
+/results/
+/output/
+nf-test/
+.project
