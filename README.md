@@ -19,7 +19,7 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from M
 9) Create a [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype statistics, parsed log files manhattan plot, qq plot and top genes.
 
 ## Status
-The pipeline is currently under development (v0.1.13).
+The pipeline is currently under development (v0.1.14).
 
 ## Quick Start
 
@@ -28,13 +28,13 @@ The pipeline is currently under development (v0.1.13).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/gwas-regenie -r v0.1.13 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -r v0.1.14 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.13 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.14 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 **Note:** The slurm profiles require that (a) singularity is installed on all nodes and (b) a shared file system path as a working directory.
 
@@ -90,6 +90,7 @@ Please click [here](tests) for available test config files.
 | `annotation_min_log10p`     |   5 | Annotate results with logp10 >= 5 |
 | `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
 | `plot_ylimit`     |   0 | Limit y axis in Manhattan/QQ plot for large p-values |
+| `manhattan_annotation_enabled`     |   true | Use annotation for Manhattan plot |
 
 ## Development
 
