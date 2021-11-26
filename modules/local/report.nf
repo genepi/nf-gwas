@@ -16,6 +16,9 @@ process REPORT {
   output:
     path "*.html"
 
+  script:
+      def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()
+
   """
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
@@ -32,7 +35,9 @@ process REPORT {
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}',
       plot_ylimit=${params.plot_ylimit},
-      annotated_tophits_filename='${annotated_tophits}'
+      annotated_tophits_filename='${annotated_tophits}',
+      manhattan_annotation_enabled = $annotation_as_string,
+      annotation_min_log10p = ${params.annotation_min_log10p}
     ),
     intermediates_dir='\$PWD',
     knit_root_dir='\$PWD',

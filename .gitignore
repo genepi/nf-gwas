@@ -4,3 +4,4 @@ work
 tests/output
 /results/
 /output/
+reports/*html
