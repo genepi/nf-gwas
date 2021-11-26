@@ -1,0 +1,43 @@
+PLINK v2.00a2.3LM 64-bit Intel (24 Jan 2020)
+Options in effect:
+  --bfile example
+  --geno 0.1
+  --hwe 1e-15
+  --mac 100
+  --maf 0.01
+  --make-bed
+  --mind 0.1
+  --no-id-header
+  --out example.qc
+  --write-samples
+  --write-snplist
+
+Hostname: ea91e939e5b5
+Working directory: /data2/git/gwas-regenie/work/b9/a2aef4db1968a7b246c0ce78d16638
+Start time: Fri Nov 26 10:53:00 2021
+
+Random number seed: 1637923980
+32074 MiB RAM detected; reserving 16037 MiB for main workspace.
+Using up to 8 compute threads.
+500 samples (0 females, 0 males, 500 ambiguous; 500 founders) loaded from
+example.fam.
+1000 variants loaded from example.bim.
+1 quantitative phenotype loaded (500 values).
+Calculating sample missingness rates... done.
+0 samples removed due to missing genotype data (--mind).
+500 samples (0 females, 0 males, 500 ambiguous; 500 founders) remaining after
+main filters.
+500 quantitative phenotype values remaining after main filters.
+--write-samples: Sample IDs written to example.qc.id .
+Calculating allele frequencies... done.
+--geno: 0 variants removed due to missing genotype data.
+--hwe: 0 variants removed due to Hardy-Weinberg exact test (founders only).
+242 variants removed due to allele frequency threshold(s)
+(--maf/--max-maf/--mac/--max-mac).
+758 variants remaining after main filters.
+--write-snplist: Variant IDs written to example.qc.snplist .
+Writing example.qc.fam ... done.
+Writing example.qc.bim ... done.
+Writing example.qc.bed ... done.
+
+End time: Fri Nov 26 10:53:00 2021
