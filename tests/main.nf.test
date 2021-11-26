@@ -23,7 +23,7 @@ nextflow_pipeline {
         then {
             assert workflow.success
             assert workflow.trace.tasks().size() == 18
-            //assert new File("tests/output/gwas-additive/results/Y1.regenie.gz").exists()
+            assert new File("tests/output/gwas-additive/results/Y1.regenie.gz").exists()
         }
 
     }
