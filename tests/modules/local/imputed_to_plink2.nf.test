@@ -1,0 +1,32 @@
+nextflow_process {
+
+    name "Test Process IMPUTED_TO_PLINK2"
+    script "modules/local/imputed_to_plink2.nf"
+    process "IMPUTED_TO_PLINK2"
+
+    test("Should create a pgen, psam and pvar file with 500 samples") {
+
+        when {
+            process {
+                """
+                input[0] = file("tests/input/example.vcf.gz")
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.imputed_plink2
+            assert process.out.imputed_plink2.size() == 1
+            assert process.out.imputed_plink2.get(0).get(0) == "example.vcf"
+            assert process.out.imputed_plink2.get(0).get(1) ==~ ".*/example.vcf.pgen"
+            assert process.out.imputed_plink2.get(0).get(2) ==~ ".*/example.vcf.psam"
+            assert process.out.imputed_plink2.get(0).get(3) ==~ ".*/example.vcf.pvar"
+
+            def psam = process.out.imputed_plink2.get(0).get(2)
+            assert file(psam).readLines().size() == 501
+        }
+
+    }
+
+}
