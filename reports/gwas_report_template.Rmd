@@ -21,6 +21,8 @@ params:
   phenotype_log: ../output/test-gwas/logs/phenotype.validated.log
   covariate_log: NO_COV_LOG
   plot_ylimit: 0
+  manhattan_annotation_enabled: true
+  annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/Y1.regenie.filtered.annotated.txt.gz
 ---
 
@@ -72,6 +74,8 @@ ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE,tmpdir="$PWD")
 
+#source: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
+
 annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE)
 
 #merge gene names of tophits to regenieTable
@@ -113,7 +117,7 @@ p <- ggplot(don, aes(x=GENPOScum, y=LOG10P)) +
                        name = "Chromosome",
                        expand = c(0,0),
                        guide = guide_axis(check.overlap = TRUE)) +
-  # custom y step 1
+  # custom y step 1annotation_limit
     scale_y_continuous(expand = c(0, 0),
                        name=expression(-log[10](italic(p))),
                        limits = c(0, sum(max(regenieTable$LOG10P), 0.5))) +
@@ -133,23 +137,29 @@ p <- ggplot(don, aes(x=GENPOScum, y=LOG10P)) +
                                color = "black"),
       axis.title = element_text(size = 14),
       axis.ticks = element_line(color = "black")
-      ) +
-  ggrepel::geom_text_repel(data = . %>% group_by(GENE_NAME) %>%
-                             top_n(1, LOG10P) %>%
-                            slice(1) %>%
-                             filter(LOG10P > -log10(5e-08)),
-                            aes(label=GENE_NAME), color = 1)
+      )
 
 # custom y axis step 2 (depends if ymax is defined)
 
  if(params$plot_ylimit == 0) {
-  p + scale_y_continuous(expand = c(0, 0),
+  p2 <- p + scale_y_continuous(expand = c(0, 0),
                        name=expression(-log[10](italic(P))),
                        limits = c(0, sum(max(regenieTable$LOG10P), 0.5)))
 } else {
-  p + scale_y_continuous(expand = c(0, 0),
+  p2 <- p + scale_y_continuous(expand = c(0, 0),
                        name=expression(-log[10](italic(P))),
-                       limits = c(0, params$manhattan_plot_ylimit))
+                       limits = c(0, params$plot_ylimit))
+}
+
+
+ if(!params$manhattan_annotation_enabled) {
+  p2
+} else {
+  p2 + ggrepel::geom_text_repel(data = don %>% group_by(GENE_NAME) %>%
+                             top_n(1, LOG10P) %>%
+                               slice(1) %>%
+                             filter(LOG10P > params$annotation_min_log10p),
+                            aes(label=GENE_NAME), color = 1)
 }
 
 
