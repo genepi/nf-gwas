@@ -4,4 +4,5 @@ work
 tests/output
 /results/
 /output/
-reports/*html
+nf-test/
+.project
