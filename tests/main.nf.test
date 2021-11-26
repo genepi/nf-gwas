@@ -8,11 +8,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'gwas-additive'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
@@ -32,11 +32,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = "test-gwas-add-pruning"
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
@@ -55,11 +55,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = "test-gwas-binary-no-approx"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
@@ -78,11 +78,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = "test-gwas-binary-no-firth"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
@@ -101,11 +101,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = "test-gwas-binary-with-NA"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin_wNA.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin_wNA.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
@@ -123,11 +123,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = "test-gwas-binary"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
@@ -145,14 +145,14 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-covariates-file'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
-                covariates_filename           = "tests/input/covariates.txt"
+                covariates_filename           = "tests/input/pipeline/covariates.txt"
                 covariates_columns            = 'V1,V2'
                 regenie_test                  = 'additive'
             }
@@ -169,11 +169,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-delete-missing-phenotype-data'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 phenotypes_delete_missings    = true
@@ -192,11 +192,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-dominant'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'dominant'
@@ -214,11 +214,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-force-step1'
-                genotypes_array                = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array                = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
@@ -237,11 +237,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-header'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.bgen'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.bgen'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = 'tests/input/phenotype_header.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype_header.txt'
                 phenotypes_columns            = 'PHENO1,PHENO2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
@@ -259,11 +259,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-hg38-annotate'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example_hg38.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example_hg38.vcf.gz'
                 genotypes_build               = 'hg38'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
@@ -281,11 +281,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-manhattan-limit'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
@@ -304,11 +304,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-phenotype-tabs'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.tabs.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.tabs.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
@@ -325,11 +325,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-phenotype-three-empty-values'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype_with_three_empty_values.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype_with_three_empty_values.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
@@ -347,11 +347,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-range'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_range                 = '1:100-200'
@@ -370,11 +370,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-recessive'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'recessive'
@@ -392,11 +392,11 @@ nextflow_pipeline {
         when {
             params {
                 project                       = 'test-gwas-skip-predictions'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_skip_predictions      = true

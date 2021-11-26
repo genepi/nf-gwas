@@ -29,7 +29,7 @@ nextflow_process {
                     assert size() == 4
                     // pred list includes 2 loco files
                     assert path(get(3)).readLines(), 2
-                    //check loco.gz md5
+                    //check loco.gz md5 sums
                     assert path(get(1)).md5 == "7acd8ecadafb0eb9bbab2eb8b529e54f"
                     assert path(get(2)).md5 == "41ab9671090c2f7af3834242e691d18a"
                     // parse log file
