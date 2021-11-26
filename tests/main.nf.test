@@ -1,0 +1,413 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    test("Test GWAS Additive") {
+
+        when {
+            params {
+                project                       = 'gwas-additive'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+                outdir                        = 'tests/output/gwas-additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 18
+            //assert new File("tests/output/gwas-additive/results/Y1.regenie.gz").exists()
+        }
+
+    }
+    test("GWAS with Pruning") {
+
+        when {
+            params {
+                project                       = "test-gwas-add-pruning"
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = false
+                regenie_test                  = 'additive'
+                prune_enabled                 = true
+        }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test GWAS Binary without Approximation") {
+
+        when {
+            params {
+                project                       = "test-gwas-binary-no-approx"
+                genotypes_array               = "tests/input/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = true
+                regenie_test                  = 'additive'
+                regenie_firth_approx          = false
+        }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test GWAS Binary Without Firth") {
+
+        when {
+            params {
+                project                       = "test-gwas-binary-no-firth"
+                genotypes_array               = "tests/input/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = true
+                regenie_test                  = 'additive'
+                regenie_firth                 = false
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Binary Phenotype with NA") {
+
+        when {
+            params {
+                project                       = "test-gwas-binary-with-NA"
+                genotypes_array               = "tests/input/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "tests/input/phenotype_bin_wNA.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = true
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Binary Phenotype") {
+
+        when {
+            params {
+                project                       = "test-gwas-binary"
+                genotypes_array               = "tests/input/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = true
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test using Covariates File") {
+
+        when {
+            params {
+                project                       = 'test-gwas-covariates-file'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = false
+                covariates_filename           = "tests/input/covariates.txt"
+                covariates_columns            = 'V1,V2'
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Delete Missing Phenotype Data") {
+
+        when {
+            params {
+                project                       = 'test-gwas-delete-missing-phenotype-data'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = false
+                phenotypes_delete_missings    = true
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Dominant Model") {
+
+        when {
+            params {
+                project                       = 'test-gwas-dominant'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'dominant'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Force Regenie Step1") {
+
+        when {
+            params {
+                project                       = 'test-gwas-force-step1'
+                genotypes_array                = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+                regenie_force_step1           = 'true'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Header") {
+
+        when {
+            params {
+                project                       = 'test-gwas-header'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.bgen'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = 'tests/input/phenotype_header.txt'
+                phenotypes_columns            = 'PHENO1,PHENO2'
+                phenotypes_binary_trait       = false
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Annotate for hg38") {
+
+        when {
+            params {
+                project                       = 'test-gwas-hg38-annotate'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example_hg38.vcf.gz'
+                genotypes_build               = 'hg38'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Manhattan Limit") {
+
+        when {
+            params {
+                project                       = 'test-gwas-manhattan-limit'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+                plot_ylimit                   = 2
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Phenotype Tabs") {
+
+        when {
+            params {
+                project                       = 'test-gwas-phenotype-tabs'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.tabs.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Phenotype with empty values") {
+        when {
+            params {
+                project                       = 'test-gwas-phenotype-three-empty-values'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype_with_three_empty_values.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Range Parameter") {
+
+        when {
+            params {
+                project                       = 'test-gwas-range'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_range                 = '1:100-200'
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Recessive") {
+
+        when {
+            params {
+                project                       = 'test-gwas-recessive'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = false
+                regenie_test                  = 'recessive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Test Skip Predictions") {
+
+        when {
+            params {
+                project                       = 'test-gwas-skip-predictions'
+                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = false
+                regenie_skip_predictions      = true
+                regenie_test                  = 'additive'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+}

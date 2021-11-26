@@ -4,3 +4,5 @@ work
 tests/output
 /results/
 /output/
+nf-test/
+.project
