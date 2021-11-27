@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Run your first GWAS"
-permalink: /run-first-gwas/
+permalink: /run-your-first-gwas/
 nav_order: 6
 ---
 
