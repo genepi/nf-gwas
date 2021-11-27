@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Blog"
-permalink: /blog/
+title: "Run your first GWAS"
+permalink: /run-first-gwas/
 nav_order: 6
 ---
 
@@ -10,7 +10,7 @@ nav_order: 6
 
 ---
 
-## From zero command line knowledge to running a genome-wide association study in no time
+##  Introduction
 
 Programs to perform genome-wide association studies (GWAS) are usually run via the command line. This can be intimidating for a biologist. Take me as an example: In my bachelor and master I've studied molecular medicine. So my formal training focused on understanding pathophysiological processes in the human body and how to perform wet-lab experiments, I never had to use the command line. Nevertheless, I recently ran my first GWAS with this gwas-regenie nextflow pipeline ([https://github.com/genepi/gwas-regenie](https://github.com/genepi/gwas-regenie)). Here, I want to first introduce this pipeline through the lens of a biologist and second share with you *my setup*. Since I am working on a Windows computer, I need to access a remote Linux server to run the pipeline. So this section will be about the kind of tasks that are *so basic that bioinformaticians don't even talk about them*. I guess this is like describing how to pipet for a trained wet-lab biologist. However, I hope it will show you that if you follow these steps you can run your first GWAS without any prior knowledge in bioinformatics in no time :).
 
@@ -33,10 +33,10 @@ In addition to performing these data preparation steps, the pipeline also perfor
 1. After performing a GWAS you first want to see the Manhattan plot, the QQ plot and maybe look at the nearest genes and effect sizes of tophits. The pipeline automatically generates an html report containing all these plots and lists. In addition, it contains all the information about the data pre-processing and regenie steps. This allows you to check if everything was performed as intended and also increases reproducibility because all the information about the GWAS is summarized in one file.
 2. Regenie gives you the GWAS summary statistics as a large file with the ending `.regenie.gz`. If your computer does not have so much RAM, loading this file for example into R to perform some further analyses can take quite long. The pipeline additionally outputs you a file with the ending `.filtered.annotated.txt.gz`. This file is much smaller because it only contains the summary SNPs filtered for a minimum ‑log10(P) (by default =5) and in addition the nearest genes have been annotated to these SNPs.
 
+## Executing the pipeline with nextflow
 And last but not least it is also important to mention that this pipeline is built with the workflow manager Nextflow ([https://www.nextflow.io/](https://www.nextflow.io/)). To use the pipeline, you don't need to know how it works let alone build one on your own but I think one important advantage is helpful to know: The software that is needed for all the steps described above is downloaded when the pipeline is initiated and the software is stored in a `container`. So no matter if you perform the data analysis on different computers or if you need to rerun it in two years: As long as you use the same input data and the same configuration of the pipeline, you always get the same results. This further increases reproducibility and saves a lot of time if you suddenly need to work with a different computer or server.
 
 ## Mastering the basic tasks
-
 As mentioned in the beginning, I am working on a Windows computer, so I cannot run the pipeline locally. However, my institute has a Linux server on which Nextflow is installed. So the first steps for you are to 1) gain access to a server, a Linux computer that you can access remotely or a cluster and 2) ask the administrator to install Nextflow on it (Version ≥ 21.04.0; [https://www.nextflow.io/docs/latest/getstarted.html#installation](https://www.nextflow.io/docs/latest/getstarted.html#installation)).
 
 ### Accessing a remote server
@@ -47,7 +47,7 @@ To access the server, you only need two programs: 1) a SSH client (I am using Wi
 
 So with PowerShell you can now navigate within the server using `bash shell` commands. The system is organized as a tree-like file system with a root branching into different folders (Unix file system). There are a lot of great video tutorials and basic courses available for free, but to run the pipeline just reading the paragraph below will be enough.
 
-Entering `pwd` will print the present working directory, `ls` will list the files and directories in the present working directory and `cd` will change your working directory. Just try them out, you cannot break anything :). If you don't put anything after `cd`, it will move you to your home directory (the working directory when you enter the server via PowerShell). If you want to navigate to another folder, you can put an absolute or relative path after `cd`. For example: If `pwd` tells you that you are in `/home/myHome` and via `ls` you found out that in *myHome* there is the folder *Project1*, you can navigate there either by entering `cd Project1` (relative path) or `cd /home/myHome/Project1` (absolute path). If you now want to navigate back to your *myHome* folder instead of using the absolute path you can also type in `cd ..` since this command always moves into the parent folder of your current location. One last command: Lets say you are in *myHome* and you want to create a new folder called GWAS. For this just enter `mkdir GWAS`. If you now use `ls`, you should see the folder and you should be able to navigate there with `cd GWAS`.
+Entering `pwd` will print the present working directory, `ls` will list the files and directories in the present working directory and `cd` will change your working directory. Just try them out, you cannot break anything :). If you don't put anything after `cd`, it will move you to your home directory (the working directory when you enter the server via PowerShell). If you want to navigate to another folder, you can put an absolute or relative path after `cd`. For example: If `pwd` tells you that you are in `/home/myHome` and via `ls` you found out that in *myHome* there is the folder *Project1*, you can navigate there either by entering `cd Project1` (relative path) or `cd /home/myHome/Project1` (absolute path). If you now want to navigate back to your *myHome* folder instead of using the absolute path you can also type in `cd ..` since this command always moves into the parent folder of your current location. One last command: Lets say you are in *myHome* and you want to create a new folder called *GWAS*. For this just enter `mkdir GWAS`. If you now use `ls`, you should see the folder and you should be able to navigate there with `cd GWAS`.
 
 ### Running the gwas pipeline
 
@@ -110,12 +110,10 @@ So to conclude, you don't need profound bioinformatics or command line knowledge
 
 | **Command** | **Description** | **Examples and additional infos** |
 | --- | --- | --- |
-| `pwd` | Will print your present working directory |
- |
-| ls | Will print all files and directories within your present working directory | If you put a path (absolute or relative) after `ls` it will print the content of this directory) e.g. `ls /home` will print the content of the folder home; If you add `-l` it will print the files and directories in a list that contains additional information such as permissions |
+| `pwd` | Will print your present working directory | |
+| `ls` | Will print all files and directories within your present working directory | If you put a path (absolute or relative) after `ls` it will print the content of this directory) e.g. `ls /home` will print the content of the folder home; If you add `-l` it will print the files and directories in a list that contains additional information such as permissions |
 | `mkdir` | Will make a new directory in your present working directory | `mkdir GWAS` will make a directory called `GWAS` |
 | `cd` | Change directories | If you only enter `cd` without an absolute or relative path, it will change to your home directory; Entering `cd ..` will change your current directory to the parent folder; Entering `cd` with an absolute or relative path will change the directory to the respective folder |
-| `nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.13 –profile singularity` | Will run the gwas pipeline;
- replace <nextflow.config> with the name of your configuration file; You can adapt the version of the pipeline by simply changing the version (v0.1.13) | Adding `-bg` will continue to run the pipeline even if you close the command line;Adding `-resume` will continue the pipeline with the files that have already been generated by a run of the same config file (e.g. if you only change the settings for the annotation files, it does not have to rerun the whole pipeline) |
+| `nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.13 –profile singularity` | Will run the gwas pipeline; replace <nextflow.config> with the name of your configuration file; You can adapt the version of the pipeline by simply changing the version (v0.1.13) | Adding `-bg` will continue to run the pipeline even if you close the command line;Adding `-resume` will continue the pipeline with the files that have already been generated by a run of the same config file (e.g. if you only change the settings for the annotation files, it does not have to rerun the whole pipeline) |
 | `htop` | Will display the current processes that are running | Hit `q` to quit |
 | `vi` | A text editor in Linux that can display the content of a file, an alternative is for example `nano` (it can be used in the same way, but the advantage is that you can immediately start to modify the file) | E.g. enter `vi first-gwas.config` to view the content of the first-gwas.config file;To quit just type in the following command and hit enter `:q!`; After running a GWAS you might notice a `.nextflow.log` file in you folder when you check via FileZilla but you don't see them if you enter ls in the command line because the dot in the beginning of the file means its hidden. However, you can still look at the content of such a file by entering `vi .nextflow.log` |
