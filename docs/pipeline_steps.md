@@ -1,11 +1,11 @@
 ---
 layout: page
-title: Pipeline Overview
-permalink: /overview/
+title: Pipeline Steps
+permalink: /steps/
 nav_order: 2
 ---
 
-## Pipeline Overview
+## Pipeline Steps
 
 The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from Michigan Imputation Server) as an input and outputs association results, annotated tophits and an RMarkdown report including numerous plots and statistics.
 
