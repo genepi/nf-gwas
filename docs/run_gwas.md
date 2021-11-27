@@ -2,7 +2,7 @@
 layout: post
 title: "Run your first GWAS"
 permalink: /run-your-first-gwas/
-nav_order: 6
+nav_order: 3
 ---
 
 # Running the gwas-regenie nextflow pipeline – Lessons learned from a biologist

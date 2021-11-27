@@ -8,4 +8,4 @@ nav_order: 4
 
 # Parameters
 
-GWAS-regenie supports a range of parameters. Please see below for all required and optional parameters. 
+GWAS-regenie supports a range of parameters. Please see below for all required and optional parameters.
