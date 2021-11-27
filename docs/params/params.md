@@ -6,7 +6,6 @@ permalink: /params/
 nav_order: 4
 ---
 
-# UI Components
+# Parameters
 
-To make it as easy as possible to write documentation in plain Markdown, most UI components are styled using default Markdown elements with few additional CSS classes needed.
-{: .fs-6 .fw-300 }
+GWAS-regenie supports a range of parameters. Please see below for all required and optional parameters. 
