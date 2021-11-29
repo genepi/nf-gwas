@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Introduction"
-parent: Beginner Guide
+parent: Beginners Guide
 nav_order: 1
 ---
 

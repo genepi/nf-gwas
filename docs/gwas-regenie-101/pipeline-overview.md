@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Pipeline Overview
-parent: Beginner Guide
+parent: Beginners Guide
 nav_order: 2
 ---
 

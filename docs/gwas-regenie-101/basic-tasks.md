@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Mastering the basic tasks"
-parent: Beginner Guide
+parent: Beginners Guide
 nav_order: 3
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Conclusion"
-parent: Beginner Guide
+parent: Beginners Guide
 nav_order: 5
 ---
 ## Conclusion

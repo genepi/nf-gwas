@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Running the pipeline"
-parent: Beginner Guide
+parent: Beginners Guide
 nav_order: 3
 ---
 
