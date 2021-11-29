@@ -1,0 +1,87 @@
+import java.util.zip.GZIPInputStream
+nextflow_process {
+
+    name "Test Process FILTER_RESULTS"
+    script "modules/local/filter_results.nf"
+    process "FILTER_RESULTS"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                annotation_min_log10p = 1
+            }
+            process {
+                """
+                input[0] = Channel.fromPath("tests/input/filter_results/*regenie.gz")
+                input[1] = file("tests/input/filter_results/RegenieFilter.jar")
+                """
+            }
+        }
+
+        then {
+            assert process.success
+
+            with(process.out) {
+                with(results_filtered){
+                assert (size == 2)
+                println(file(get(0)))
+                GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0))));
+                BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+                count = 0;
+                while ((content = br.readLine()) != null) {
+                    if(count == 0) {
+                    //check if regenie header is as expected
+                    assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                    }
+                    count++;
+                    }
+
+                //check amount of lines
+                assert (count == 117)
+                }
+                }
+            }
+
+        }
+
+        test("Should run without failures") {
+
+            when {
+                params {
+                    annotation_min_log10p = 0
+                }
+                process {
+                    """
+                    input[0] = Channel.fromPath("tests/input/filter_results/*regenie.gz")
+                    input[1] = file("tests/input/filter_results/RegenieFilter.jar")
+                    """
+                }
+            }
+
+            then {
+                assert process.success
+
+                with(process.out) {
+                    with(results_filtered){
+                    assert (size == 2)
+                    GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0))));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+                    count = 0;
+                    while ((content = br.readLine()) != null) {
+                        if(count == 0) {
+                        //check if regenie header is as expected
+                        assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                        }
+                        count++;
+                        }
+
+                    //check amount of lines
+                    assert (count == 1001)
+                    }
+                    }
+                }
+
+            }
+
+    }

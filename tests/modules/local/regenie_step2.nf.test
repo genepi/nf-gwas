@@ -35,9 +35,6 @@ nextflow_process {
             assert process.trace.tasks().size() == 1
 
                 with(process.out) {
-
-
-
                     with(regenie_step2_out.get(0)){
                     assert size,2
                     assert path(get(0)).md5 == "c4f6883d15cf0963176923e8f3538ea7"
@@ -57,7 +54,6 @@ nextflow_process {
 
                     //check amount of lines
                     assert count,10001
-
                     }
 
 
