@@ -6,7 +6,7 @@ nextflow_process {
     script "modules/local/merge_results.nf"
     process "MERGE_RESULTS"
 
-    test("Should run without failures") {
+    test("Should output 2 merged regenie files by phenotype, one is empty") {
 
         when {
             params {
@@ -45,14 +45,14 @@ nextflow_process {
                  //check if file 2 is empty
                  gzip = new GZIPInputStream(new FileInputStream(file(get(1).get(1))));
                  br = new BufferedReader(new InputStreamReader(gzip));
-                count = 0;
-                while ((content = br.readLine()) != null) {
-                    if(count == 0) {
-                    //check if regenie header is as expected
-                    assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
-                    }
-                    count++;
-                    }
+                 count = 0;
+                    while ((content = br.readLine()) != null) {
+                        if(count == 0) {
+                        //check if regenie header is as expected
+                        assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                        }
+                        count++;
+                        }
 
                 //only header
                 assert (count == 1)

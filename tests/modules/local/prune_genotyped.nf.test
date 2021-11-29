@@ -4,7 +4,7 @@ nextflow_process {
     script "modules/local/prune_genotyped.nf"
     process "PRUNE_GENOTYPED"
 
-    test("Should run without failures") {
+    test("Should apply pruning and limit output to 248 lines") {
 
         when {
             params {

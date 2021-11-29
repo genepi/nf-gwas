@@ -4,7 +4,7 @@ nextflow_process {
     script "modules/local/regenie_step1.nf"
     process "REGENIE_STEP1"
 
-    test("Should run without failures") {
+    test("Should execute regenie step 1 for 2 phenotypes ") {
 
         when {
             params {

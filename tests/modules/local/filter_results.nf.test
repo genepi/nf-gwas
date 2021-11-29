@@ -5,7 +5,7 @@ nextflow_process {
     script "modules/local/filter_results.nf"
     process "FILTER_RESULTS"
 
-    test("Should run without failures") {
+    test("Should output only 117 filtered lines") {
 
         when {
             params {
@@ -44,7 +44,7 @@ nextflow_process {
 
         }
 
-        test("Should run without failures") {
+        test("Should output all regenie lines") {
 
             when {
                 params {
@@ -75,7 +75,7 @@ nextflow_process {
                         count++;
                         }
 
-                    //check amount of lines
+                    //all lines included since filter value is 0
                     assert (count == 1001)
                     }
                     }
