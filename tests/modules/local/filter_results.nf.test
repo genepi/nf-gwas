@@ -25,7 +25,6 @@ nextflow_process {
             with(process.out) {
                 with(results_filtered){
                 assert (size == 2)
-                println(file(get(0)))
                 GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0))));
                 BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
                 count = 0;
