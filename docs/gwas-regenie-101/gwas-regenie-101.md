@@ -1,6 +1,6 @@
 ---
 layout: post
-title: GWAS-Regenie 101
+title: Beginner Guide
 has_children: true
 nav_order: 3
 ---

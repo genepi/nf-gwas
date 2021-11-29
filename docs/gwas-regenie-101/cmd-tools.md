@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Table 1 - Command Line Tools to run your GWAS"
-parent: GWAS-Regenie 101
+parent: Beginner Guide
 nav_order: 6
 ---
 ## Table 1 - Command Line Tools to run your GWAS

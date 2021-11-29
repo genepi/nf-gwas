@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Pipeline Overview
-parent: GWAS-Regenie 101
+parent: Beginner Guide
 nav_order: 2
 ---
 

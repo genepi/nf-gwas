@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "What to do with errors"
-parent: GWAS-Regenie 101
+parent: Beginner Guide
 nav_order: 4
 ---
 ## What to do with errors

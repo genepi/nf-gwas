@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Conclusion"
-parent: GWAS-Regenie 101
+parent: Beginner Guide
 nav_order: 5
 ---
 ## Conclusion

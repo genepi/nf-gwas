@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Mastering the basic tasks"
-parent: GWAS-Regenie 101
+parent: Beginner Guide
 nav_order: 3
 ---
 

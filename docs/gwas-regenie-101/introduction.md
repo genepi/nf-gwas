@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Introduction"
-parent: GWAS-Regenie 101
+parent: Beginner Guide
 nav_order: 1
 ---
 

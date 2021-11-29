@@ -13,27 +13,27 @@ nav_order: 1
 A nextflow pipeline to perform whole genome regression modelling using [regenie](https://github.com/rgcgithub/regenie).
 {: .fs-6 .fw-300 }
 
-[Get started now](#getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 }&nbsp;&nbsp;
+[Get started now](getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 }&nbsp;&nbsp;
 [View it on GitHub](https://github.com/genepi/gwas-regenie){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
-## Getting Started
+The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from Michigan Imputation Server) as an input and outputs association results, annotated tophits and an RMarkdown report including numerous plots and statistics.
 
-1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0)
+1. Validate phenotype and covariate file (e.g. check file format, replace empty values with NA, create summary statistics)
 
-2. Install [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://sylabs.io/)
+2. Convert VCF imputed data into the [plink2] file format (https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf).
 
-3. Run the pipeline on a test dataset using Docker to validate your installation
+3. Prune genotyped data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
 
-    ```
-    nextflow run genepi/gwas-regenie -r v0.1.14 -profile test,docker
-    ```
+4. Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness.
 
-4. Run the pipeline on your data
+5. Run [regenie](https://github.com/rgcgithub/regenie).
 
-    ```
-    nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.14 -profile docker
-    ```
+6. Parse regenie log and create summary statistics.
 
-**Note:** The slurm profiles require that (a) singularity is installed on all nodes and (b) a shared file system path as a working directory.
+7. Filter regenie results by pvalue using [JBang](https://github.com/jbangdev/jbang).
+
+8. Annotate filtered results using [bedtools closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html).
+
+9. Create a [RMarkdown report](https://rmarkdown.rstudio.com/) including phenotype statistics, parsed log files manhattan plot, qq plot and top genes.
