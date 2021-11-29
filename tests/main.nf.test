@@ -3,9 +3,12 @@ nextflow_pipeline {
     name "Test Workflow main.nf"
     script "main.nf"
 
-    test("Test GWAS Additive") {
+    test("Should execute pipeline applying an additive model") {
 
         when {
+
+        def testOutdir = outputDir
+
             params {
                 project                       = 'gwas-additive'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -16,18 +19,18 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
-                outdir                        = 'tests/output/gwas-additive'
+                outdir                        = "$testOutdir/gwas-additive"
             }
         }
 
         then {
             assert workflow.success
             assert workflow.trace.tasks().size() == 18
-            assert new File("tests/output/gwas-additive/results/Y1.regenie.gz").exists()
+            assert new File("$outputDir/gwas-additive/results/Y1.regenie.gz").exists()
         }
 
     }
-    test("GWAS with Pruning") {
+    test("Should execute pipeline including pruning step") {
 
         when {
             params {
@@ -50,7 +53,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test GWAS Binary without Approximation") {
+    test("Should execute pipeline for binary trait with firth but without approximation") {
 
         when {
             params {
@@ -73,7 +76,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test GWAS Binary Without Firth") {
+    test("Should execute pipeline for binary trait without firth") {
 
         when {
             params {
@@ -96,7 +99,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Binary Phenotype with NA") {
+    test("Should execute pipeline for binary traits including NAs") {
 
         when {
             params {
@@ -118,7 +121,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Binary Phenotype") {
+    test("Should execute pipeline for binary trait") {
 
         when {
             params {
@@ -140,7 +143,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test using Covariates File") {
+    test("Should execute pipeline with covariate file") {
 
         when {
             params {
@@ -164,7 +167,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Delete Missing Phenotype Data") {
+    test("Should execute pipeline without missing phenotype values") {
 
         when {
             params {
@@ -187,7 +190,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Dominant Model") {
+    test("Should execute pipeline applying a dominant model") {
 
         when {
             params {
@@ -209,7 +212,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Force Regenie Step1") {
+    test("Should execute pipeline with forced step1 parameter") {
 
         when {
             params {
@@ -232,7 +235,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Header") {
+    test("Should execute pipeline with different header") {
 
         when {
             params {
@@ -254,7 +257,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Annotate for hg38") {
+    test("Should execute pipeline with hg38 annotation") {
 
         when {
             params {
@@ -276,7 +279,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Manhattan Limit") {
+    test("Should execute pipeline with applied plot limit") {
 
         when {
             params {
@@ -299,7 +302,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Phenotype Tabs") {
+    test("Should execute pipeline with tabs in phenotype file") {
 
         when {
             params {
@@ -321,7 +324,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Phenotype with empty values") {
+    test("Should execute pipeline with 3 empty phenotype values") {
         when {
             params {
                 project                       = 'test-gwas-phenotype-three-empty-values'
@@ -342,7 +345,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Range Parameter") {
+    test("Should execute pipeline on a specified range only") {
 
         when {
             params {
@@ -365,7 +368,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Recessive") {
+    test("Should execute pipeline applying a recessive model") {
 
         when {
             params {
@@ -387,7 +390,7 @@ nextflow_pipeline {
 
     }
 
-    test("Test Skip Predictions") {
+    test("Should execute pipeline without regenie predictions") {
 
         when {
             params {
