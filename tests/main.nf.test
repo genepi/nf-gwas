@@ -6,9 +6,7 @@ nextflow_pipeline {
     test("Should execute pipeline applying an additive model") {
 
         when {
-
-        def testOutdir = outputDir
-
+            def testOutdir = outputDir
             params {
                 project                       = 'gwas-additive'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -19,20 +17,21 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
-                outdir                        = "$testOutdir/gwas-additive"
+                outdir                        = "$testOutdir"
             }
         }
 
         then {
             assert workflow.success
             assert workflow.trace.tasks().size() == 18
-            assert new File("$outputDir/gwas-additive/results/Y1.regenie.gz").exists()
+            assert new File("$outputDir/results/Y1.regenie.gz").exists()
         }
 
     }
     test("Should execute pipeline including pruning step") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-add-pruning"
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -44,6 +43,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
                 prune_enabled                 = true
+                outdir                        = "$testOutdir"
         }
         }
 
@@ -56,6 +56,7 @@ nextflow_pipeline {
     test("Should execute pipeline for binary trait with firth but without approximation") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary-no-approx"
                 genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
@@ -67,6 +68,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 regenie_firth_approx          = false
+                outdir                        = "$testOutdir"
         }
         }
 
@@ -79,6 +81,7 @@ nextflow_pipeline {
     test("Should execute pipeline for binary trait without firth") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary-no-firth"
                 genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
@@ -90,6 +93,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 regenie_firth                 = false
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -102,6 +106,7 @@ nextflow_pipeline {
     test("Should execute pipeline for binary traits including NAs") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary-with-NA"
                 genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
@@ -112,6 +117,7 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -124,6 +130,7 @@ nextflow_pipeline {
     test("Should execute pipeline for binary trait") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary"
                 genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
@@ -134,6 +141,7 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -146,6 +154,7 @@ nextflow_pipeline {
     test("Should execute pipeline with covariate file") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-covariates-file'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -158,6 +167,7 @@ nextflow_pipeline {
                 covariates_filename           = "tests/input/pipeline/covariates.txt"
                 covariates_columns            = 'V1,V2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -170,6 +180,7 @@ nextflow_pipeline {
     test("Should execute pipeline without missing phenotype values") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-delete-missing-phenotype-data'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -181,6 +192,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 phenotypes_delete_missings    = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -193,6 +205,7 @@ nextflow_pipeline {
     test("Should execute pipeline applying a dominant model") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-dominant'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -203,6 +216,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'dominant'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -215,6 +229,7 @@ nextflow_pipeline {
     test("Should execute pipeline with forced step1 parameter") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-force-step1'
                 genotypes_array                = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -226,6 +241,7 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 regenie_force_step1           = 'true'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -238,6 +254,7 @@ nextflow_pipeline {
     test("Should execute pipeline with different header") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-header'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -248,6 +265,7 @@ nextflow_pipeline {
                 phenotypes_columns            = 'PHENO1,PHENO2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -260,6 +278,7 @@ nextflow_pipeline {
     test("Should execute pipeline with hg38 annotation") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-hg38-annotate'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -270,6 +289,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -282,6 +302,7 @@ nextflow_pipeline {
     test("Should execute pipeline with applied plot limit") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-manhattan-limit'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -293,6 +314,7 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 plot_ylimit                   = 2
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -305,6 +327,7 @@ nextflow_pipeline {
     test("Should execute pipeline with tabs in phenotype file") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-phenotype-tabs'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -315,6 +338,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -326,6 +350,7 @@ nextflow_pipeline {
 
     test("Should execute pipeline with 3 empty phenotype values") {
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-phenotype-three-empty-values'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -336,6 +361,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -348,6 +374,7 @@ nextflow_pipeline {
     test("Should execute pipeline on a specified range only") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-range'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -359,6 +386,7 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_range                 = '1:100-200'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -371,6 +399,7 @@ nextflow_pipeline {
     test("Should execute pipeline applying a recessive model") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-recessive'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -381,6 +410,7 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'recessive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -393,6 +423,7 @@ nextflow_pipeline {
     test("Should execute pipeline without regenie predictions") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-skip-predictions'
                 genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
@@ -404,6 +435,7 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 regenie_skip_predictions      = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
