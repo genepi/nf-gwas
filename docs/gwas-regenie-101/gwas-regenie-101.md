@@ -9,6 +9,4 @@ nav_order: 3
 
 *or: From zero command line knowledge to running a genome-wide association study in no time*
 
-Earlier this year we contacted our colleague [Johanna](https://twitter.com/johsr2) to present her our current status of the GWAS pipeline using Nextflow. In this tutorial, she summarizes her first steps with Nextflow and executing the pipeline on remote infrastructure.
-
-The goal of this tutorial is to get started with the GWAS-regenie pipeline **without prior knowledge of Nextflow**.
+In this tutorial, [Johanna](https://twitter.com/johsr2) summarizes her experiences with the command line, Nextflow and executing GWAS-Regenie. The overall goal of this tutorial is to get started with the GWAS-regenie pipeline **without prior knowledge of Nextflow**.
