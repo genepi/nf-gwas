@@ -31,8 +31,13 @@ nextflow_process {
         then {
             assert process.success
 
+            //check amount of processes
+            assert process.trace.tasks().size() == 1
 
                 with(process.out) {
+
+
+
                     with(regenie_step2_out.get(0)){
                     assert size,2
                     assert path(get(0)).md5 == "c4f6883d15cf0963176923e8f3538ea7"
