@@ -23,5 +23,7 @@ jobs:
       run: sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.3.0/nf-test-0.3.0.tar.gz; tar xvfz nf-test-0.3.0.tar.gz; chmod +x nf-test;
     - name: Add nf-test to path
       run: echo "/opt/nf-test" >> $GITHUB_PATH;
-    - name: Run tests
-      run:  nf-test test 
+    - name: Run nf-test tests
+      run:  nf-test test
+    - name: Run static Tests
+      run:  ./run-tests.sh
