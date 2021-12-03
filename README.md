@@ -14,17 +14,21 @@ Documentation can be found [here](https://genepi.github.io/gwas-regenie/).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/gwas-regenie -r v0.1.14 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -r v0.1.15 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.14 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.15 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 **Note:** The slurm profiles require that (a) singularity is installed on all nodes and (b) a shared file system path as a working directory.
 
 Please click [here](tests) for available test config files.
+
+
+## Status
+The pipeline is currently under development (v0.1.15).
 
 ## Development
 ```
