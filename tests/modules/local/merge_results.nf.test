@@ -1,0 +1,67 @@
+import java.util.zip.GZIPInputStream
+
+nextflow_process {
+
+    name "Test Process MERGE_RESULTS"
+    script "modules/local/merge_results.nf"
+    process "MERGE_RESULTS"
+
+    test("Should output 2 merged regenie files by phenotype, one is empty") {
+
+        when {
+            params {
+            phenotypes_columns = 'Y1,Y2'
+            }
+            process {
+                """
+                phenotypes_array = params.phenotypes_columns.trim().split(',')
+                input[0] = Channel.fromPath("tests/input/merge_results/*regenie.gz").collect()
+                input[1] = Channel.from(phenotypes_array)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            with(process.out) {
+
+                with(results_merged){
+                assert size() == 2
+
+                GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0).get(1))));
+                BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+                count = 0;
+                while ((content = br.readLine()) != null) {
+                    if(count == 0) {
+                    //check if regenie header is as expected
+                    assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                    }
+                    count++;
+                    }
+
+                //check amount of lines
+                assert (count == 2001)
+
+                 //check if file 2 is empty
+                 gzip = new GZIPInputStream(new FileInputStream(file(get(1).get(1))));
+                 br = new BufferedReader(new InputStreamReader(gzip));
+                 count = 0;
+                    while ((content = br.readLine()) != null) {
+                        if(count == 0) {
+                        //check if regenie header is as expected
+                        assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                        }
+                        count++;
+                        }
+
+                //only header
+                assert (count == 1)
+
+                }
+            }
+
+        }
+
+    }
+
+}

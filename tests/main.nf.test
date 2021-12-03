@@ -3,44 +3,47 @@ nextflow_pipeline {
     name "Test Workflow main.nf"
     script "main.nf"
 
-    test("Test GWAS Additive") {
+    test("Should execute pipeline applying an additive model") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'gwas-additive'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
-                outdir                        = 'tests/output/gwas-additive'
+                outdir                        = "$testOutdir"
             }
         }
 
         then {
             assert workflow.success
             assert workflow.trace.tasks().size() == 18
-            //assert new File("tests/output/gwas-additive/results/Y1.regenie.gz").exists()
+            assert new File("$outputDir/results/Y1.regenie.gz").exists()
         }
 
     }
-    test("GWAS with Pruning") {
+    test("Should execute pipeline including pruning step") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-add-pruning"
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
                 prune_enabled                 = true
+                outdir                        = "$testOutdir"
         }
         }
 
@@ -50,20 +53,22 @@ nextflow_pipeline {
 
     }
 
-    test("Test GWAS Binary without Approximation") {
+    test("Should execute pipeline for binary trait with firth but without approximation") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary-no-approx"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 regenie_firth_approx          = false
+                outdir                        = "$testOutdir"
         }
         }
 
@@ -73,20 +78,22 @@ nextflow_pipeline {
 
     }
 
-    test("Test GWAS Binary Without Firth") {
+    test("Should execute pipeline for binary trait without firth") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary-no-firth"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 regenie_firth                 = false
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -96,19 +103,21 @@ nextflow_pipeline {
 
     }
 
-    test("Test Binary Phenotype with NA") {
+    test("Should execute pipeline for binary traits including NAs") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary-with-NA"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin_wNA.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin_wNA.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -118,19 +127,21 @@ nextflow_pipeline {
 
     }
 
-    test("Test Binary Phenotype") {
+    test("Should execute pipeline for binary trait") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = "test-gwas-binary"
-                genotypes_array               = "tests/input/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/example.bgen"
+                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/phenotype_bin.txt"
+                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -140,21 +151,23 @@ nextflow_pipeline {
 
     }
 
-    test("Test using Covariates File") {
+    test("Should execute pipeline with covariate file") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-covariates-file'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
-                covariates_filename           = "tests/input/covariates.txt"
+                covariates_filename           = "tests/input/pipeline/covariates.txt"
                 covariates_columns            = 'V1,V2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -164,20 +177,22 @@ nextflow_pipeline {
 
     }
 
-    test("Test Delete Missing Phenotype Data") {
+    test("Should execute pipeline without missing phenotype values") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-delete-missing-phenotype-data'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 phenotypes_delete_missings    = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -187,19 +202,21 @@ nextflow_pipeline {
 
     }
 
-    test("Test Dominant Model") {
+    test("Should execute pipeline applying a dominant model") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-dominant'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'dominant'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -209,20 +226,22 @@ nextflow_pipeline {
 
     }
 
-    test("Test Force Regenie Step1") {
+    test("Should execute pipeline with forced step1 parameter") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-force-step1'
-                genotypes_array                = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array                = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 regenie_force_step1           = 'true'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -232,19 +251,21 @@ nextflow_pipeline {
 
     }
 
-    test("Test Header") {
+    test("Should execute pipeline with different header") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-header'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.bgen'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.bgen'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = 'tests/input/phenotype_header.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype_header.txt'
                 phenotypes_columns            = 'PHENO1,PHENO2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -254,19 +275,21 @@ nextflow_pipeline {
 
     }
 
-    test("Test Annotate for hg38") {
+    test("Should execute pipeline with hg38 annotation") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-hg38-annotate'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example_hg38.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example_hg38.vcf.gz'
                 genotypes_build               = 'hg38'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -276,20 +299,22 @@ nextflow_pipeline {
 
     }
 
-    test("Test Manhattan Limit") {
+    test("Should execute pipeline with applied plot limit") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-manhattan-limit'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 plot_ylimit                   = 2
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -299,19 +324,21 @@ nextflow_pipeline {
 
     }
 
-    test("Test Phenotype Tabs") {
+    test("Should execute pipeline with tabs in phenotype file") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-phenotype-tabs'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.tabs.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.tabs.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -321,18 +348,20 @@ nextflow_pipeline {
 
     }
 
-    test("Test Phenotype with empty values") {
+    test("Should execute pipeline with 3 empty phenotype values") {
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-phenotype-three-empty-values'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype_with_three_empty_values.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype_with_three_empty_values.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -342,20 +371,22 @@ nextflow_pipeline {
 
     }
 
-    test("Test Range Parameter") {
+    test("Should execute pipeline on a specified range only") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-range'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_range                 = '1:100-200'
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -365,19 +396,21 @@ nextflow_pipeline {
 
     }
 
-    test("Test Recessive") {
+    test("Should execute pipeline applying a recessive model") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-recessive'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'recessive'
+                outdir                        = "$testOutdir"
             }
         }
 
@@ -387,20 +420,22 @@ nextflow_pipeline {
 
     }
 
-    test("Test Skip Predictions") {
+    test("Should execute pipeline without regenie predictions") {
 
         when {
+            def testOutdir = outputDir
             params {
                 project                       = 'test-gwas-skip-predictions'
-                genotypes_array               = 'tests/input/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/example.vcf.gz'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/phenotype.txt'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_skip_predictions      = true
                 regenie_test                  = 'additive'
+                outdir                        = "$testOutdir"
             }
         }
 

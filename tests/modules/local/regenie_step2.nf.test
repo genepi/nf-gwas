@@ -1,0 +1,73 @@
+import java.util.zip.GZIPInputStream
+
+nextflow_process {
+
+    name "Test Process REGENIE_STEP2"
+    script "modules/local/regenie_step2.nf"
+    process "REGENIE_STEP2"
+
+    test("Should execute regenie step2 without predictions") {
+
+        when {
+            params {
+                //set required phenotypes_column
+                phenotypes_columns = 'Y1,Y2'
+                regenie_test = 'additive'
+                genotypes_imputed_format = 'bgen'
+                regenie_skip_predictions = true
+            }
+            process {
+                """
+                input[0] = Channel.fromPath("tests/input/regenie_step2/regenie_step1_out*")
+                input[1] = Channel.fromPath("tests/input/pipeline/example.bgen")
+                .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
+                input[2] = file("tests/input/pipeline/phenotype.txt")
+                input[3] = file('NO_SAMPLE_FILE')
+                input[4] = file('NO_COV_FILE')
+                """
+            }
+        }
+
+        then {
+            assert process.success
+
+            //check amount of processes
+            assert process.trace.tasks().size() == 1
+
+                with(process.out) {
+                    with(regenie_step2_out.get(0)){
+                    assert size,2
+                    assert path(get(0)).md5 == "c4f6883d15cf0963176923e8f3538ea7"
+                    assert path(get(1)).md5 == "7c15d34188ee5cfb86a9bf4aac448321"
+
+                    GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0))));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+                    count = 0;
+                    while ((content = br.readLine()) != null) {
+
+                        if(count == 0) {
+                        //check if regenie header is as expected
+                        assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                        }
+                        count++;
+                        }
+
+                    //check amount of lines
+                    assert count,10001
+                    }
+
+
+                    with(regenie_step2_out_log){
+                    assert path(get(0)).text.contains("--step 2")
+                    assert path(get(0)).text.contains("--phenoColList Y1,Y2")
+                    assert path(get(0)).text.contains("--bgen example.bgen")
+                    assert path(get(0)).text.contains("--ignore-pred")
+                    assert path(get(0)).text.contains("--test additive ")
+                    }
+
+            }
+        }
+
+    }
+
+}

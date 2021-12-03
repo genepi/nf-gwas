@@ -1,0 +1,35 @@
+nextflow_process {
+
+    name "Test Process PRUNE_GENOTYPED"
+    script "modules/local/prune_genotyped.nf"
+    process "PRUNE_GENOTYPED"
+
+    test("Should apply pruning and limit output to 248 lines") {
+
+        when {
+            params {
+                // Set higher maf to see if pruning works correctly
+                prune_maf = 0.20
+            }
+            process {
+                """
+                input[0] =  Channel.fromFilePairs("tests/input/prune_genotyped/example.qc.{bim,bed,fam}", size: 3, flat:true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            with(process.out) {
+                with(genotypes_pruned_ch.get(0)){
+                    assert size() == 4
+                    assert path(get(1)).readLines().size() == 248
+                    assert path(get(1)).md5 == "db52c9abf7e31bfb7ef34f9ee7e8c6cc"
+                }
+
+        }
+
+    }
+
+}
+}

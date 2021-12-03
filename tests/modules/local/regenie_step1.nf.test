@@ -1,0 +1,46 @@
+nextflow_process {
+
+    name "Test Process REGENIE_STEP1"
+    script "modules/local/regenie_step1.nf"
+    process "REGENIE_STEP1"
+
+    test("Should execute regenie step 1 for 2 phenotypes ") {
+
+        when {
+            params {
+                // set required phenotypes_column
+                phenotypes_columns = 'Y1,Y2'
+            }
+            process {
+                """
+                input[0] =  Channel.fromFilePairs("tests/input/regenie_step1/example.qc.{bim,bed,fam}", size: 3, flat:true)
+                input[1] = file("tests/input/regenie_step1/example.qc.snplist")
+                input[2] = file("tests/input/regenie_step1/example.qc.id")
+                input[3] = file("tests/input/pipeline/phenotype.txt")
+                input[4] = file('NO_COV_FILE')
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            with(process.out) {
+                with(regenie_step1_out.get(0)){
+                    assert size() == 4
+                    // pred list includes 2 loco files
+                    assert path(get(3)).readLines(), 2
+                    //check loco.gz md5 sums
+                    assert path(get(1)).md5 == "7acd8ecadafb0eb9bbab2eb8b529e54f"
+                    assert path(get(2)).md5 == "41ab9671090c2f7af3834242e691d18a"
+                    // parse log file
+                    assert path(get(0)).text.contains("--step 1")
+                    assert path(get(0)).text.contains("--keep example.qc.id")
+                    assert path(get(0)).text.contains("--phenoFile phenotype.txt")
+                    assert path(get(0)).text.contains("--phenoColList Y1,Y2")
+                }
+            }
+        }
+
+    }
+
+}

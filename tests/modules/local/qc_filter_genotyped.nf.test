@@ -1,0 +1,54 @@
+nextflow_process {
+
+    name "Test Process QC_FILTER_GENOTYPED"
+    script "modules/local/qc_filter_genotyped.nf"
+    process "QC_FILTER_GENOTYPED"
+
+    test("Should create QCed files by using plink") {
+
+        when {
+
+            process {
+                """
+                 input[0] =  Channel.fromFilePairs("tests/input/pipeline/example.{bim,bed,fam}", size: 3)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+
+                with(process.out) {
+
+                    with(genotyped_filtered_id_ch){
+                    assert size() == 1
+                    assert path(get(0)).md5 == "cf62b27fc06fbabf367a8b177bc0830c"
+                    }
+
+                    //check bim/bed/fam channel
+                    with(genotyped_filtered_files_ch.get(0)){
+                    //filename + bim/bed/fam
+                    assert size() == 4
+                    assert get(1) ==~ ".*.bim"
+                    assert path(get(1)).md5 == "d588360331a4b4589b3bb86b81ba56ee"
+                    assert get(2) ==~ ".*.bed"
+                    assert path(get(2)).md5 == "ed400a8df66d275f9bcf70be9259dae8"
+                    assert get(3) ==~ ".*.fam"
+                    assert path(get(3)).md5 == "fd6ece51dceed54af8945ccfb9d4b7c"
+                    assert file(get(1)).readLines().size() == 758
+                    }
+
+                    // test snplist channel
+                    with(genotyped_filtered_snplist_ch){
+                    assert size() == 1
+                    assert get(0) ==~ ".*.snplist"
+                    assert path(get(0)).md5 == "502cb12d33c882269df9799271e63347"
+                    //check amount of SNPs
+                    assert file(get(0)).readLines().size() == 758
+                    }
+            }
+        }
+
+    }
+
+}
