@@ -26,6 +26,14 @@ nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.1.14 -profile <docke
 
 Please click [here](tests) for available test config files.
 
+## Development
+```
+git clone https://github.com/genepi/gwas-regenie
+cd gwas-regenie
+docker build -t genepi/gwas-regenie . # don't ignore the dot
+nextflow run main.nf -profile test,development
+```
+
 ## License
 gwas-regenie is MIT Licensed.
 
