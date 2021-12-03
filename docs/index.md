@@ -28,7 +28,7 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from M
 
 4. Filter genotyped data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness.
 
-5. Run [regenie](https://github.com/rgcgithub/regenie).
+5. Run [regenie](https://github.com/rgcgithub/regenie) and tabix results (e.g. to use with LocusZoom).
 
 6. Parse regenie log and create summary statistics.
 
