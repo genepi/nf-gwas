@@ -3,7 +3,7 @@ set -e
 
 
 # test all config files in tests folder
-config_files="tests/*.conf"
+config_files="conf/tests/*.conf"
 for config_file in $config_files
 do
   echo "---------------------------------------------------------"
