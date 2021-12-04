@@ -12,9 +12,10 @@ To run the pipeline on your data, prepare the phenotype and (optional) covariate
 Now, you have to prepare a configuration file for the pipeline. For this, you can use any text editor but for example the text editor [Atom](https://atom.io/) is very convenient since it can also highlight different kinds of codes etc. The required and optional parameters for the configuration file are all listed [here](../params) of the pipeline. To make your own config file, it is the easiest to copy one of the exemplary [config files](https://github.com/genepi/gwas-regenie/tree/main/conf/tests). Adapt all the paths and parameters to fit your data and save the file (e.g. as: first-gwas.config). If you added additional parameters, just make sure, that they are within the curly brackets.
 
 Just one possibly helpful fact on the side here: as indicated on the GitHub repository, the genotypes have to be a single merged file but the imputed genotypes can also be one file per chromosome. If we have them in single files per chromosome we can put the path for example as follows into the configuration file `/home/myHome/GWAS/imputed\_data/\*vcf.gz`. The asterisk (\*) is a wildcard. So it will take all the files from the imputed\_data folder that end with `vcf.gz`.
+ 
  Now you can transfer the file via FileZilla to your folder of choice on the server (as an example let's say we put the `first-gwas.config` into the folder `/home/myHome/GWAS`).
 
-To run the pipeline with the `first-gwas.config` configuration file, we simply change the working directory to the GWAS folder (`cd /home/myHome/GWAS`) and type in the following command:
+To run the pipeline with the `first-gwas.config` configuration file, you simply change the working directory to the GWAS folder (`cd /home/myHome/GWAS`) and type in the following command:
 ```
 nextflow run genepi/gwas-regenie -c first-gwas.config -r v0.1.15 -profile docker -bg
 ```
@@ -24,7 +25,7 @@ In more detail:
 
 * `run genepi/gwas-regenie` tells Nextflow which pipeline it should access
 
-* `-c first-gwas.config`; tells the pipeline which configuration file it should use (just exchange first-gwas.config with the name of your config file)
+* `-c first-gwas.config` tells the pipeline which configuration file it should use (just exchange first-gwas.config with the name of your config file)
 
 * `-r v0.1.15` tells which version of the pipeline should be used (you can check the number of the latest version on the GitHub repository of the pipeline and change it accordingly)
 
