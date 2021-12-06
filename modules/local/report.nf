@@ -29,7 +29,7 @@ process REPORT {
       regenie_filename='${regenie_merged.baseName}',
       phenotype_file='${phenotype_file_validated}',
       phenotype='${phenotype}',
-      covariates='${params.covariates_columns.join(',')}',
+      covariates='${params.covariates_columns}',
       phenotype_log='${phenotype_log}',
       covariate_log='${covariate_log}',
       regenie_step1_log='${step1_log}',
