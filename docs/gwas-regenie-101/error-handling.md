@@ -8,11 +8,11 @@ nav_order: 4
 
 Before running the pipeline on your own data, you can run the pipeline with a small test dataset with the following command:
 ```
-nextflow run genepi/gwas-regenie -c -r v0.1.15 -profile test,docker -bg
+nextflow run genepi/gwas-regenie -r v0.1.15 -profile test,docker -bg
 ```
-(adapt the -r and -profile to the one you want to use on your data)
+(adapt the -r and -profile to the one you want to use on your data; for this to work the container software - e.g. [docker](https://docs.docker.com/get-docker/) - must also be pre-installed)
 
-It should not take very long and you will get the outputs as described above for the test dataset. If this works, it means that you can execute the pipeline on your server, so if you get an error message when running the pipeline on your data, your input or configuration files have some issues. But even if this happens don't worry because the error message usually tells you which file has a problem or what you should do, just follow the instructions. If you are not sure, if your input files are formatted correctly, you can find [some examples](https://github.com/genepi/gwas-regenie/tree/main/conf/tests) on the GitHub repository.
+It should not take very long and you will get the outputs as described above for the test dataset. If this works, it means that you can execute the pipeline on your server, so if you get an error message when running the pipeline on your data, your input or configuration files have some issues. But even if this happens don't worry because the error message usually tells you which file has a problem or what you should do, just follow the instructions. If you are not sure, if your input files are formatted correctly, you can find [some examples](https://github.com/genepi/gwas-regenie/tree/main/tests/input/pipeline) on the GitHub repository.
 
 If you still cannot find a solution, post an issue on the GitHub page, I am sure Lukas Forer and Sebastian Schoenherr (the developers of the pipeline) will find a solution :). If it's a non-pipeline related questions, the administrator hosting your server, another (bio)informatician you know, and also the internet in general is a great resource (e.g. you can ask questions in forums). Don't be afraid to ask!
 
