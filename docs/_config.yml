@@ -16,7 +16,7 @@
 title: GWAS-Regenie
 email: sebastian.schoenherr@i-med.ac.at
 description: >- # this means to ignore newlines until "baseurl:"
-  Running regenie with Nextflow. 
+  Running regenie with Nextflow.
 baseurl: "/gwas-regenie" # the subpath of your site, e.g. /blog
 url: "https://genepi.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 domain: genepi.github.io
