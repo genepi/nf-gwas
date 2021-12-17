@@ -2,7 +2,7 @@ process REPORT {
 
   publishDir "${params.outdir}", mode: 'copy'
 
-  memory '5 GB'
+  label 'required_memory_report'
 
   input:
     tuple val(phenotype), path(regenie_merged), path(annotated_tophits)

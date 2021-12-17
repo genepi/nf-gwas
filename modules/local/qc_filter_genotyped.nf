@@ -1,6 +1,7 @@
 process QC_FILTER_GENOTYPED {
 
 publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.qc.log'
+label 'process_plink2'
 
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_file)
@@ -22,7 +23,9 @@ publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.qc.log'
     --mind ${params.qc_mind} \
     --write-snplist --write-samples --no-id-header \
     --out ${genotyped_plink_filename}.qc \
-    --make-bed
+    --make-bed \
+    --threads ${task.cpus} \
+    --memory ${task.memory.toMega()}
   """
 
 }

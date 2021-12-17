@@ -11,13 +11,18 @@ process SNP_PRUNING {
     --bfile ${genotyped_plink_filename} \
     --double-id --maf ${params.prune_maf} \
     --indep-pairwise ${params.prune_window_kbsize} ${params.prune_step_size} ${params.prune_r2_threshold} \
-    --out ${genotyped_plink_filename}
+    --out ${genotyped_plink_filename} \
+    --threads ${task.cpus} \
+    --memory ${task.memory.toMega()}
+      
   plink2 \
     --bfile ${genotyped_plink_filename} \
     --extract ${genotyped_plink_filename}.prune.in \
     --double-id \
     --make-bed \
-    --out ${genotyped_plink_filename}.pruned
+    --out ${genotyped_plink_filename}.pruned \
+    --threads ${task.cpus} \
+    --memory ${task.memory.toMega()}
   """
 
 }

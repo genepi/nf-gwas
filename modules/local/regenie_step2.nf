@@ -2,7 +2,6 @@ process REGENIE_STEP2 {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
 
-  cpus "${params.cpus}"
   tag "${filename}"
 
   input:
