@@ -2,7 +2,6 @@
 layout: page
 title: "Required Parameters"
 parent: Parameters
-permalink: /required-params/
 nav_order: 1
 ---
 

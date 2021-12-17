@@ -2,7 +2,6 @@
 layout: page
 title: "Optional Parameters"
 parent: Parameters
-permalink: /optional-params/
 nav_order: 2
 ---
 

@@ -2,7 +2,6 @@
 layout: default
 title: Parameters
 has_children: true
-permalink: /params/
 nav_order: 4
 ---
 

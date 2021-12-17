@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Pipeline Testing"
+title: "Testing"
 nav_order: 5
 ---
 
