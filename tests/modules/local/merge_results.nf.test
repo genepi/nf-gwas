@@ -34,7 +34,7 @@ nextflow_process {
                 while ((content = br.readLine()) != null) {
                     if(count == 0) {
                     //check if regenie header is as expected
-                    assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                    assert content.equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
                     }
                     count++;
                     }
@@ -49,7 +49,7 @@ nextflow_process {
                     while ((content = br.readLine()) != null) {
                         if(count == 0) {
                         //check if regenie header is as expected
-                        assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                        assert content.equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
                         }
                         count++;
                         }
