@@ -1,6 +1,6 @@
 process QC_FILTER {
 
-label 'process_plink2'
+  label 'process_plink2'
 
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)

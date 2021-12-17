@@ -1,6 +1,6 @@
 process FILTER_RESULTS {
 
-tag "${regenie_chromosomes.baseName}"
+  tag "${regenie_chromosomes.baseName}"
 
   input:
   path regenie_chromosomes

@@ -1,13 +1,13 @@
 process PRUNE_GENOTYPED {
 
-publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.pruned.log'
-label 'process_plink2'
+  publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.pruned.log'
+  label 'process_plink2'
 
   input:
-  tuple val(genotyped_qc_filename), path(genotyped_qc_bim_file), path(genotyped_qc_bed_file), path(genotyped_qc_fam_file)
+    tuple val(genotyped_qc_filename), path(genotyped_qc_bim_file), path(genotyped_qc_bed_file), path(genotyped_qc_fam_file)
   output:
-  tuple val("${genotyped_qc_filename}.pruned"), path("${genotyped_qc_filename}.pruned.bim"), path("${genotyped_qc_filename}.pruned.bed"),path("${genotyped_qc_filename}.pruned.fam"), emit: genotypes_pruned_ch
-  path "${genotyped_qc_filename}.pruned.log"
+    tuple val("${genotyped_qc_filename}.pruned"), path("${genotyped_qc_filename}.pruned.bim"), path("${genotyped_qc_filename}.pruned.bed"),path("${genotyped_qc_filename}.pruned.fam"), emit: genotypes_pruned_ch
+    path "${genotyped_qc_filename}.pruned.log"
   """
   # Prune, filter and convert to plink
   plink2 \

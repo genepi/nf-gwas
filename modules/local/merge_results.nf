@@ -1,15 +1,15 @@
 process MERGE_RESULTS {
 
-publishDir "${params.outdir}/results", mode: 'copy'
-tag "${phenotype}"
+  publishDir "${params.outdir}/results", mode: 'copy'
+  tag "${phenotype}"
 
   input:
-  path regenie_chromosomes
-  val phenotype
+    path regenie_chromosomes
+    val phenotype
 
   output:
-  tuple val(phenotype), path ("${phenotype}.regenie.gz"), emit: results_merged
-  path "${phenotype}.regenie.gz.tbi"
+    tuple val(phenotype), path ("${phenotype}.regenie.gz"), emit: results_merged
+    path "${phenotype}.regenie.gz.tbi"
 
   """
   # static header due to split
