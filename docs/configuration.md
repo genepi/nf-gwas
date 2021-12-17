@@ -6,7 +6,7 @@ nav_order: 4
 
 ## Configuration
 
-Before running GWAS-Regenie, [pipeline parameters](params/params) must be specified **and** the cpus/memory directives set in the Nextflow configuration file with `-c gwas.config`. Learn about Nextflow configuration files [here](https://www.nextflow.io/docs/latest/config.html) or read our [Beginners Guide](gwas-regenie-101/beginners-guide).
+Before running GWAS-Regenie, [pipeline parameters](#setting-parameters) must be specified **and** the [cpus/memory directives](setting-memory-and-cpu-directives) must be set in the Nextflow configuration file (e.g. with `-c gwas.config`). Learn about Nextflow configuration files [here](https://www.nextflow.io/docs/latest/config.html) or read our [Beginners Guide](gwas-regenie-101/beginners-guide).
 
 ### Setting Parameters
 
@@ -38,8 +38,8 @@ Below please find a GWAS configuration for VCF data.
 ```
 params {
   project                       = 'mis-gwas'
-  genotypes_array               = '/data/genotyped/gckd_cal_allChrs.{bim,bed,fam}'
-  genotypes_imputed             = '/data/imputed/vcf-format/vcfs/*vcf.gz'
+  genotypes_array               = '/data/genotyped/allChrs.{bim,bed,fam}'
+  genotypes_imputed             = '/data/imputed/vcfs/*vcf.gz'
   genotypes_build               = 'hg19'
   genotypes_imputed_format      = 'vcf'
   phenotypes_filename           = 'phenotype/my_phenotypes.txt'
@@ -52,7 +52,7 @@ params {
 ```
 
 ### Setting Memory and CPU directives
-Depending on your actual server or cluster, the memory and CPU directives must be adapted to run regenie an all required as efficient as possible. Please find below the default setting. Copy/paste the process section to your configuration file and run your GWAS. Fully working examples including different parameters can be found [here](https://github.com/genepi/gwas-regenie/tree/main/conf/tests). We will also adapt this section with memory settings from real-world experiments. Read also [here](https://rgcgithub.github.io/regenie/performance/) to increase the memory for regenie.
+Depending on your actual server or cluster, the memory and CPU directives must be adapted to run regenie an all required as efficient as possible. Please find below the default setting. Copy/paste the process section to your configuration file and run your GWAS. Fully working examples including different parameters can be found [here](https://github.com/genepi/gwas-regenie/tree/main/conf/tests). Read also [here](https://rgcgithub.github.io/regenie/performance/) to learn about memory requirements of regenie (We will also adapt this section in future with memory settings from our experiments.).
 ```
 process {
 
