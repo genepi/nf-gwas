@@ -13,10 +13,6 @@ for (param in requiredParams) {
     }
 }
 
-if(params.cpus == 1) {
-    println("WARNING: 'params.cpu' parameter is set to '1'. Each regenie process is started with 1 thread.")
-}
-
 if(params.outdir == null) {
   outdir = "output/${params.project}"
 } else {
