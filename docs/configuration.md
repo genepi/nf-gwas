@@ -6,14 +6,14 @@ nav_order: 4
 
 ## Configuration
 
-Before running GWAS-Regenie, the Nextflow config file must be prepared: This includes setting (a) [pipeline parameters](#setting-parameters) **and** (b) the [cpus/memory directives](#setting-memory-and-cpu-directives). If you are new to Nextflow, please read about Nextflow configuration files [here](https://www.nextflow.io/docs/latest/config.html) or check out our [Beginners Guide](gwas-regenie-101/beginners-guide).
+To run GWAS-Regenie, the Nextflow config file must be prepared. This file includes (a) [pipeline parameters](#setting-parameters) and (b) the [cpus/memory directives](#setting-memory-and-cpu-directives). If you are new to Nextflow, please read about Nextflow configuration files [here](https://www.nextflow.io/docs/latest/config.html) or check out our [Beginners Guide](gwas-regenie-101/beginners-guide).
 
 ### Setting Parameters
 
 The GWAS-Regenie pipeline currently supports imputed files in **BGEN** or **VCF** format (coming from [Michigan Imputation Server](https://imputationserver.sph.umich.edu/)). Please find below to working config files to run GWAS-Regenie.
 
 ####  BGEN files
-The following minimal configuration file runs an additive model using the UK Biobank data. Click [here](../params/params) to see all available pipeline parameters. 
+The following minimal configuration file runs an additive model using the UK Biobank data. Click [here](params/params) to see all available pipeline parameters. 
 
 ```
 params {
@@ -33,7 +33,7 @@ params {
 ```
 
 ####  VCF files
-The following minimal configuration file runs an additive model using VCF data from e.g. Michigan Imputation Server. Click [here](../params/params) to see all available pipeline parameters. 
+The following minimal configuration file runs an additive model using VCF data from e.g. Michigan Imputation Server. Click [here](./params/params) to see all available pipeline parameters. 
 
 ```
 params {
