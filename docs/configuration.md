@@ -6,7 +6,7 @@ nav_order: 4
 
 ## Configuration
 
-To run GWAS-Regenie, the Nextflow config file must be prepared. This file includes (a) [pipeline parameters](#setting-parameters) and (b) the [cpus/memory directives](#setting-memory-and-cpu-directives). If you are new to Nextflow, please read about Nextflow configuration files [here](https://www.nextflow.io/docs/latest/config.html) or check out our [Beginners Guide](gwas-regenie-101/beginners-guide).
+To run GWAS-Regenie, the Nextflow config file must be prepared. This file includes (a) [pipeline parameters](#setting-parameters) and (b) [cpus/memory directives](#setting-memory-and-cpu-directives). If you are new to Nextflow, please read about Nextflow configuration files [here](https://www.nextflow.io/docs/latest/config.html) or check out our [Beginners Guide](gwas-regenie-101/beginners-guide).
 
 ### Setting Parameters
 
