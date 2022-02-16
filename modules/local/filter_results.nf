@@ -1,6 +1,6 @@
 process FILTER_RESULTS {
 
-  tag "${regenie_chromosomes.baseName}"
+  tag "${regenie_chromosomes.simpleName}"
 
   input:
     tuple val(phenotype), path(regenie_chromosomes)

@@ -2,7 +2,7 @@ process REGENIE_STEP2 {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
 
-  tag "${filename}"
+  tag "${plink2_pgen_file.simpleName}"
 
   input:
 	  path step1_out
