@@ -37,10 +37,11 @@ nextflow_process {
                 with(process.out) {
                     with(regenie_step2_out.get(0)){
                     assert size,2
-                    assert path(get(0)).md5 == "c4f6883d15cf0963176923e8f3538ea7"
-                    assert path(get(1)).md5 == "7c15d34188ee5cfb86a9bf4aac448321"
+                    assert path(get(1).get(0)).md5 == 'c4f6883d15cf0963176923e8f3538ea7'
+                    assert path(get(1).get(1)).md5 == '7c15d34188ee5cfb86a9bf4aac448321'
+                    //assert path(get(1)).md5 == "7c15d34188ee5cfb86a9bf4aac448321"
 
-                    GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0))));
+                    GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(1).get(0))));
                     BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
                     count = 0;
                     while ((content = br.readLine()) != null) {

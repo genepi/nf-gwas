@@ -9,14 +9,18 @@ nextflow_process {
     test("Should output 2 merged regenie files by phenotype, one is empty") {
 
         when {
-            params {
-            phenotypes_columns = 'Y1,Y2'
-            }
+        
             process {
                 """
-                phenotypes_array = params.phenotypes_columns.trim().split(',')
-                input[0] = Channel.fromPath("tests/input/merge_results/*regenie.gz").collect()
-                input[1] = Channel.from(phenotypes_array)
+                f1 = file('$baseDir/tests/input/merge_results/chr1_Y1.regenie.gz')
+                f2 = file('$baseDir/tests/input/merge_results/chr2_Y1.regenie.gz')
+                f3 = file('$baseDir/tests/input/merge_results/chr1_Y2.regenie.gz')
+                f4 = file('$baseDir/tests/input/merge_results/chr2_Y2.regenie.gz')
+
+                regenie_step2_out = Channel.of( ['chr1', f1], ['chr2', f2], ['chr1', f3], ['chr2', f4])
+                input[0] = regenie_step2_out
+                  .transpose()
+                  .map { prefix, file -> tuple(file.baseName.replaceAll(prefix + "_", '').replaceAll('.regenie', ''), file) }.groupTuple()
                 """
             }
         }
@@ -39,25 +43,24 @@ nextflow_process {
                     count++;
                     }
 
-                //check amount of lines
-                assert (count == 2001)
+                //check amount of lines of Y1
+                assert (count == 502)
 
-                 //check if file 2 is empty
-                 gzip = new GZIPInputStream(new FileInputStream(file(get(1).get(1))));
-                 br = new BufferedReader(new InputStreamReader(gzip));
-                 count = 0;
-                    while ((content = br.readLine()) != null) {
-                        if(count == 0) {
-                        //check if regenie header is as expected
-                        assert content.equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
-                        }
-                        count++;
-                        }
+                gzip = new GZIPInputStream(new FileInputStream(file(get(1).get(1))));
+                br = new BufferedReader(new InputStreamReader(gzip));
+                count = 0;
+                while ((content = br.readLine()) != null) {
+                    if(count == 0) {
+                    //check if regenie header is as expected
+                    assert content.equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
+                    }
+                    count++;
+                    }
 
-                //only header
-                assert (count == 1)
+                //check amount of lines of Y2
+                assert (count == 501)
 
-                }
+                  }
             }
 
         }
