@@ -203,7 +203,7 @@ REGENIE_STEP2.out.regenie_step2_out
     )
 
     MERGE_RESULTS (
-        FILTER_RESULTS.out.results.groupTuple()
+        regenie_step2_by_phenotype.groupTuple()
     )
 
     ANNOTATE_FILTERED (
@@ -233,7 +233,7 @@ workflow.onComplete {
     println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
 }
 
-// extract phenotype name from regenie output file. 
+// extract phenotype name from regenie output file.
 def getPhenotype(prefix, file ) {
     return file.baseName.replaceAll(prefix + "_", '').replaceAll('.regenie', '')
 }
