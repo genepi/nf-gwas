@@ -186,19 +186,24 @@ workflow GWAS_REGENIE {
         CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
     )
 
+// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotpe.
+REGENIE_STEP2.out.regenie_step2_out
+  .transpose()
+  .map { prefix, file -> tuple(getPhenotype(prefix, file), file) }
+  .set { regenie_step2_by_phenotype }
+
+
     FILTER_RESULTS (
-        REGENIE_STEP2.out.regenie_step2_out.flatten(),
+        regenie_step2_by_phenotype,
         CACHE_JBANG_SCRIPTS.out.regenie_filter_jar
     )
 
     MERGE_RESULTS_FILTERED (
-        FILTER_RESULTS.out.results_filtered.collect(),
-        phenotypes
+        FILTER_RESULTS.out.results_filtered.groupTuple()
     )
 
     MERGE_RESULTS (
-        FILTER_RESULTS.out.results.collect(),
-        phenotypes
+        FILTER_RESULTS.out.results.groupTuple()
     )
 
     ANNOTATE_FILTERED (
@@ -226,4 +231,9 @@ workflow GWAS_REGENIE {
 workflow.onComplete {
     println "Pipeline completed at: $workflow.complete"
     println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
+}
+
+// extract phenotype name from regenie output file. 
+def getPhenotype(prefix, file ) {
+    return file.baseName.replaceAll(prefix + "_", '').replaceAll('.regenie', '')
 }

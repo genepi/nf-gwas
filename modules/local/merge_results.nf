@@ -4,8 +4,7 @@ process MERGE_RESULTS {
   tag "${phenotype}"
 
   input:
-    path regenie_chromosomes
-    val phenotype
+    tuple val(phenotype), path(regenie_chromosomes)
 
   output:
     tuple val(phenotype), path ("${phenotype}.regenie.gz"), emit: results_merged
@@ -14,7 +13,7 @@ process MERGE_RESULTS {
   """
   # static header due to split
   ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
-  ls -1v  ${regenie_chromosomes} | ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > ${phenotype}.regenie.tmp.gz
+  ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | gzip > ${phenotype}.regenie.tmp.gz
   cat header.gz ${phenotype}.regenie.tmp.gz > ${phenotype}.regenie.tmp2.gz
   rm ${phenotype}.regenie.tmp.gz
   zcat ${phenotype}.regenie.tmp2.gz | sed 's/ /\t/g' | bgzip -c > ${phenotype}.regenie.gz

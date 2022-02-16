@@ -12,8 +12,9 @@ process REGENIE_STEP2 {
     path covariates_file
 
   output:
-    path "*regenie.gz", emit: regenie_step2_out
-    path "regenie_step2_${filename}.log", emit: regenie_step2_out_log
+    tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
+    path "${filename}.log", emit: regenie_step2_out_log
+
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
@@ -26,7 +27,6 @@ process REGENIE_STEP2 {
     def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
     def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
-
 
   """
   regenie \
@@ -47,6 +47,6 @@ process REGENIE_STEP2 {
     $covariants \
     $deleteMissingData \
     $predictions \
-    --out regenie_step2_${filename}
+    --out ${filename}
   """
 }
