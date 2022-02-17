@@ -6,6 +6,6 @@ nav_order: 7
 
 ## About
 
-This pipeline has been created by the [Institute of Genetic Epidemiology](https://genepi.i-med.ac.at/), Medical University of Innsbruck.
+This pipeline has been created by [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at), [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at) from the [Institute of Genetic Epidemiology](https://genepi.i-med.ac.at/), Medical University of Innsbruck, Austria.
 
-If you have any questions about the regenie nextflow pipeline please contact [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at) or [Lukas Forer](mailto:lukas.forer@i-med.ac.at)
+Also have a look at our [other work](https://genepi.github.io/).

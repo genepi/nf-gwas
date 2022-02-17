@@ -9,9 +9,8 @@ nav_order: 2
 
 | Option        |Default          | Description |
 | ------------- |-----------------| -------------|
-| `cpus`     | 1 | This parameter sets the amount of threads in regenie and plink2. |  
-| `date`     | today | Date in report |  
 | `outdir`     | "output/${params.project}" | Output directory   
+| `project_date`     | today | Date in report |  
 | `covariates_filename`     |  empty | path to covariates file |
 | `covariates_columns`     | empty | List of covariates |  
 | `phenotypes_delete_missings`     | false | Removing samples with missing data at any of the phenotypes |
@@ -28,14 +27,13 @@ nav_order: 2
 | `regenie_bsize_step1`     | 1000 | Size of the genotype blocks |  
 | `regenie_bsize_step2`     | 400 | Size of the genotype blocks |  
 | `regenie_sample_file`     |  empty | Sample file corresponding to input BGEN file |
-| `regenie_force_step1`     |  false | Run regenie step 1 when >1M genotyped variants are used (not recommended) |
 | `regenie_skip_predictions`     | false | Skip Regenie Step 1 predictions |  
 | `regenie_min_imputation_score`     |  0.00 | Minimum imputation info score (IMPUTE/MACH R^2)  |
 | `regenie_min_mac`     |  5 | Minimum minor allele count  |
 | `regenie_range`     |  ' ' | Apply regenie only on a specify region [format=CHR:MINPOS-MAXPOS] |
 | `regenie_firth`     |   true  | Use Firth likelihood ratio test (LRT) as fallback for p-values less than threshold |
 | `regenie_firth_approx`     |  true | Use approximate Firth LRT for computational speedup |
-| `annotation_min_log10p`     |   5 | Annotate results with logp10 >= 5 |
-| `tophits`     |   50 | # of tophits (sorted by pvalue) with annotation |
+| `regenie_force_step1`     |  false | Run regenie step 1 when >1M genotyped variants are used (not recommended) |
+| `annotation_min_log10p`     |   5 | Filter and annotate results with logp10 >= 5 |
 | `plot_ylimit`     |   0 | Limit y axis in Manhattan/QQ plot for large p-values |
 | `manhattan_annotation_enabled`     |   true | Use annotation for Manhattan plot |

@@ -6,19 +6,19 @@ nav_order: 2
 
 ## Getting Started
 
-1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0)
+1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0).
 
-2. Install [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://sylabs.io/)
+2. Install [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://sylabs.io/).
 
-3. Run the pipeline on a test dataset using Docker to validate your installation
+3. Run the pipeline on a test dataset using Docker to validate your installation.
 
     ```
-    nextflow run genepi/gwas-regenie -r v0.2.0 -profile test,docker
+    nextflow run genepi/gwas-regenie -r v0.2.2 -profile test,docker
     ```
 
 ### Run the pipeline on your data
 
-1. Create a configuration file (e.g. `project.config`) and set the required parameters and paths:
+1. Create a Nextflow configuration file (e.g. `project.config`) and set the required parameters and paths. A list of all parameters can be found [here](params/params.md).
 
     ```
     params {
@@ -35,11 +35,10 @@ nav_order: 2
     }
     ```
 
-   A list of all parameters can be found [here](params/params.md)
 
 2. Run the pipeline with your configuration file
     ```
-    nextflow run genepi/gwas-regenie -c project.config -r v0.2.0 -profile docker
+    nextflow run genepi/gwas-regenie -c project.config -r v0.2.2 -profile docker
     ```
 
 **Note:** The slurm profiles require that (a) singularity is installed on all nodes and (b) a shared file system path as a working directory.

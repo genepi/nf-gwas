@@ -7,13 +7,14 @@ nav_order: 2
 
 ## Pipeline Overview
 
-The GWAS-regenie pipeline performs whole genome regression modeling using [regenie](https://github.com/rgcgithub/regenie). For profound details on regenie, I suggest to read the paper by Mbatchou et al. but it can be used for quantitative and binary traits and first builds regression models according to the leave-one-chromosome-out (LOCO) scheme that are then used in the second step (which tests the association of each SNP with the phenotype) as covariates ([see regenie paper](https://doi.org/10.1038/s41588-021-00870-7)). The advantage is that it is computationally efficient and fast meaning that it can also be used on very large datasets such as UK Biobank.
+The GWAS-regenie pipeline performs whole genome regression modeling using [regenie](https://github.com/rgcgithub/regenie). For profound details on regenie, I suggest to read [the paper by Mbatchou et al.](https://doi.org/10.1038/s41588-021-00870-7) but it can be used for quantitative and binary traits and first builds regression models according to the leave-one-chromosome-out (LOCO) scheme that are then used in the second step (which tests the association of each SNP with the phenotype) as covariates. The advantage is that it is computationally efficient and fast meaning that it can also be used on very large datasets such as UK Biobank.
 
 ### Error-prone data preparation steps are performed by the pipeline
 
-However, before you actually perform a GWAS, you need to properly prepare your data including converting file formats, filtering data and correct preparation of phenotypes and covariates. These steps are tedious and prone to error - and can also be very time consuming if it's your first time working with command line programs. Luckily, the pipeline does some of the work for you and summarizes these preparation steps in the end in a report file:
+However, before you actually perform a GWAS, you need to properly prepare your data including converting file formats, filtering data and correct preparation of phenotypes and covariates. These steps are tedious and prone to error - and can also be very time consuming if it's your first time working with command line programs.
+Luckily, the GWAS pipeline presented here does some of the work for you and summarizes these preparation steps in the end in a report file:
 
-1. It validates the phenotype and (optional) covariate files that you prepared
+1. It validates the phenotype and (optional) covariate files that you prepared.
 2. For step 1 regenie developers recommend to use directly genotyped variants that have passed quality control (QC). The pipeline performs the QC for you, based on minor allele frequency and count, genotype missingness, Hardy-Weinberg equilibrium and sample missingness. In addition, the regenie developers do not recommend to use >1M SNPs for step 1. Therefore, the pipeline can additionally perform pruning before step 1 of regenie is run. By default, certain QC thresholds are set and pruning is disabled but of course you can adapt the QC thresholds and pruning settings.
 3. In step 2 all available genotypes should be used. If you have for example imputed your data with the Michigan Imputation Server, it is in the VCF format, that is not supported by regenie. The pipeline can convert your VCF imputed data into the correct file format. In addition, you can also set a threshold for the imputation score and the minor allele count for the imputed variants that are included in step 2.
 
