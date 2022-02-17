@@ -76,10 +76,15 @@ regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P
 
 #source: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
 
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
-
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
 #merge gene names of tophits to regenieTable
-regenieTable_annotated <- left_join(regenieTable, annotatedTopHits,  by = c("CHROM", "GENPOS"))
+
+annotatedTopHits <- annotatedTopHits %>%  
+    mutate(ID = as.character(ID))
+regenieTable <- regenieTable %>%  
+    mutate(ID = as.character(ID))
+    
+regenieTable_annotated <- left_join(regenieTable, annotatedTopHits, by = "ID")
 
 #prepare for plotting
 don <- regenieTable_annotated %>%
