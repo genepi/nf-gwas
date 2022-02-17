@@ -2,7 +2,7 @@
 
 [![GWAS_Regenie](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml)
 
-A nextflow pipeline to perform whole genome regression modelling using [regenie](https://github.com/rgcgithub/regenie).
+A nextflow pipeline to perform whole genome regression modelling using [regenie](https://github.com/rgcgithub/regenie). 
 
 ## Documentation
 Documentation can be found [here](https://genepi.github.io/gwas-regenie/).
@@ -22,13 +22,8 @@ nextflow run genepi/gwas-regenie -r v0.2.1 -profile test,<docker,singularity,slu
 ```
 nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.2.1 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
-**Note:** The slurm profiles require that (a) singularity is installed on all nodes and (b) a shared file system path as a working directory.
 
 Please click [here](tests) for available test config files.
-
-
-## Status
-The pipeline is currently under development (v0.2.1).
 
 ## Development
 ```
