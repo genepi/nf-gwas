@@ -9,7 +9,7 @@ nav_order: 3
 
 GWAS-Regenie provides different execution profiles which can be specified with the `-profile` parameter.
 
-`nextflow run genepi/gwas-regenie -r v0.2.2 -profile test, <docker,singularity,development, slurm,slurm_with_scratch>`.
+`nextflow run genepi/gwas-regenie -r v0.3.0 -profile test, <docker,singularity,development, slurm,slurm_with_scratch>`.
 
 ### Docker
 For local runs, [Docker](https://docs.docker.com/get-docker/) is the easiest way to run the pipeline.
