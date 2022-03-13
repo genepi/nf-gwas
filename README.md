@@ -14,13 +14,13 @@ Documentation can be found [here](https://genepi.github.io/gwas-regenie/).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/gwas-regenie -r v0.2.2 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -r v0.3.0 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.2.2 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/gwas-regenie -c <nextflow.config> -r v0.3.0 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 
 Please click [here](tests) for available test config files.
