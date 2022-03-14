@@ -1,8 +1,3 @@
----
-layout: page
-title: "Testing"
-nav_order: 6
----
 
 ## Pipeline Testing
 
