@@ -44,7 +44,8 @@ public class RegenieFilter implements Callable<Integer> {
 
 		while (reader.next()) {
 
-			if (reader.getDouble("LOG10P") < limit) {
+			String value = reader.getString("LOG10P");
+			if (value.equals("NA") || Double.valueOf(value) < limit) {
 				continue;
 			}
 			writer.setRow(reader.getRow());
