@@ -2,7 +2,7 @@
 
 [![GWAS_Regenie](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/gwas-regenie/actions/workflows/ci-tests.yml)
 
-A nextflow pipeline to perform whole genome regression modelling using [regenie](https://github.com/rgcgithub/regenie).
+A nextflow pipeline to perform genome-wide association studies (GWAS) using [regenie](https://github.com/rgcgithub/regenie).
 
 ## Documentation
 Documentation can be found [here](https://genepi.github.io/gwas-regenie/).
