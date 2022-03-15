@@ -83,7 +83,7 @@ annotatedTopHits <- annotatedTopHits %>%
     mutate(ID = as.character(ID))
 regenieTable <- regenieTable %>%  
     mutate(ID = as.character(ID))
-    
+
 regenieTable_annotated <- left_join(regenieTable, annotatedTopHits, by = "ID")
 
 #prepare for plotting
@@ -187,7 +187,7 @@ rm(qqPrepare)
 rm(regenieTable)
 ```
 
-## Top Genes
+## Top Loci
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
