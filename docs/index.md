@@ -37,4 +37,4 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from [
 
 8. Annotate filtered results using [bedtools closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html).
 
-9. Create a RMarkdown report per phenotype including a annotated manhattan plot, qq plot, top genes, phenotype statistics and parsed log files.
+9. Create a RMarkdown report per phenotype including a annotated manhattan plot, qq plot, top loci, phenotype statistics and parsed log files.
