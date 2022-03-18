@@ -1,5 +1,3 @@
-import java.util.zip.GZIPInputStream
-
 nextflow_process {
 
     name "Test Process MERGE_RESULTS"
@@ -9,7 +7,7 @@ nextflow_process {
     test("Should output 2 merged regenie files by phenotype, one is empty") {
 
         when {
-        
+
             process {
                 """
                 f1 = file('$baseDir/tests/input/merge_results/chr1_Y1.regenie.gz')
@@ -32,35 +30,22 @@ nextflow_process {
                 with(results_merged){
                 assert size() == 2
 
-                GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0).get(1))));
-                BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
-                count = 0;
-                while ((content = br.readLine()) != null) {
-                    if(count == 0) {
-                    //check if regenie header is as expected
-                    assert content.equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
-                    }
-                    count++;
-                    }
+                def lines = path(get(0).get(1)).readLinesGzip()
+
+                assert lines.get(0).equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
+
 
                 //check amount of lines of Y1
-                assert (count == 502)
+                assert (lines.size() == 502)
 
-                gzip = new GZIPInputStream(new FileInputStream(file(get(1).get(1))));
-                br = new BufferedReader(new InputStreamReader(gzip));
-                count = 0;
-                while ((content = br.readLine()) != null) {
-                    if(count == 0) {
-                    //check if regenie header is as expected
-                    assert content.equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
-                    }
-                    count++;
-                    }
+                lines = path(get(1).get(1)).readLinesGzip()
+
+                assert lines.get(0).equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
 
                 //check amount of lines of Y2
-                assert (count == 501)
+                assert (lines.size() == 501)
 
-                  }
+               }
             }
 
         }

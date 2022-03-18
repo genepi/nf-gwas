@@ -1,4 +1,3 @@
-import java.util.zip.GZIPInputStream
 nextflow_process {
 
     name "Test Process FILTER_RESULTS"
@@ -24,21 +23,17 @@ nextflow_process {
 
             with(process.out) {
                 with(results_filtered){
+
                 assert (size == 2)
+
                 // access second element of first tuple
-                GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0).get(1))));
-                BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
-                count = 0;
-                while ((content = br.readLine()) != null) {
-                    if(count == 0) {
-                    //check if regenie header is as expected
-                    assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
-                    }
-                    count++;
-                    }
+                def lines = path(get(0).get(1)).readLinesGzip()
+
+                //check if regenie header is as expected
+                assert lines.get(0).equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
 
                 //check amount of lines
-                assert (count == 117)
+                assert (lines.size() == 117)
                 }
                 }
             }
@@ -63,22 +58,20 @@ nextflow_process {
                     assert process.success
 
                     with(process.out) {
+
                         with(results_filtered){
+
                         assert (size == 2)
-                        GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file(get(0).get(1))));
-                        BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
-                        count = 0;
-                        while ((content = br.readLine()) != null) {
-                            if(count == 0) {
-                            //check if regenie header is as expected
-                            assert content.equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
-                            }
-                            count++;
-                            }
+
+                        def lines = path(get(0).get(1)).readLinesGzip()
+
+                        //check if regenie header is as expected
+                        assert lines.get(0).equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
 
                         //all lines included since filter value is 0
-                        assert (count == 1001)
+                        assert (lines.size() == 1001)
                         }
+
                         }
                     }
 

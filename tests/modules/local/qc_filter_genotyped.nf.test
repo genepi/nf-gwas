@@ -35,7 +35,7 @@ nextflow_process {
                     assert path(get(2)).md5 == "ed400a8df66d275f9bcf70be9259dae8"
                     assert get(3) ==~ ".*.fam"
                     assert path(get(3)).md5 == "fd6ece51dceed54af8945ccfb9d4b7c"
-                    assert file(get(1)).readLines().size() == 758
+                    assert path(get(1)).readLines().size() == 758
                     }
 
                     // test snplist channel
@@ -44,7 +44,7 @@ nextflow_process {
                     assert get(0) ==~ ".*.snplist"
                     assert path(get(0)).md5 == "502cb12d33c882269df9799271e63347"
                     //check amount of SNPs
-                    assert file(get(0)).readLines().size() == 758
+                    assert path(get(0)).readLines().size() == 758
                     }
             }
         }
