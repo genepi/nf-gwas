@@ -34,6 +34,7 @@ nav_order: 2
 | `regenie_firth`     |   true  | Use Firth likelihood ratio test (LRT) as fallback for p-values less than threshold |
 | `regenie_firth_approx`     |  true | Use approximate Firth LRT for computational speedup |
 | `regenie_force_step1`     |  false | Run regenie step 1 when >1M genotyped variants are used (not recommended) |
+| `regenie_ref_first`     |  false | Specify to use the first allele as the reference allele for BGEN or PLINK bed/bim/fam file input [default is to use the last allele as the reference] |
 | `annotation_min_log10p`     |   5 | Filter and annotate results with logp10 >= 5 |
 | `plot_ylimit`     |   0 | Limit y axis in Manhattan/QQ plot for large p-values |
 | `manhattan_annotation_enabled`     |   true | Use annotation for Manhattan plot |
