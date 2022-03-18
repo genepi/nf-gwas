@@ -17,6 +17,7 @@ process REGENIE_STEP1 {
   def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
   def deleteMissings = params.phenotypes_delete_missings  ? "--strict" : ''
   def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
+  def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
   """
   # qcfiles path required for keep and extract (but not actually set below)
   regenie \
@@ -29,6 +30,7 @@ process REGENIE_STEP1 {
     $covariants \
     $deleteMissings \
     $forceStep1 \
+    $refFirst \
     --bsize ${params.regenie_bsize_step1} \
     ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
     --lowmem \
