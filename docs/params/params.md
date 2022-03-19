@@ -7,4 +7,4 @@ nav_order: 5
 
 # Parameters
 
-GWAS-regenie supports a range of parameters. Please see below for all required and optional parameters.
+nf-gwas supports a range of parameters. Please see below for all required and optional parameters.

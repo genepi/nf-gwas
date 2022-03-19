@@ -7,10 +7,10 @@ nav_order: 4
 
 ## Configuration
 
-Before running GWAS-Regenie, a Nextflow config file must be prepared. This file includes both [pipeline parameters](../params/params) and [cpus/memory directives](directives). Additionally, the correct [profile](profiles) must be specified before executing the pipeline. Fully working examples including different parameters can be found [here](https://github.com/genepi/gwas-regenie/tree/main/conf/tests).
+Before running nf-gwas, a Nextflow config file must be prepared. This file includes both [pipeline parameters](../params/params) and [cpus/memory directives](directives). Additionally, the correct [profile](profiles) must be specified before executing the pipeline. Fully working examples including different parameters can be found [here](https://github.com/genepi/nf-gwas/tree/main/conf/tests).
 
 ## Examples
-The GWAS-Regenie pipeline currently supports imputed files in **BGEN** or **VCF** format (coming from [Michigan Imputation Server](https://imputationserver.sph.umich.edu/)). Please find below two working config files to run GWAS-Regenie. 
+The nf-gwas pipeline currently supports imputed files in **BGEN** or **VCF** format (coming from [Michigan Imputation Server](https://imputationserver.sph.umich.edu/)). Please find below two working config files to run nf-gwas. 
 
 ###  BGEN files
 The following minimal configuration file runs an additive model using the UK Biobank data.

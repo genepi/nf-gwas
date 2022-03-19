@@ -7,7 +7,7 @@ nav_order: 2
 
 ## Pipeline Overview
 
-The GWAS-regenie pipeline performs whole genome regression modeling using [regenie](https://github.com/rgcgithub/regenie). For profound details on regenie, I suggest to read [the paper by Mbatchou et al.](https://doi.org/10.1038/s41588-021-00870-7) but it can be used for quantitative and binary traits and first builds regression models according to the leave-one-chromosome-out (LOCO) scheme that are then used in the second step (which tests the association of each SNP with the phenotype) as covariates. The advantage is that it is computationally efficient and fast meaning that it can also be used on very large datasets such as UK Biobank.
+The nf-gwas pipeline performs whole genome regression modeling using [regenie](https://github.com/rgcgithub/regenie). For profound details on regenie, I suggest to read [the paper by Mbatchou et al.](https://doi.org/10.1038/s41588-021-00870-7) but it can be used for quantitative and binary traits and first builds regression models according to the leave-one-chromosome-out (LOCO) scheme that are then used in the second step (which tests the association of each SNP with the phenotype) as covariates. The advantage is that it is computationally efficient and fast meaning that it can also be used on very large datasets such as UK Biobank.
 
 ### Error-prone data preparation steps are performed by the pipeline
 

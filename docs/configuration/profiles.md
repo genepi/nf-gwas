@@ -7,9 +7,9 @@ nav_order: 3
 
 ## Profiles
 
-GWAS-Regenie provides different execution profiles which can be specified with the `-profile` parameter.
+nf-gwas provides different execution profiles which can be specified with the `-profile` parameter.
 
-`nextflow run genepi/gwas-regenie -r v0.3.3 -profile test, <docker,singularity,development, slurm,slurm_with_scratch>`.
+`nextflow run genepi/nf-gwas -r v0.3.3 -profile test, <docker,singularity,development, slurm,slurm_with_scratch>`.
 
 ### Docker
 For local runs, [Docker](https://docs.docker.com/get-docker/) is the easiest way to run the pipeline.
@@ -24,8 +24,8 @@ Nextflow supports Slurm as an execution engine. The profile `slurm_with-scratch`
 The profile `development` can be used to e.g. test/adapt the code and e.g. create pull requests. This profile requires that the image must be available locally.
 
 ```
-git clone https://github.com/genepi/gwas-regenie
-cd gwas-regenie
-docker build -t genepi/gwas-regenie . # don't ignore the dot
+git clone https://github.com/genepi/nf-gwas
+cd nf-gwas
+docker build -t genepi/nf-gwas . # don't ignore the dot
 nextflow run main.nf -profile test,development
 ```
