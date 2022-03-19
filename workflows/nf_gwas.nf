@@ -82,7 +82,7 @@ include { MERGE_RESULTS               } from '../modules/local/merge_results'  a
 include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 
-workflow GWAS_REGENIE {
+workflow NF_GWAS {
 
     CACHE_JBANG_SCRIPTS (
         regenie_log_parser_java,
