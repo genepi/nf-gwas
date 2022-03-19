@@ -34,9 +34,8 @@ nextflow run main.nf -profile test,development
 ```
 
 ## License
-gwas-regenie is MIT Licensed.
+nf-gwas is MIT Licensed.
 
 ## Contact
-If you have any questions about the regenie nextflow pipeline please contact
 * [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at)
 * [Lukas Forer](mailto:lukas.forer@i-med.ac.at)
