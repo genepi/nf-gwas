@@ -1,16 +1,16 @@
 #!/usr/bin/env nextflow
 /*
 ========================================================================================
-    genepi/gwas-regenie
+    genepi/nf-gwas
 ========================================================================================
-    Github : https://github.com/genepi/gwas-regenie
+    Github : https://github.com/genepi/nf-gwas
     Author: Sebastian Schönherr & Lukas Forer
     ---------------------------
 */
 
 nextflow.enable.dsl = 2
 
-include { GWAS_REGENIE } from './workflows/gwas_regenie'
+include { NF_GWAS } from './workflows/nf_gwas'
 
 /*
 ========================================================================================
@@ -19,5 +19,5 @@ include { GWAS_REGENIE } from './workflows/gwas_regenie'
 */
 
 workflow {
-    GWAS_REGENIE ()
+    NF_GWAS ()
 }
