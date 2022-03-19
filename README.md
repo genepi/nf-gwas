@@ -2,7 +2,7 @@
 
 [![nf-gwas](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml)
 
-A nextflow pipeline to perform genome-wide association studies (GWAS) using [regenie](https://github.com/rgcgithub/regenie).
+A nextflow pipeline to perform genome-wide association studies (GWAS).
 
 ## Documentation
 Documentation can be found [here](https://genepi.github.io/nf-gwas/).
@@ -28,7 +28,7 @@ Please click [here](tests) for available test config files.
 ## Development
 ```
 git clone https://github.com/genepi/nf-gwas
-cd gwas-regenie
+cd nf-gwas
 docker build -t genepi/nf-gwas . # don't ignore the dot
 nextflow run main.nf -profile test,development
 ```
