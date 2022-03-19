@@ -2,7 +2,7 @@
 
 [![nf-gwas](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml)
 
-A nextflow pipeline to perform genome-wide association studies (GWAS).
+A nextflow pipeline to perform genome-wide association studies (GWAS) using [regenie](https://github.com/rgcgithub/regenie).
 
 ## Documentation
 Documentation can be found [here](https://genepi.github.io/nf-gwas/).
@@ -14,13 +14,13 @@ Documentation can be found [here](https://genepi.github.io/nf-gwas/).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/nf-gwas -r v0.3.3 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -r v0.3.4 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/nf-gwas -c <nextflow.config> -r v0.3.3 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -c <nextflow.config> -r v0.3.4 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 
 Please click [here](tests) for available test config files.
