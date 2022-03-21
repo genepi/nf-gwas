@@ -14,18 +14,18 @@ A nextflow pipeline to perform genome-wide association studies (GWAS) using [reg
 
 ---
 
-The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from [Michigan Imputation Server](https://imputationserver.sph.umich.edu/)) as an input and outputs association results, annotated tophits and an RMarkdown report including numerous plots and statistics. The pipeline currently includes the following steps:
+The pipeline takes files in BGEN (e.g. from UK Biobank) or VCF format (e.g. from [Michigan Imputation Server](https://imputationserver.sph.umich.edu/)) as an input and outputs association results, annotated tophits and an interactive HTML report including numerous plots (e.g. Manhattan Plot, QQ Plot) and statistics (e.g. phenotype histogram, top loci). The pipeline currently includes the following steps:
 
 
 1. Validate phenotype and covariate file (e.g. check file format, replace empty values with NA, create summary statistics)
 
-2. Convert VCF imputed data into the [plink2 file format](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (optional).
+2. Convert imputed data in VCF format into the [plink2 file format](https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf) (optional).
 
 3. Prune micro-array data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
 
 4. Filter micro-array data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness.
 
-5. Run [regenie](https://github.com/rgcgithub/regenie) and tabix results (e.g. to use with LocusZoom).
+5. Run [regenie](https://github.com/rgcgithub/regenie) and tabix results to use with LocusZoom.
 
 6. Parse regenie log and create summary statistics.
 
@@ -33,4 +33,4 @@ The pipeline takes imputed bgen (e.g. from UK Biobank) or VCF files (e.g. from [
 
 8. Annotate filtered results using [bedtools closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html).
 
-9. Create a RMarkdown report per phenotype including a annotated manhattan plot, qq plot, top loci, phenotype statistics and parsed log files.
+9. Create a HTML report per phenotype including the annotated manhattan plot, qq plot, top loci, phenotype statistics and parsed log files.
