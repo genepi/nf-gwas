@@ -16,9 +16,9 @@ nav_order: 2
 | `phenotypes_delete_missings`     | false | Removing samples with missing data at any of the phenotypes |
 | `prune_enabled`     | false | Enable pruning step |
 | `prune_maf`     | 0.01 | MAF filter |
-| `prune_window_kbsize`     |  50 | Window size |
-| `prune_step_size`     |   5 | Step size (variant ct) |
-| `prune_r2_threshold`     |   0.2 | Unphased hardcall R2 threshold|
+| `prune_window_kbsize`     | 1000 | Window size |
+| `prune_step_size`     | 100 | Step size (variant ct) |
+| `prune_r2_threshold`     |  0.9 | Unphased hardcall R2 threshold|
 | `qc_maf`     |   0.01 | Minor allele frequency (MAF) filter |
 | `qc_mac`     |  100 | Minor allele count (MAC) filter |  
 | `qc_geno`     | 0.1 | Genotype missingess |  
@@ -37,4 +37,4 @@ nav_order: 2
 | `regenie_ref_first`     |  false | Specify to use the first allele as the reference allele for BGEN or PLINK bed/bim/fam file input [default is to use the last allele as the reference] |
 | `annotation_min_log10p`     |   5 | Filter and annotate results with logp10 >= 5 |
 | `plot_ylimit`     |   0 | Limit y axis in Manhattan/QQ plot for large p-values |
-| `manhattan_annotation_enabled`     |   true | Use annotation for Manhattan plot |
+| `manhattan_annotation_enabled`     |  true | Use annotation for Manhattan plot |
