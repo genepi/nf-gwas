@@ -16,7 +16,7 @@
 title: nf-gwas
 email: sebastian.schoenherr@i-med.ac.at
 description: >- # this means to ignore newlines until "baseurl:"
-  Running regenie with Nextflow.
+  nf-gwas: A nextflow pipeline to perform genome-wide association studies (GWAS) using regenie.
 baseurl: "/nf-gwas" # the subpath of your site, e.g. /blog
 url: "https://genepi.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 domain: genepi.github.io
