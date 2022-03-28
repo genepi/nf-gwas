@@ -7,6 +7,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+
+import javax.sound.sampled.Line;
+
 import genepi.io.table.writer.CsvTableWriter;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
@@ -104,20 +107,29 @@ public class RegenieLogParser implements Callable<Integer> {
 					writer.setInteger(1, Integer.valueOf(value));
 					writer.next();
 				} else if (line.contains("* phenotypes")) {
-					String value = line.split("=")[1].trim();
-					writer.setString(0, "Number of defined phenotypes");
-					writer.setInteger(1, Integer.valueOf(value));
+					String[] splits = line.split("=");
+					if (splits.length > 1) {
+						String value = splits[1].trim();
+						writer.setString(0, "Number of defined phenotypes");
+						writer.setInteger(1, Integer.valueOf(value));
+					}
 					writer.next();
 				} else if (line.contains("-number of phenotyped individuals")) {
-					String value = line.split("=")[1].trim();
-					writer.setString(0, "Phenotyped individuals total");
-					writer.setInteger(1, Integer.valueOf(value));
-					writer.next();
+					String[] splits = line.split("=");
+					if (splits.length > 1) {
+						String value = splits[1].trim();
+						writer.setString(0, "Phenotyped individuals total");
+						writer.setInteger(1, Integer.valueOf(value));
+						writer.next();
+					}
 				} else if (line.contains("number of individuals used in analysis")) {
-					String value = line.split("=")[1].trim();
-					writer.setString(0, "Phenotyped individuals used");
-					writer.setInteger(1, Integer.valueOf(value));
-					writer.next();
+					String[] splits = line.split("=");
+					if (splits.length > 1) {
+						String value = splits[1].trim();
+						writer.setString(0, "Phenotyped individuals used");
+						writer.setInteger(1, Integer.valueOf(value));
+						writer.next();
+					}
 				} else if (line.contains("--minMAC")) {
 					String value = line.split("\\s+")[2].trim();
 					writer.setString(0, "MAC limit");
@@ -129,10 +141,13 @@ public class RegenieLogParser implements Callable<Integer> {
 					writer.setDouble(1, Double.valueOf(value));
 					writer.next();
 				} else if (line.contains("Number of ignored SNPs due to low MAC or info score")) {
-					String value = line.split(":")[1].trim();
-					writer.setString(0, "Variants ignored (low MAC or low info score)");
-					writer.setInteger(1, Integer.valueOf(value));
-					writer.next();
+					String[] splits = line.split(":");
+					if (splits.length > 1) {
+						String value = splits[1].trim();
+						writer.setString(0, "Variants ignored (low MAC or low info score)");
+						writer.setInteger(1, Integer.valueOf(value));
+						writer.next();
+					}
 				}
 			}
 			s.close();
