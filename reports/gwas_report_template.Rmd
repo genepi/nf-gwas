@@ -40,15 +40,15 @@ library(dplyr)
 
 ## Project Summary
 
-| Parameter     | Value                                      |
-| ------------- |--------------------------------------------|
-| Project       | `r params$project`                         |
-| Pipeline Version       | `r params$version`                |
-| Date       | `r params$date`                         |
-| Phenotype File      | `r params$phenotype_file`            |
-| Phenotype       | `r params$phenotype`                     |
-| Covariates       | `r params$covariates`                     |
-| Regenie Output      | `r params$regenie_filename`             |
+| Parameter        | Value                       |
+|------------------|-----------------------------|
+| Project          | `r params$project`          |
+| Pipeline Version | `r params$version`          |
+| Date             | `r params$date`             |
+| Phenotype File   | `r params$phenotype_file`   |
+| Phenotype        | `r params$phenotype`        |
+| Covariates       | `r params$covariates`       |
+| Regenie Output   | `r params$regenie_filename` |
 
 ## Phenotype Statistics
 
@@ -62,6 +62,7 @@ kable(skim(phenotypeTable) %>%
 ```
 
 ### Histogram
+
 ```{r, echo=FALSE}
 ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
   geom_histogram(color="black", fill="white",bins=30)
@@ -243,9 +244,6 @@ step2_log <- read.table(params$regenie_step2_log,
 kable(step2_log)
 ```
 
+------------------------------------------------------------------------
 
----
-
-<small>
-This report has been created with **[nf-gwas `r params$version`](https://github.com/genepi/nf-gwas)**, a nextflow pipeline developed by [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at), [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
-</small>
+<small> This report has been created with [**nf-gwas `r params$version`**](https://github.com/genepi/nf-gwas), a nextflow pipeline developed by [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at), [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck. </small>

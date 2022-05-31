@@ -4,7 +4,8 @@ requiredParams = [
     'genotypes_imputed', 'genotypes_build',
     'genotypes_imputed_format', 'phenotypes_filename',
     'phenotypes_columns', 'phenotypes_binary_trait',
-    'regenie_test'
+    'regenie_test', 'regenie_gene_masks',
+    'regenie_gene_setlist', 'regenie_gene_annot'
 ]
 
 for (param in requiredParams) {
@@ -26,7 +27,7 @@ if(!params.covariates_columns.isEmpty()){
   covariates_array = params.covariates_columns.trim().split(',')
 }
 
-gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+gwas_report_template = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
 
 //JBang scripts
 regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
@@ -62,6 +63,12 @@ if (params.regenie_test != 'additive' && params.regenie_test != 'recessive' && p
 if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
   exit 1, "File format ${params.genotypes_imputed_format} not supported."
 }
+
+//Check regenie step1 predictions
+//if (params.regenie_skip_predictions == true){
+//  exit 1, "Prediction should be computed"
+//}
+
 
 //Array genotypes
 Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
@@ -175,19 +182,22 @@ workflow NF_GWAS_GENE {
 
     REGENIE_GENE (
         regenie_step1_out_ch.collect(),
-        imputed_plink2_ch,
+        genotyped_final_ch,
+        // imputed_plink2_ch,
+        QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+        // QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-        sample_file,
+        // sample_file,
         covariates_file_validated
     )
 
     REGENIE_LOG_PARSER_STEP2 (
-        REGENIE_STEP2.out.regenie_step2_out_log.collect(),
+        REGENIE_GENE.out.regenie_gene_level_out_log.collect(),
         CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
     )
 
 // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotpe.
-REGENIE_GENE.out.regenie_step2_out
+REGENIE_GENE.out.regenie_gene_level_out
   .transpose()
   .map { prefix, file -> tuple(getPhenotype(prefix, file), file) }
   .set { regenie_step2_by_phenotype }
@@ -207,9 +217,9 @@ REGENIE_GENE.out.regenie_step2_out
     )
 
     ANNOTATE_FILTERED (
-        MERGE_RESULTS_FILTERED.out.results_filtered_merged,
-        genes_hg19,
-        genes_hg38
+      MERGE_RESULTS_FILTERED.out.results_filtered_merged,
+      genes_hg19,
+      genes_hg38
     )
 
     //combined merge results and annotated filtered results by phenotype (index 0)
