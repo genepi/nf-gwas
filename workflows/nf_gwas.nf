@@ -7,6 +7,12 @@ requiredParams = [
     'regenie_test'
 ]
 
+if (params.regenie_run_gene_tests){
+  requiredParams += ['regenie_gene_masks',
+  'regenie_gene_setlist', 'regenie_gene_annot']
+}
+
+
 for (param in requiredParams) {
     if (params[param] == null) {
       exit 1, "Parameter ${param} is required."
@@ -26,7 +32,11 @@ if(!params.covariates_columns.isEmpty()){
   covariates_array = params.covariates_columns.trim().split(',')
 }
 
-gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+if (params.regenie_run_gene_tests){
+  gwas_report_template = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
+} else {
+  gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+}
 
 //JBang scripts
 regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
@@ -74,13 +84,18 @@ include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' 
 include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
-include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
+if (params.regenie_run_gene_tests){
+  include { REGENIE_GENE as REGENIE_STEP2} from '../modules/local/regenie_gene_level' addParams(outdir: "$outdir")
+} else {
+  include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
+}
 include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
 include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
+
 
 workflow NF_GWAS {
 
@@ -172,15 +187,23 @@ workflow NF_GWAS {
         regenie_step1_parsed_logs_ch = Channel.fromPath("NO_LOG")
 
     }
-
-    REGENIE_STEP2 (
-        regenie_step1_out_ch.collect(),
-        imputed_plink2_ch,
-        VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-        sample_file,
-        covariates_file_validated
-    )
-
+    if (params.regenie_run_gene_tests){
+      REGENIE_STEP2 (
+          regenie_step1_out_ch.collect(),
+          genotyped_final_ch,
+          QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          covariates_file_validated
+      )
+    } else {
+      REGENIE_STEP2 (
+          regenie_step1_out_ch.collect(),
+          imputed_plink2_ch,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          sample_file,
+          covariates_file_validated
+      )
+    }
     REGENIE_LOG_PARSER_STEP2 (
         REGENIE_STEP2.out.regenie_step2_out_log.collect(),
         CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
