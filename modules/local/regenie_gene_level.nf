@@ -12,8 +12,8 @@ process REGENIE_GENE {
     path covariates_file
 
   output:
-    tuple val(genotyped_plink_filename), path("*regenie.gz"), emit: regenie_gene_level_out
-    path "${genotyped_plink_filename}.log", emit: regenie_gene_level_out_log
+    tuple val(genotyped_plink_filename), path("*regenie.gz"), emit: regenie_step2_out
+    path "${genotyped_plink_filename}.log", emit: regenie_step2_out_log
 
   script:
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
