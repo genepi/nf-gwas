@@ -33,6 +33,14 @@ docker build -t genepi/nf-gwas . # don't ignore the dot
 nextflow run main.nf -profile test,development
 ```
 
+### Gene-level analysis
+```
+git clone https://github.com/genepi/nf-gwas
+cd nf-gwas
+docker build -t genepi/nf-gwas . # don't ignore the dot
+nextflow run main_gene.nf -profile test_gene,development
+```
+
 ## License
 nf-gwas is MIT Licensed.
 
