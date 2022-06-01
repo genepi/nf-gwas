@@ -72,7 +72,7 @@ ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, dpi=300}
 #sources: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
 
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE, tmpdir="$PWD")
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ"), header=TRUE, tmpdir="$PWD")
 
 #source: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
 
