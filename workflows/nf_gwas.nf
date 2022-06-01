@@ -32,8 +32,12 @@ if(!params.covariates_columns.isEmpty()){
   covariates_array = params.covariates_columns.trim().split(',')
 }
 
+//TODO: remove duplicate code in templates
 if (params.regenie_run_gene_tests){
   gwas_report_template = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
+  regenie_gene_annot   = file(params.regenie_gene_annot, checkIfExists: true)
+  regenie_gene_setlist = file(params.regenie_gene_setlist, checkIfExists: true)
+  regenie_gene_masks   = file(params.regenie_gene_masks, checkIfExists: true)
 } else {
   gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 }
@@ -84,11 +88,8 @@ include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' 
 include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
-if (params.regenie_run_gene_tests){
-  include { REGENIE_GENE as REGENIE_STEP2} from '../modules/local/regenie_gene_level' addParams(outdir: "$outdir")
-} else {
-  include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
-}
+include { REGENIE_STEP2_GENE_TESTS    } from '../modules/local/regenie_step2_gene_tests' addParams(outdir: "$outdir")
+include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
@@ -188,14 +189,23 @@ workflow NF_GWAS {
 
     }
     if (params.regenie_run_gene_tests){
-      REGENIE_STEP2 (
+
+      REGENIE_STEP2_GENE_TESTS (
           regenie_step1_out_ch.collect(),
           genotyped_final_ch,
           QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
           VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-          covariates_file_validated
+          covariates_file_validated,
+          regenie_gene_annot,
+          regenie_gene_setlist,
+          regenie_gene_masks
       )
+
+      regenie_step2_log_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out_log
+      regenie_step2_out_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out
+
     } else {
+
       REGENIE_STEP2 (
           regenie_step1_out_ch.collect(),
           imputed_plink2_ch,
@@ -203,14 +213,18 @@ workflow NF_GWAS {
           sample_file,
           covariates_file_validated
       )
+
+      regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
+      regenie_step2_out_ch = REGENIE_STEP2.out.regenie_step2_out
+
     }
     REGENIE_LOG_PARSER_STEP2 (
-        REGENIE_STEP2.out.regenie_step2_out_log.collect(),
+        regenie_step2_log_ch.collect(),
         CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
     )
 
 // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotpe.
-REGENIE_STEP2.out.regenie_step2_out
+regenie_step2_out_ch
   .transpose()
   .map { prefix, file -> tuple(getPhenotype(prefix, file), file) }
   .set { regenie_step2_by_phenotype }

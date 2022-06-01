@@ -1,8 +1,6 @@
-process REGENIE_GENE {
+process REGENIE_STEP2_GENE_TESTS {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
-
-  // tag "${plink2_pgen_file.simpleName}"
 
   input:
 	  path step1_out
@@ -10,6 +8,9 @@ process REGENIE_GENE {
     path id
     path phenotypes_file
     path covariates_file
+    path regenie_gene_annot
+    path regenie_gene_setlist
+    path regenie_gene_masks
 
   output:
     tuple val(genotyped_plink_filename), path("*regenie.gz"), emit: regenie_step2_out
@@ -34,9 +35,9 @@ process REGENIE_GENE {
     --bsize ${params.regenie_bsize_step1} \
     --pred regenie_step1_out_pred.list \
     --threads ${task.cpus} \
-    --anno-file ${params.regenie_gene_annot} \
-    --set-list ${params.regenie_gene_setlist} \
-    --mask-def ${params.regenie_gene_masks} \
+    --anno-file ${regenie_gene_annot} \
+    --set-list ${regenie_gene_setlist} \
+    --mask-def ${regenie_gene_masks} \
     --gz \
     $aaf \
     --write-mask \
