@@ -12,7 +12,6 @@ if (params.regenie_run_gene_tests){
   'regenie_gene_setlist', 'regenie_gene_annot']
 }
 
-
 for (param in requiredParams) {
     if (params[param] == null) {
       exit 1, "Parameter ${param} is required."

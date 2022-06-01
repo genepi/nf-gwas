@@ -36,6 +36,7 @@ library(skimr)
 library(kableExtra)
 library(ramwas)
 library(dplyr)
+library(RColorBrewer)
 ```
 
 ## Project Summary
@@ -73,16 +74,16 @@ ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, dpi=300}
 #sources: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
 
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE, tmpdir="$PWD")
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ"), header=TRUE, tmpdir="$PWD")
 
 #source: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
 
 annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
 #merge gene names of tophits to regenieTable
 
-annotatedTopHits <- annotatedTopHits %>%  
+annotatedTopHits <- annotatedTopHits %>%
     mutate(ID = as.character(ID))
-regenieTable <- regenieTable %>%  
+regenieTable <- regenieTable %>%
     mutate(ID = as.character(ID))
 
 regenieTable_annotated <- left_join(regenieTable, annotatedTopHits, by = "ID")
@@ -173,18 +174,107 @@ p <- ggplot(don, aes(x=GENPOScum, y=LOG10P)) +
 ## QQ Plot
 
 ```{r, echo=FALSE, results='asis'}
-qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
+compute.inflation <- function(x, log=FALSE) {
+  if (sum(is.na(x)) > 1) {
+    x <- x[!is.na(x)]
+  }
+
+  if (log){
+    x <- 10**(-x)
+  }
+
+  ## lambda chisq <- qchisq(1-x,1)
+  chisq <- qchisq(x, 1, lower.tail = FALSE)
+  lambda <- median(chisq) / qchisq(0.5, 1)
+
+  return(lambda)
+}
+
+#---- Create null distribution for qqplot ----
+create_nulldist <- function(x, log=FALSE){
+  n <- length(x)
+  expected <- -log10(1:n / n)
+  if (log){
+    xl <- x
+  } else {
+    xl <- -log10(x)
+  }
+  ix <- order(xl, decreasing=TRUE)
+  newexp <- rep(1, n)
+  newexp[ix] <- expected
+  return(newexp)
+}
+
+
+myqqplot_mafbreak <- function(
+  df,
+  mafbreaks=c(0, 0.0005, 0.005, 0.05, 1),
+  mafcol = "AF_Allele2",
+  pvalcol = "p.value",
+  log=FALSE,
+  title="QQPLOT"
+){
+  mylog10 <- function(x){
+    return(-log10(x))
+  }
+
+  df$MAFBRK <- cut(df %>% pull({{ mafcol }}), breaks=mafbreaks)
+
+
+  df <- df %>%
+    group_by(MAFBRK)  %>%
+    mutate(
+      across(
+        any_of(pvalcol),
+        ~create_nulldist(.x, log=log),
+        .names="EXP")
+    )
+  overall.lmb <- compute.inflation(df %>% pull({{ pvalcol }}), log=log)
+
+  # mylambdas <- df %>% group_by(MAFBRK) %>%
+  #   summarise(lambda = compute.inflation(-log10(p.value))$lambda,
+  #             EXP=0, p.value=-log10(min(p.value)))
+
+  if (!log){
+    df <- df %>% mutate_at(vars({{pvalcol}}), ~mylog10)
+  }
+
+  qqp <- ggplot(df, aes_string("EXP", pvalcol, color="MAFBRK")) + geom_abline()
+  qqp <- qqp + geom_point() + theme_bw()
+  qqp <- qqp + labs(x = "Expected -log(P.Value)", y = "Observed -log(P.Value)", color="MAF intervals") +
+    theme(panel.border = element_blank(), legend.position = "right")
+  qqp <- qqp + ggtitle(title) + scale_colour_brewer(palette="Blues")
+
+  xannot <- max(df$EXP) - (max(df$EXP)*0.1)
+  qqp <- qqp + annotate(
+    "text",
+    x = xannot,
+    y = 0.5,
+    label =
+      paste0(
+        "lambda: ",
+        round(overall.lmb, 2)
+      )
+  )
+  return(qqp)
+}
+
+pp <- myqqplot_mafbreak(
+  df=regenieTable,
+  pvalcol="LOG10P",
+  log=TRUE,
+  mafcol = "A1FREQ",
+  title=paste("QQplot", params$phenotype, sep=" - ")
+)
 
 if(params$plot_ylimit == 0) {
   limit = NULL
 } else {
   limit = c(0, params$plot_ylimit )
-    cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
+  pp <- pp + ylim(0, params$plot_ylimit)
+  cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
 }
-
-qqPlotFast(qqPrepare, ylim = limit)
-
-rm(qqPrepare)
+print(pp)
 rm(regenieTable)
 ```
 
