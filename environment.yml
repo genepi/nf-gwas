@@ -29,3 +29,4 @@ dependencies:
   - bioconductor-ramwas=1.16.0
   - bedtools=2.30.0
   - htslib=1.14
+  - r-stringr=1.4.0

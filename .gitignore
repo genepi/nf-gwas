@@ -7,3 +7,8 @@ tests/output
 .nf-test/
 nf-test
 .project
+*.Rproj*
+*.Rdata
+*.Rhistory
+*.html
+*.ipynb
