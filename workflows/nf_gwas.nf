@@ -66,7 +66,6 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 //Array genotypes
 Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
 
-include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scripts'
 include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
 include { VALIDATE_COVARIATS          } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
@@ -84,20 +83,13 @@ include { REPORT                      } from '../modules/local/report'  addParam
 
 workflow NF_GWAS {
 
-    // CACHE_JBANG_SCRIPTS (
-    //     regenie_log_parser_java,
-    //     regenie_filter_java,
-    //     regenie_validate_input_java
-    // )
-
     VALIDATE_PHENOTYPES (
         phenotypes_file
     )
-/*
+
     if(covariates_file.exists()) {
         VALIDATE_COVARIATS (
-          covariates_file,
-          CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
+          covariates_file
         )
 
         covariates_file_validated = VALIDATE_COVARIATS.out.covariates_file_validated
@@ -157,8 +149,7 @@ workflow NF_GWAS {
         )
 
         REGENIE_LOG_PARSER_STEP1 (
-            REGENIE_STEP1.out.regenie_step1_out_log,
-            CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
+            REGENIE_STEP1.out.regenie_step1_out_log
         )
 
         regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out
@@ -181,8 +172,7 @@ workflow NF_GWAS {
     )
 
     REGENIE_LOG_PARSER_STEP2 (
-        REGENIE_STEP2.out.regenie_step2_out_log.collect(),
-        CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
+        REGENIE_STEP2.out.regenie_step2_out_log.collect()
     )
 
 // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotpe.
@@ -193,8 +183,7 @@ REGENIE_STEP2.out.regenie_step2_out
 
 
     FILTER_RESULTS (
-        regenie_step2_by_phenotype,
-        CACHE_JBANG_SCRIPTS.out.regenie_filter_jar
+        regenie_step2_by_phenotype
     )
 
     MERGE_RESULTS_FILTERED (
@@ -225,7 +214,7 @@ REGENIE_STEP2.out.regenie_step2_out
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
-*/
+
 }
 
 workflow.onComplete {

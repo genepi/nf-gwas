@@ -5,13 +5,12 @@ process VALIDATE_COVARIATS {
 
   input:
     path covariates_file
-  path regenie_validate_input_jar
 
   output:
     path "${covariates_file.baseName}.validated.txt", emit: covariates_file_validated
     path "${covariates_file.baseName}.validated.log", emit: covariates_file_validated_log
 
   """
-  java -jar ${regenie_validate_input_jar} --input ${covariates_file} --output  ${covariates_file.baseName}.validated.txt --type covariate
+  java -jar /opt/RegenieValidateInput.jar --input ${covariates_file} --output  ${covariates_file.baseName}.validated.txt --type covariate
   """
   }
