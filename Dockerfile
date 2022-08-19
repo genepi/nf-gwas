@@ -26,7 +26,18 @@ RUN wget https://github.com/jbangdev/jbang/releases/download/v0.91.0/jbang-0.91.
     unzip -q jbang-*.zip && \
     mv jbang-0.91.0 jbang  && \
     rm jbang*.zip
+
 ENV PATH="/opt/jbang/bin:${PATH}"
+
+COPY ./bin/RegenieFilter.java ./
+RUN jbang export portable -O=RegenieFilter.jar RegenieFilter.java
+
+COPY ./bin/RegenieLogParser.java ./
+RUN jbang export portable -O=RegenieLogParser.jar RegenieLogParser.java
+
+COPY ./bin/RegenieValidateInput.java ./
+RUN jbang export portable -O=RegenieValidateInput.jar RegenieValidateInput.java
+
 
 # Install regenie (not as conda package available)
 WORKDIR "/opt"
