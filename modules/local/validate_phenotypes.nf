@@ -5,7 +5,6 @@ process VALIDATE_PHENOTYPES {
 
   input:
     path phenotypes_file
-    path regenie_validate_input_jar
 
   output:
     path "${phenotypes_file.baseName}.validated.txt", emit: phenotypes_file_validated

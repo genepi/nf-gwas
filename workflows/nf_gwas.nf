@@ -84,17 +84,16 @@ include { REPORT                      } from '../modules/local/report'  addParam
 
 workflow NF_GWAS {
 
-    CACHE_JBANG_SCRIPTS (
-        regenie_log_parser_java,
-        regenie_filter_java,
-        regenie_validate_input_java
-    )
+    // CACHE_JBANG_SCRIPTS (
+    //     regenie_log_parser_java,
+    //     regenie_filter_java,
+    //     regenie_validate_input_java
+    // )
 
     VALIDATE_PHENOTYPES (
-        phenotypes_file,
-        CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
+        phenotypes_file
     )
-
+/*
     if(covariates_file.exists()) {
         VALIDATE_COVARIATS (
           covariates_file,
@@ -226,6 +225,7 @@ REGENIE_STEP2.out.regenie_step2_out
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
+*/
 }
 
 workflow.onComplete {
