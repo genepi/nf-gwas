@@ -172,13 +172,13 @@ workflow NF_GWAS {
         REGENIE_STEP2.out.regenie_step2_out_log.collect()
     )
 
-// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotpe.
+// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
 REGENIE_STEP2.out.regenie_step2_out
   .transpose()
-  .map { prefix, file -> tuple(getPhenotype(prefix, file), file) }
+  .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
   .set { regenie_step2_by_phenotype }
 
-/*
+
     FILTER_RESULTS (
         regenie_step2_by_phenotype
     )
@@ -198,9 +198,8 @@ REGENIE_STEP2.out.regenie_step2_out
     )
 
     //combined merge results and annotated filtered results by phenotype (index 0)
-    merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged.combine(
-      ANNOTATE_FILTERED.out.annotated_ch, by: 0
-    )
+    merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
+                                                .combine( ANNOTATE_FILTERED.out.annotated_ch, by: 0)
 
     REPORT (
         merged_results_and_annotated_filtered,
@@ -211,7 +210,7 @@ REGENIE_STEP2.out.regenie_step2_out
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
-*/
+
 }
 
 workflow.onComplete {
