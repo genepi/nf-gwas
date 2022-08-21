@@ -9,6 +9,6 @@ process REGENIE_LOG_PARSER_STEP1 {
     path "${params.project}.step1.log", emit: regenie_step1_parsed_logs
 
   """
-  java -jar RegenieLogParser.jar ${regenie_step1_log} --output ${params.project}.step1.log
+  java -jar /opt/RegenieLogParser.jar ${regenie_step1_log} --output ${params.project}.step1.log
   """
   }

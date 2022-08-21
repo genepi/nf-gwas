@@ -28,11 +28,6 @@ if(!params.covariates_columns.isEmpty()){
 
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 
-//JBang scripts
-regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
-regenie_filter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
-regenie_validate_input_java = file("$baseDir/bin/RegenieValidateInput.java", checkIfExists: true)
-
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.GRCh37.sorted.bed", checkIfExists: true)
 genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
@@ -41,16 +36,18 @@ genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
-//Covariates
-covariates_file = file(params.covariates_filename)
-if (params.covariates_filename != 'NO_COV_FILE' && !covariates_file.exists()){
-  exit 1, "Covariate file ${params.covariates_filename} not found."
+//Optional covariates file
+if (params.covariates_filename == []) {
+    covariates_file = []
+} else {
+    covariates_file = file(params.covariates_filename, checkIfExists: true)
 }
 
 //Optional sample file
-sample_file = file(params.regenie_sample_file)
-if (params.regenie_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists()){
-  exit 1, "Sample file ${params.regenie_sample_file} not found."
+if (params.regenie_sample_file == []) {
+    sample_file = []
+} else {
+    sample_file = file(params.regenie_sample_file, checkIfExists: true)
 }
 
 //Check specified test
@@ -87,7 +84,7 @@ workflow NF_GWAS {
         phenotypes_file
     )
 
-    if(covariates_file.exists()) {
+    if(params.covariates_filename != []) {
         VALIDATE_COVARIATS (
           covariates_file
         )
@@ -98,8 +95,8 @@ workflow NF_GWAS {
    } else {
 
      // set covariates_file to default value
-     covariates_file_validated = covariates_file
-     covariates_file_validated_log = Channel.fromPath("NO_COV_LOG")
+        covariates_file_validated = covariates_file
+        covariates_file_validated_log = []
 
    }
 
@@ -117,7 +114,7 @@ workflow NF_GWAS {
 
         //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
         channel.fromPath("${params.genotypes_imputed}")
-        .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
+        .map { tuple(it.baseName, it, [], []) }
         .set {imputed_plink2_ch}
     }
 
@@ -159,7 +156,7 @@ workflow NF_GWAS {
 
         regenie_step1_out_ch = Channel.of('/')
 
-        regenie_step1_parsed_logs_ch = Channel.fromPath("NO_LOG")
+        regenie_step1_parsed_logs_ch = Channel.of([])
 
     }
 
@@ -181,7 +178,7 @@ REGENIE_STEP2.out.regenie_step2_out
   .map { prefix, file -> tuple(getPhenotype(prefix, file), file) }
   .set { regenie_step2_by_phenotype }
 
-
+/*
     FILTER_RESULTS (
         regenie_step2_by_phenotype
     )
@@ -210,11 +207,11 @@ REGENIE_STEP2.out.regenie_step2_out
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
-        covariates_file_validated_log.collect(),
+                covariates_file_validated_log.collect(),
         regenie_step1_parsed_logs_ch.collect(),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
-
+*/
 }
 
 workflow.onComplete {

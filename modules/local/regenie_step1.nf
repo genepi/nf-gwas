@@ -14,7 +14,7 @@ process REGENIE_STEP1 {
     path "regenie_step1_out.log", emit: regenie_step1_out_log
 
   script:
-  def covariants = covariates_file.name != 'NO_COV_FILE' ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
+  def covariants = covariates_file.name != [] ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
   def deleteMissings = params.phenotypes_delete_missings  ? "--strict" : ''
   def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
   def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
