@@ -37,14 +37,14 @@ phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
 //Optional covariates file
-if (params.covariates_filename == []) {
+if (!params.covariates_filename) {
     covariates_file = []
 } else {
     covariates_file = file(params.covariates_filename, checkIfExists: true)
 }
 
 //Optional sample file
-if (params.regenie_sample_file == []) {
+if (!params.regenie_sample_file) {
     sample_file = []
 } else {
     sample_file = file(params.regenie_sample_file, checkIfExists: true)
@@ -84,7 +84,7 @@ workflow NF_GWAS {
         phenotypes_file
     )
 
-    if(params.covariates_filename != []) {
+    if(params.covariates_filename) {
         VALIDATE_COVARIATS (
           covariates_file
         )
