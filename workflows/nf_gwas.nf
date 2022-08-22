@@ -37,14 +37,14 @@ phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
 //Optional covariates file
-if (params.covariates_filename == []) {
+if (!params.covariates_filename) {
     covariates_file = []
 } else {
     covariates_file = file(params.covariates_filename, checkIfExists: true)
 }
 
 //Optional sample file
-if (params.regenie_sample_file == []) {
+if (!params.regenie_sample_file) {
     sample_file = []
 } else {
     sample_file = file(params.regenie_sample_file, checkIfExists: true)
@@ -64,7 +64,7 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
 
 include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
-include { VALIDATE_COVARIATS          } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
+include { VALIDATE_COVARIATES         } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
 include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' addParams(outdir: "$outdir")
 include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
@@ -84,19 +84,19 @@ workflow NF_GWAS {
         phenotypes_file
     )
 
-    if(params.covariates_filename != []) {
-        VALIDATE_COVARIATS (
+    covariates_file_validated_log = Channel.empty()
+    if(params.covariates_filename) {
+        VALIDATE_COVARIATES (
           covariates_file
         )
 
-        covariates_file_validated = VALIDATE_COVARIATS.out.covariates_file_validated
-        covariates_file_validated_log = VALIDATE_COVARIATS.out.covariates_file_validated_log
+        covariates_file_validated = VALIDATE_COVARIATES.out.covariates_file_validated
+        covariates_file_validated_log = VALIDATE_COVARIATES.out.covariates_file_validated_log
 
    } else {
 
-     // set covariates_file to default value
+        // set covariates_file to default value
         covariates_file_validated = covariates_file
-        covariates_file_validated_log = []
 
    }
 
@@ -135,6 +135,7 @@ workflow NF_GWAS {
           genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
       }
 
+    regenie_step1_parsed_logs_ch = Channel.empty()
     if (!params.regenie_skip_predictions){
 
         REGENIE_STEP1 (
@@ -155,8 +156,6 @@ workflow NF_GWAS {
     } else {
 
         regenie_step1_out_ch = Channel.of('/')
-
-        regenie_step1_parsed_logs_ch = Channel.of([])
 
     }
 
@@ -206,8 +205,8 @@ REGENIE_STEP2.out.regenie_step2_out
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
-        covariates_file_validated_log.collect(),
-        regenie_step1_parsed_logs_ch.collect(),
+        covariates_file_validated_log.collect().ifEmpty([]),
+        regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
 
