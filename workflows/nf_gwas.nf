@@ -84,6 +84,7 @@ workflow NF_GWAS {
         phenotypes_file
     )
 
+    covariates_file_validated_log = Channel.empty()
     if(params.covariates_filename) {
         VALIDATE_COVARIATS (
           covariates_file
@@ -94,9 +95,8 @@ workflow NF_GWAS {
 
    } else {
 
-     // set covariates_file to default value
+        // set covariates_file to default value
         covariates_file_validated = covariates_file
-        covariates_file_validated_log = []
 
    }
 
@@ -135,6 +135,7 @@ workflow NF_GWAS {
           genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
       }
 
+    regenie_step1_parsed_logs_ch = Channel.empty()
     if (!params.regenie_skip_predictions){
 
         REGENIE_STEP1 (
@@ -155,8 +156,6 @@ workflow NF_GWAS {
     } else {
 
         regenie_step1_out_ch = Channel.of('/')
-
-        regenie_step1_parsed_logs_ch = Channel.of([])
 
     }
 
@@ -206,8 +205,8 @@ REGENIE_STEP2.out.regenie_step2_out
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
-        covariates_file_validated_log.collect(),
-        regenie_step1_parsed_logs_ch.collect(),
+        covariates_file_validated_log.collect().ifEmpty([]),
+        regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
 
