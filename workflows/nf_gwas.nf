@@ -64,7 +64,7 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
 
 include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
-include { VALIDATE_COVARIATS          } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
+include { VALIDATE_COVARIATES         } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
 include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' addParams(outdir: "$outdir")
 include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
@@ -86,12 +86,12 @@ workflow NF_GWAS {
 
     covariates_file_validated_log = Channel.empty()
     if(params.covariates_filename) {
-        VALIDATE_COVARIATS (
+        VALIDATE_COVARIATES (
           covariates_file
         )
 
-        covariates_file_validated = VALIDATE_COVARIATS.out.covariates_file_validated
-        covariates_file_validated_log = VALIDATE_COVARIATS.out.covariates_file_validated_log
+        covariates_file_validated = VALIDATE_COVARIATES.out.covariates_file_validated
+        covariates_file_validated_log = VALIDATE_COVARIATES.out.covariates_file_validated_log
 
    } else {
 

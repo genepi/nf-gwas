@@ -1,4 +1,4 @@
-process VALIDATE_COVARIATS {
+process VALIDATE_COVARIATES {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*log'
   publishDir "${params.outdir}/validated_input/", mode: 'copy', pattern: '*validated.txt'
