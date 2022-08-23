@@ -28,11 +28,6 @@ if(!params.covariates_columns.isEmpty()){
 
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 
-//JBang scripts
-regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
-regenie_filter_java = file("$baseDir/bin/RegenieFilter.java", checkIfExists: true)
-regenie_validate_input_java = file("$baseDir/bin/RegenieValidateInput.java", checkIfExists: true)
-
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.GRCh37.sorted.bed", checkIfExists: true)
 genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
@@ -41,16 +36,18 @@ genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
-//Covariates
-covariates_file = file(params.covariates_filename)
-if (params.covariates_filename != 'NO_COV_FILE' && !covariates_file.exists()){
-  exit 1, "Covariate file ${params.covariates_filename} not found."
+//Optional covariates file
+if (!params.covariates_filename) {
+    covariates_file = []
+} else {
+    covariates_file = file(params.covariates_filename, checkIfExists: true)
 }
 
 //Optional sample file
-sample_file = file(params.regenie_sample_file)
-if (params.regenie_sample_file != 'NO_SAMPLE_FILE' && !sample_file.exists()){
-  exit 1, "Sample file ${params.regenie_sample_file} not found."
+if (!params.regenie_sample_file) {
+    sample_file = []
+} else {
+    sample_file = file(params.regenie_sample_file, checkIfExists: true)
 }
 
 //Check specified test
@@ -66,9 +63,8 @@ if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format 
 //Array genotypes
 Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
 
-include { CACHE_JBANG_SCRIPTS         } from '../modules/local/cache_jbang_scripts'
 include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
-include { VALIDATE_COVARIATS          } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
+include { VALIDATE_COVARIATES         } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
 include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' addParams(outdir: "$outdir")
 include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
@@ -84,31 +80,23 @@ include { REPORT                      } from '../modules/local/report'  addParam
 
 workflow NF_GWAS {
 
-    CACHE_JBANG_SCRIPTS (
-        regenie_log_parser_java,
-        regenie_filter_java,
-        regenie_validate_input_java
-    )
-
     VALIDATE_PHENOTYPES (
-        phenotypes_file,
-        CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
+        phenotypes_file
     )
 
-    if(covariates_file.exists()) {
-        VALIDATE_COVARIATS (
-          covariates_file,
-          CACHE_JBANG_SCRIPTS.out.regenie_validate_input_jar
+    covariates_file_validated_log = Channel.empty()
+    if(params.covariates_filename) {
+        VALIDATE_COVARIATES (
+          covariates_file
         )
 
-        covariates_file_validated = VALIDATE_COVARIATS.out.covariates_file_validated
-        covariates_file_validated_log = VALIDATE_COVARIATS.out.covariates_file_validated_log
+        covariates_file_validated = VALIDATE_COVARIATES.out.covariates_file_validated
+        covariates_file_validated_log = VALIDATE_COVARIATES.out.covariates_file_validated_log
 
    } else {
 
-     // set covariates_file to default value
-     covariates_file_validated = covariates_file
-     covariates_file_validated_log = Channel.fromPath("NO_COV_LOG")
+        // set covariates_file to default value
+        covariates_file_validated = covariates_file
 
    }
 
@@ -126,7 +114,7 @@ workflow NF_GWAS {
 
         //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
         channel.fromPath("${params.genotypes_imputed}")
-        .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
+        .map { tuple(it.baseName, it, [], []) }
         .set {imputed_plink2_ch}
     }
 
@@ -147,6 +135,7 @@ workflow NF_GWAS {
           genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
       }
 
+    regenie_step1_parsed_logs_ch = Channel.empty()
     if (!params.regenie_skip_predictions){
 
         REGENIE_STEP1 (
@@ -158,8 +147,7 @@ workflow NF_GWAS {
         )
 
         REGENIE_LOG_PARSER_STEP1 (
-            REGENIE_STEP1.out.regenie_step1_out_log,
-            CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
+            REGENIE_STEP1.out.regenie_step1_out_log
         )
 
         regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out
@@ -168,8 +156,6 @@ workflow NF_GWAS {
     } else {
 
         regenie_step1_out_ch = Channel.of('/')
-
-        regenie_step1_parsed_logs_ch = Channel.fromPath("NO_LOG")
 
     }
 
@@ -182,20 +168,18 @@ workflow NF_GWAS {
     )
 
     REGENIE_LOG_PARSER_STEP2 (
-        REGENIE_STEP2.out.regenie_step2_out_log.collect(),
-        CACHE_JBANG_SCRIPTS.out.regenie_log_parser_jar
+        REGENIE_STEP2.out.regenie_step2_out_log.collect()
     )
 
-// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotpe.
+// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
 REGENIE_STEP2.out.regenie_step2_out
   .transpose()
-  .map { prefix, file -> tuple(getPhenotype(prefix, file), file) }
+  .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
   .set { regenie_step2_by_phenotype }
 
 
     FILTER_RESULTS (
-        regenie_step2_by_phenotype,
-        CACHE_JBANG_SCRIPTS.out.regenie_filter_jar
+        regenie_step2_by_phenotype
     )
 
     MERGE_RESULTS_FILTERED (
@@ -213,19 +197,19 @@ REGENIE_STEP2.out.regenie_step2_out
     )
 
     //combined merge results and annotated filtered results by phenotype (index 0)
-    merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged.combine(
-      ANNOTATE_FILTERED.out.annotated_ch, by: 0
-    )
+    merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
+                                                .combine( ANNOTATE_FILTERED.out.annotated_ch, by: 0)
 
     REPORT (
         merged_results_and_annotated_filtered,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
-        covariates_file_validated_log.collect(),
-        regenie_step1_parsed_logs_ch.collect(),
+        covariates_file_validated_log.collect().ifEmpty([]),
+        regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
+
 }
 
 workflow.onComplete {

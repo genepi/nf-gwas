@@ -13,11 +13,11 @@ nextflow_process {
             }
             process {
                 """
-                input[0] =  Channel.fromFilePairs("tests/input/regenie_step1/example.qc.{bim,bed,fam}", size: 3, flat:true)
+                input[0] = Channel.fromFilePairs("tests/input/regenie_step1/example.qc.{bim,bed,fam}", size: 3, flat:true)
                 input[1] = file("tests/input/regenie_step1/example.qc.snplist")
                 input[2] = file("tests/input/regenie_step1/example.qc.id")
                 input[3] = file("tests/input/pipeline/phenotype.txt")
-                input[4] = file('NO_COV_FILE')
+                input[4] = []
                 """
             }
         }
