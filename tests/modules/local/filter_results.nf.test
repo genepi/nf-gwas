@@ -13,7 +13,6 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of( ['Y1', '$baseDir/tests/input/filter_results/regenie_step2_example_Y1.regenie.gz'], ['Y2', '$baseDir/tests/input/filter_results/regenie_step2_example_Y2.regenie.gz'])
-                input[1] = file("tests/input/filter_results/RegenieFilter.jar")
                 """
             }
         }
@@ -49,7 +48,6 @@ nextflow_process {
                     process {
                         """
                         input[0] = Channel.of( ['Y1', '$baseDir/tests/input/filter_results/regenie_step2_example_Y1.regenie.gz'], ['Y2', '$baseDir/tests/input/filter_results/regenie_step2_example_Y2.regenie.gz'])
-                        input[1] = file("tests/input/filter_results/RegenieFilter.jar")
                         """
                     }
                 }
