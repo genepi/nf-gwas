@@ -12,8 +12,8 @@ process MERGE_RESULTS {
 
   """
   # static header due to split
-  ls -1v ${regenie_chromosomes} | head -n 1 | xargs cat | zgrep -hE 'CHROM' | gzip > header.gz
-  ls *_${phenotype}.regenie.gz | xargs cat | zgrep -hE '^[0-9]' | sort -n -k1 -k2 -T ${PWD} | gzip > ${phenotype}.regenie.tmp.gz
+  ls -1v ${regenie_chromosomes} | head -n 1 | xargs zcat | grep -hE 'CHROM' | gzip > header.gz
+  ls *_${phenotype}.regenie.gz | xargs zcat | grep -hEv 'CHROM' | sort -n -k1 -k2 -T ${PWD} | gzip > ${phenotype}.regenie.tmp.gz
   cat header.gz ${phenotype}.regenie.tmp.gz > ${phenotype}.regenie.tmp2.gz
   rm ${phenotype}.regenie.tmp.gz
   zcat ${phenotype}.regenie.tmp2.gz | sed 's/ /\t/g' | bgzip -c > ${phenotype}.regenie.gz
