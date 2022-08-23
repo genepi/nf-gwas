@@ -17,7 +17,7 @@ nextflow_process {
                 input[1] = file("tests/input/regenie_step1/example.qc.snplist")
                 input[2] = file("tests/input/regenie_step1/example.qc.id")
                 input[3] = file("tests/input/pipeline/phenotype.txt")
-                input[4] = null
+                input[4] = []
                 """
             }
         }
