@@ -7,6 +7,3 @@ tests/output
 .nf-test/
 nf-test
 .project
-*.Rhistory
-*.Rproj
-*proj*
