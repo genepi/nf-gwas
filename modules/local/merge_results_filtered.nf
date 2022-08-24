@@ -10,9 +10,9 @@ process MERGE_RESULTS_FILTERED {
 
 
   """
-  # static header due to split
-  ls -1v ${regenie_chromosomes} | head -n 1 | xargs zcat | grep -hE 'CHROM' | gzip > header.gz
-  ls *_${phenotype}.regenie.filtered.gz | xargs zcat | grep -hEv 'CHROM' | sort -n -k1 -k2 -T ${PWD} | gzip > ${phenotype}.regenie.tmp.gz
+  # get header from first line of first file
+  ls -1v ${regenie_chromosomes} | head -n 1 | xargs zcat | head -n 1 | gzip > header.gz
+  zcat ${regenie_chromosomes} | grep -hEv 'CHROM' | sort -n -k1 -k2 -T ${PWD} | gzip > ${phenotype}.regenie.tmp.gz
   cat header.gz ${phenotype}.regenie.tmp.gz > ${phenotype}.regenie.filtered.gz
   rm ${phenotype}.regenie.tmp.gz
   """
