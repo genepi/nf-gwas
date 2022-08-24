@@ -36,6 +36,7 @@ library(skimr)
 library(kableExtra)
 library(ramwas)
 library(dplyr)
+source("./functions.R")
 ```
 
 ## Project Summary
@@ -52,33 +53,17 @@ library(dplyr)
 
 ## Phenotype Statistics
 
-### Overview
+```{r child='child_phenostatistics.Rmd'}
 
-```{r, echo=FALSE}
-phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
-kable(skim(phenotypeTable) %>%
-  dplyr::filter(skim_variable == params$phenotype)) %>%
-  kableExtra::scroll_box(width = "100%")
-```
-
-### Histogram
-```{r, echo=FALSE}
-ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
-  geom_histogram(color="black", fill="white",bins=30)
 ```
 
 ## Manhattan Plot
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, dpi=300}
-#sources: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
-
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE, tmpdir="$PWD")
-
-#source: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
-
 annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
-#merge gene names of tophits to regenieTable
 
+#merge gene names of tophits to regenieTable
 annotatedTopHits <- annotatedTopHits %>%  
     mutate(ID = as.character(ID))
 regenieTable <- regenieTable %>%  
@@ -86,87 +71,33 @@ regenieTable <- regenieTable %>%
 
 regenieTable_annotated <- left_join(regenieTable, annotatedTopHits, by = "ID")
 
-#prepare for plotting
-don <- regenieTable_annotated %>%
-
-  # Compute chromosome size
-  group_by(CHROM) %>%
-  summarise(CHROM_len=max(GENPOS)) %>%
-
-  # Calculate cumulative start position of each chromosome
-  mutate(tot=cumsum(as.numeric(CHROM_len))-CHROM_len) %>%
-  select(-CHROM_len) %>%
-
-  # Add this info to the initial dataset
-  left_join(regenieTable_annotated, ., by=c("CHROM"="CHROM")) %>%
-
-  # Add a cumulative position of each SNP
-  arrange(CHROM, GENPOS) %>%
-  mutate( GENPOScum=GENPOS+tot)
+#prepare data for plotting
+df_prep <- manhattan_prep(regenieTable_annotated) 
 
 rm(regenieTable_annotated)
 
-# Prepare X axis
-axisdf = don %>% group_by(CHROM) %>% summarize(center=( max(GENPOScum) + min(GENPOScum) ) / 2 )
+#create plot
+p <- manhattan_plot(df_prep, 
+                    ymax = params$plot_ylimit)
 
-p <- ggplot(don, aes(x=GENPOScum, y=LOG10P)) +
-
-    # Show all points
-    geom_point(aes(color=as.factor(CHROM))) +
-    scale_color_manual(values = rep(c("#779ECB", "#03254c"), 22 )) +
-
-    # custom X axis:
-    scale_x_continuous(label = axisdf$CHROM,
-                       breaks= axisdf$center,
-                       name = "Chromosome",
-                       expand = c(0,0),
-                       guide = guide_axis(check.overlap = TRUE)) +
-  # custom y step 1annotation_limit
-    scale_y_continuous(expand = c(0, 0),
-                       name=expression(-log[10](italic(p))),
-                       limits = c(0, sum(max(regenieTable$LOG10P), 0.5))) +
-  geom_hline(yintercept = -log10(5e-08),
-             linetype ="longdash",
-             color ="firebrick") + # genomewide significance
-  geom_hline(yintercept = -log10(1e-5),
-             linetype ="longdash",
-             color ="darkgrey")  + # suggestive significance
-
-    # Custom the theme:
-    theme_classic() +
-    theme(
-      legend.position="none",
-      panel.border = element_blank(),
-      axis.text = element_text(size = 12,
-                               color = "black"),
-      axis.title = element_text(size = 14),
-      axis.ticks = element_line(color = "black")
-      )
-
-# custom y axis step 2 (depends if ymax is defined)
-
- if(params$plot_ylimit == 0) {
-  p2 <- p + scale_y_continuous(expand = c(0, 0),
-                       name=expression(-log[10](italic(P))),
-                       limits = c(0, sum(max(regenieTable$LOG10P), 0.5)))
+#note for manual ylim setting (if ymax is defined)
+if(params$plot_ylimit == 0) {
+  limit = NULL
 } else {
-  p2 <- p + scale_y_continuous(expand = c(0, 0),
-                       name=expression(-log[10](italic(P))),
-                       limits = c(0, params$plot_ylimit))
+  limit = c(0, params$plot_ylimit )
+    cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
 }
 
-
+#annotatate plot (if it is enabled)
  if(!params$manhattan_annotation_enabled) {
-  p2
+  p
 } else {
-  p2 + ggrepel::geom_text_repel(data = don %>% group_by(GENE_NAME) %>%
+  p + ggrepel::geom_text_repel(data = df_prep %>% group_by(GENE_NAME) %>%
                              top_n(1, LOG10P) %>%
                                slice(1) %>%
                              filter(LOG10P > params$annotation_min_log10p),
-                            aes(label=GENE_NAME), color = 1)
+                            aes(label=GENE_NAME), color = 1, fontface = "italic")
 }
-
-
 ```
 
 ## QQ Plot
@@ -207,40 +138,8 @@ datatable(topHitsGroupedByGene)
 
 ### Phenotype File Validation
 
-```{r, echo=FALSE}
-phenotype_log <- read.table(params$phenotype_log,
-                      sep ="\t", header = TRUE, dec =".")
-kable(phenotype_log)
-```
+```{r child='child_validationlogs.Rmd'}
 
-### Covariate File Validation
-
-```{r, echo=FALSE, results='asis'}
-if(file.exists(params$covariate_log)) {
-step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".")
-kable(step1_log)
-} else {
-    cat("*No covariates available.*")
-}
-```
-
-### Regenie Step 1 Log
-
-```{r, echo=FALSE, results='asis'}
-if(file.exists(params$regenie_step1_log)) {
-step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
-kable(step1_log)
-} else {
-    cat("*Regenie step 1 skipped.*")
-}
-```
-
-### Regenie Step 2 Log
-
-```{r, echo=FALSE}
-step2_log <- read.table(params$regenie_step2_log,
-                      sep ="\t", header = TRUE, dec =".")
-kable(step2_log)
 ```
 
 

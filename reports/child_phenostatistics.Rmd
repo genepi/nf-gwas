@@ -1,0 +1,13 @@
+### Overview
+
+```{r, echo=FALSE}
+phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
+kable(skim_without_charts(phenotypeTable) %>%
+  dplyr::filter(skim_variable == params$phenotype))
+```
+
+### Histogram
+```{r, echo=FALSE}
+ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
+  geom_histogram(color="black", fill="white",bins=30)
+```
