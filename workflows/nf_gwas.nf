@@ -27,6 +27,7 @@ if(!params.covariates_columns.isEmpty()){
 }
 
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+r_functions_file = file("$baseDir/reports/functions.R",checkIfExists: true)
 
 //JBang scripts
 regenie_log_parser_java  = file("$baseDir/bin/RegenieLogParser.java", checkIfExists: true)
@@ -221,6 +222,7 @@ REGENIE_STEP2.out.regenie_step2_out
         merged_results_and_annotated_filtered,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
+        r_functions_file,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
         covariates_file_validated_log.collect(),
         regenie_step1_parsed_logs_ch.collect(),

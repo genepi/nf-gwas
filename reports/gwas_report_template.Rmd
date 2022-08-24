@@ -24,6 +24,7 @@ params:
   manhattan_annotation_enabled: true
   annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
+  r_functions: ./functions.R
 ---
 
 ```{r setup, include=FALSE}
@@ -36,7 +37,7 @@ library(skimr)
 library(kableExtra)
 library(ramwas)
 library(dplyr)
-source("./functions.R")
+source(params$r_functions)
 ```
 
 ## Project Summary
@@ -72,12 +73,12 @@ regenieTable <- regenieTable %>%
 regenieTable_annotated <- left_join(regenieTable, annotatedTopHits, by = "ID")
 
 #prepare data for plotting
-df_prep <- manhattan_prep(regenieTable_annotated) 
+df_prep <- manhattan_prep(regenieTable_annotated)
 
 rm(regenieTable_annotated)
 
 #create plot
-p <- manhattan_plot(df_prep, 
+p <- manhattan_plot(df_prep,
                     ymax = params$plot_ylimit)
 
 #note for manual ylim setting (if ymax is defined)
