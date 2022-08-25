@@ -73,6 +73,9 @@ if (params.genotypes_sequenced && params.genotypes_imputed){
   exit 1, "Ambiguous input detected! Please specify either (a) genotypes_sequenced (gene-based tests) or (b) genotypes_imputed (single-variant testing)."
 }
 
+// set to empty array since it's required for report
+regenie_masks_file = []
+
 // Load required files for gene-based tests
 if (params.genotypes_sequenced) {
     gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
@@ -263,6 +266,7 @@ regenie_step2_out_ch
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         r_functions_file,
+        regenie_masks_file,
         rmd_pheno_stats_file,
         rmd_valdiation_logs_file,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
