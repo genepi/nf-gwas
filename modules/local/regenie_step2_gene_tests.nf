@@ -25,7 +25,7 @@ process REGENIE_STEP2_GENE_TESTS {
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
     def genetest = "--vc-tests ${params.regenie_gene_test}"
-    def aaf = "--aaf-bins ${params.regenie_gene_aaf}"
+    def aaf = params.regenie_gene_aaf ? "--aaf-bins ${params.regenie_gene_aaf}":''
 
   """
   regenie \
