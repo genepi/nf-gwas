@@ -25,8 +25,8 @@ params:
   annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
   r_functions: ./functions.R
-  rmd_pheno_stats: test
-  rmd_valdiation_logs: test
+  rmd_pheno_stats: ./child_phenostatistics.Rmd
+  rmd_valdiation_logs: ./child_validationlogs.Rmd
 ---
 
 ```{r setup, include=FALSE}
