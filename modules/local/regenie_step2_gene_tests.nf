@@ -1,6 +1,8 @@
 process REGENIE_STEP2_GENE_TESTS {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
+    publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.txt'
+      publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.snplist'
 
   input:
     path step1_out
@@ -14,6 +16,8 @@ process REGENIE_STEP2_GENE_TESTS {
   output:
     tuple val(plink_filename), path("*regenie.gz"), emit: regenie_step2_out
     path "${plink_filename}.log", emit: regenie_step2_out_log
+    path "${plink_filename}_masks_report.txt"
+    path "${plink_filename}_masks.snplist"
 
   script:
     def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
@@ -24,8 +28,12 @@ process REGENIE_STEP2_GENE_TESTS {
     def covariants = covariates_file ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
-    def genetest = "--vc-tests ${params.regenie_gene_test}"
+    def geneTest = params.regenie_gene_test ? "--vc-tests ${params.regenie_gene_test}":''
     def aaf = params.regenie_gene_aaf ? "--aaf-bins ${params.regenie_gene_aaf}":''
+    def maxAaf = params.regenie_gene_vc_max_aaf ? "--vc-maxAAF ${params.regenie_gene_vc_max_aaf}":''
+    def vcMACThr = params.regenie_gene_vc_mac_thr ? "--vc-MACthr ${params.regenie_gene_vc_mac_thr}":''
+    def buildMask = params.regenie_gene_build_mask ? "--build-mask ${params.regenie_gene_build_mask}":''
+    def joint = params.regenie_gene_joint ? "--joint ${params.regenie_gene_joint}":''
 
   """
   regenie \
@@ -41,11 +49,17 @@ process REGENIE_STEP2_GENE_TESTS {
     --threads ${task.cpus} \
     --gz \
     --write-mask \
+    --check-burden-files \
+    --write-mask-snplist \
     $binaryTrait \
-    $aaf \
     $covariants \
     $predictions \
-    $genetest \
+    $geneTest \
+    $aaf \
+    $maxAaf \
+    $vcMACThr \
+    $buildMask \
+    $joint \
     --out ${plink_filename}
   """
 }
