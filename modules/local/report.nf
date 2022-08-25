@@ -9,6 +9,8 @@ process REPORT {
     path phenotype_file_validated
     path gwas_report_template
     path r_functions_file
+    path rmd_pheno_stats_file
+    path rmd_valdiation_logs_file
     path phenotype_log
     path covariate_log
     path step1_log
@@ -39,7 +41,9 @@ process REPORT {
       annotated_tophits_filename='${annotated_tophits}',
       manhattan_annotation_enabled = $annotation_as_string,
       annotation_min_log10p = ${params.annotation_min_log10p},
-      r_functions='${r_functions_file}'
+      r_functions='${r_functions_file}',
+      rmd_pheno_stats='${rmd_pheno_stats_file}',
+      rmd_valdiation_logs='${rmd_valdiation_logs_file}'
     ),
     intermediates_dir='\$PWD',
     knit_root_dir='\$PWD',

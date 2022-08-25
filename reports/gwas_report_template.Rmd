@@ -25,6 +25,8 @@ params:
   annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
   r_functions: ./functions.R
+  rmd_pheno_stats: test
+  rmd_valdiation_logs: test
 ---
 
 ```{r setup, include=FALSE}
@@ -54,7 +56,7 @@ source(params$r_functions)
 
 ## Phenotype Statistics
 
-```{r child='child_phenostatistics.Rmd'}
+```{r child=params$rmd_pheno_stats}
 
 ```
 
@@ -139,7 +141,7 @@ datatable(topHitsGroupedByGene)
 
 ### Phenotype File Validation
 
-```{r child='child_validationlogs.Rmd'}
+```{r child=params$rmd_valdiation_logs}
 
 ```
 

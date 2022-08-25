@@ -28,6 +28,8 @@ if(!params.covariates_columns.isEmpty()){
 
 gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 r_functions_file = file("$baseDir/reports/functions.R",checkIfExists: true)
+rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics.Rmd",checkIfExists: true)
+rmd_valdiation_logs_file = file("$baseDir/reports/child_validationlogs.Rmd",checkIfExists: true)
 
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.GRCh37.sorted.bed", checkIfExists: true)
@@ -206,6 +208,8 @@ REGENIE_STEP2.out.regenie_step2_out
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
         gwas_report_template,
         r_functions_file,
+        rmd_pheno_stats_file,
+        rmd_valdiation_logs_file,
         VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
         covariates_file_validated_log.collect().ifEmpty([]),
         regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
