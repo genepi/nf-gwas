@@ -1,0 +1,258 @@
+---
+title: "Report: `r params$project`"
+output:
+  rmdformats::robobook:
+    self_contained: true
+    thumbnails: false
+    lightbox: true
+    gallery: false
+    highlight: tango
+params:
+  project: test-gene-level
+  date: 2022-05-27
+  version: v0.3.0
+  regenie_merged: ../output/test-gene-level/results/Y1.regenie.gz
+  regenie_filename: test-gene-level.Y1.regenie.all.gz
+  phenotype: Y1
+  covariates:
+  phenotype_file: ../output/test-gene-level/validated_input/phenotype_bin.validated.txt
+  regenie_step1_log: ../output/test-gene-level/logs/test-gene-level.step1.log
+  regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
+  phenotype_log: ../output/test-gene-level/logs/phenotype_bin.validated.log
+  covariate_log: ../output/test-gene-level/logs/covariates.validated.log
+  plot_ylimit: 0
+  mask_file: ../tests/input/gene_based_tests/example.masks # params.regenie_gene_masks
+  manhattan_annotation_enabled: true
+  annotation_min_log10p: 1
+  annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
+  r_functions: ./functions.R
+  rmd_pheno_stats: ./child_phenostatistics.Rmd
+  rmd_valdiation_logs: ./child_validationlogs.Rmd
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+library(qqman)
+library(DT)
+library(data.table)
+library(R.utils)
+library(ggplot2)
+library(skimr)
+library(kableExtra)
+library(ramwas)
+library(dplyr)
+library(stringr)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+```
+
+```{r plot_function}
+gg.man <- function(df2plot){
+  p <- ggplot(df2plot, aes(x=GENPOScum, y=LOG10P)) +
+
+    # Show all points
+    geom_point(aes(color=as.factor(CHROM))) +
+    scale_color_manual(values = rep(c("#779ECB", "#03254c"), 22 )) +
+
+    # custom X axis:
+    scale_x_continuous(label = axisdf$CHROM,
+                       breaks= axisdf$center,
+                       name = "Chromosome",
+                       expand = c(0,0),
+                       guide = guide_axis(check.overlap = TRUE)) +
+    # custom y step 1annotation_limit
+    scale_y_continuous(expand = c(0, 0),
+                       name=expression(-log[10](italic(p))),
+                       limits = c(0, sum(max(regenieTable$LOG10P), 0.5))) +
+    geom_hline(yintercept = -log10(5e-08),
+               linetype ="longdash",
+               color ="firebrick") + # genomewide significance
+    geom_hline(yintercept = -log10(1e-5),
+               linetype ="longdash",
+               color ="darkgrey")  + # suggestive significance
+    # geom_vline(
+    #   xintercept = df2plot %>% group_by(CHROM) %>% summarise(mm=max(GENPOScum)) %>% pull(mm),
+    #   alpha=0.5) +
+    # facet_wrap(~TEST+AAF,  scales = "free_y", ncol = 1) + # divide by AAF bins
+    # Custom the theme:
+    # theme_classic() +
+    theme(
+      legend.position="none",
+      panel.border = element_rect(fill=NA, colour = "grey70"),
+      axis.text = element_text(size = 12,
+                               color = "black"),
+      axis.title = element_text(size = 14),
+      axis.ticks = element_line(color = "black"),
+      strip.text = element_text(face="bold"),
+      strip.background.y = element_rect(fill = "gold"),
+      strip.background.x = element_rect(fill = "deepskyblue"),
+      panel.grid = element_blank(),
+      panel.background = element_blank()
+    )
+  if(params$plot_ylimit == 0) {
+    p2 <- p + scale_y_continuous(expand = c(0, 0),
+                                 name=expression(-log[10](italic(P))),
+                                 limits = c(0, sum(max(dftmp$LOG10P), 0.5)))
+  } else {
+    p2 <- p + scale_y_continuous(expand = c(0, 0),
+                                 name=expression(-log[10](italic(P))),
+                                 limits = c(0, params$plot_ylimit))
+  }
+  if(!params$manhattan_annotation_enabled) {
+    p2
+  } else {
+    p2 + ggrepel::geom_text_repel(data = df2plot %>% group_by(Set) %>%
+                                    top_n(1, LOG10P) %>%
+                                    slice(1) %>%
+                                    filter(LOG10P > params$annotation_min_log10p),
+                                  aes(label=Set), color = 1)
+  }
+  return(p2)
+}
+
+```
+
+
+
+## Project Summary
+
+| Parameter        | Value                       |
+|------------------|-----------------------------|
+| Project          | `r params$project`          |
+| Pipeline Version | `r params$version`          |
+| Date             | `r params$date`             |
+| Phenotype File   | `r params$phenotype_file`   |
+| Phenotype        | `r params$phenotype`        |
+| Covariates       | `r params$covariates`       |
+| Mask File        | `r params$mask_file`        |
+| Regenie Output   | `r params$regenie_filename` |
+
+
+```{r read_mask_file}
+masks <- read.table(params$mask_file, header=FALSE)
+names(masks) <- c("ID", "Mask")
+```
+
+## Phenotype Statistics
+
+### Overview
+
+```{r, echo=FALSE}
+phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
+kable(skim(phenotypeTable) %>%
+  dplyr::filter(skim_variable == params$phenotype)) %>%
+  kableExtra::scroll_box(width = "100%")
+```
+
+### Histogram
+
+```{r, echo=FALSE}
+ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
+  geom_histogram(color="black", fill="white",bins=30)
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, dpi=300}
+#sources: https://www.r-graph-gallery.com/101_Manhattan_plot.html with modifications
+regenieTable <- fread(params$regenie_merged, header=TRUE, tmpdir="$PWD")
+regenieTable <- regenieTable %>% tidyr::separate(ID, into=c("Set", "Mask", "AAF"), sep="\\.", extra="merge")
+```
+
+
+```{r, mask_section, results='asis', eval=FALSE}
+cat('\n\n')
+cat('## Mask: ', mm)
+cat('\n\n')
+
+myeff <- masks %>% filter(ID==mm) %>% pull(Mask)
+if (length(myeff) > 0){
+  if (myeff != ""){
+    cat("Use variant with effects: ", gsub(",", ", ", myeff), "\n\n")
+  }
+}
+```
+
+```{r, manhattan_plot_df, eval=FALSE}
+dftmp <- regenieTable %>% filter(Mask == mm)
+# NB gene-level analysis, ALLELE1 column contain mask name and frequency clusters
+df2plot <- dftmp %>%
+  group_by(AAF, CHROM) %>%
+  summarise(CHROM_len = max(GENPOS)) %>%
+  mutate(tot = cumsum(as.numeric(CHROM_len) - CHROM_len)) %>%
+  select(-CHROM_len) %>%
+  left_join(dftmp, ., by=c("CHROM", "AAF")) %>%
+  arrange(CHROM, GENPOS) %>%
+  mutate(GENPOScum=GENPOS + tot)
+axisdf <- df2plot %>% group_by(AAF,CHROM) %>% summarize(center=( max(GENPOScum) + min(GENPOScum) ) / 2 )
+```
+```{r, manhattan_plot, eval=FALSE}
+df2plot <- df2plot %>% group_by(AAF, TEST) %>%
+  tidyr::nest() %>%
+  mutate(plot=purrr::map(data, ~gg.man(.x))) %>%
+  ungroup()
+```
+
+```{r, results='asis', cache=FALSE}
+for (mm in unique(regenieTable$Mask)){
+  message(mm)
+  <<mask_section>>
+  <<manhattan_plot_df>>
+  <<manhattan_plot>>
+    for (i in 1:nrow(df2plot)){
+      pp <- df2plot %>% slice(i) %>% pull(plot)
+      pp <- pp[[1]]
+      tt <- df2plot %>% slice(i) %>% tidyr::unite(col="title", TEST, AAF, sep = " ") %>% pull(title)
+      pp <- pp + ggtitle(tt)
+
+      cat("\n\n")
+      cat("### Manhattan Plot for ", strsplit(tt, " ")[[1]][1], "test", "\n")
+      cat("\n\n")
+
+      print(pp)
+    }
+
+  cat("\n\n")
+  cat("-----")
+  cat("\n\n")
+
+}
+```
+
+
+
+## Validation and Logs
+
+### Phenotype File Validation
+
+```{r, echo=FALSE}
+phenotype_log <- read.table(params$phenotype_log,
+                      sep ="\t", header = TRUE, dec =".")
+kable(phenotype_log)
+```
+
+### Covariate File Validation
+
+```{r, echo=FALSE, results='asis'}
+if(file.exists(params$covariate_log)) {
+step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".")
+kable(step1_log)
+} else {
+    cat("*No covariates available.*")
+}
+```
+
+### Regenie Step 1 Log
+
+```{r, echo=FALSE, results='asis'}
+if(file.exists(params$regenie_step1_log)) {
+step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
+kable(step1_log)
+} else {
+    cat("*Regenie step 1 skipped.*")
+}
+```
+
+
+------------------------------------------------------------------------
+
+<small> This report has been created with [**nf-gwas `r params$version`**](https://github.com/filosi/nf-gwas), gene-level module, a nextflow pipeline forked by [Michele Filosi](mailto:michele.filosi@eurac.edu), Eurac Research Bozen</small>

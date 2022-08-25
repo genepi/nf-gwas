@@ -12,9 +12,9 @@ process MERGE_RESULTS {
 
   """
   # get header from first line of first file
-  ls -1v ${regenie_chromosomes} | head -n 1 | xargs zcat | head -n 1 | gzip > header.gz
+  ls -1v ${regenie_chromosomes} | head -n 1 | xargs zcat | grep -hE 'CHROM' | gzip > header.gz
   # grep all lines not starting with 'CHROM' pattern and sort them by pos
-  zcat ${regenie_chromosomes} | grep -hEv 'CHROM' | sort -n -k1 -k2 -T ${PWD} | gzip > ${phenotype}.regenie.tmp.gz
+  zcat ${regenie_chromosomes} | grep -hE '^(chr)?[0-9]' | sort -n -k1 -k2 -T ${PWD} | gzip > ${phenotype}.regenie.tmp.gz
   cat header.gz ${phenotype}.regenie.tmp.gz > ${phenotype}.regenie.tmp2.gz
   rm ${phenotype}.regenie.tmp.gz
   zcat ${phenotype}.regenie.tmp2.gz | sed 's/ /\t/g' | bgzip -c > ${phenotype}.regenie.gz

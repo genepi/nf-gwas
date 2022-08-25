@@ -7,26 +7,38 @@ requiredParams = [
     'regenie_test'
 ]
 
+requiredParamsGeneTests = [
+    'project', 'genotypes_array',
+    'genotypes_sequenced', 'phenotypes_filename',
+    'phenotypes_columns', 'phenotypes_binary_trait','regenie_gene_anno',
+    'regenie_gene_setlist','regenie_gene_masks','regenie_gene_test'
+]
+
 for (param in requiredParams) {
-    if (params[param] == null) {
-      exit 1, "Parameter ${param} is required."
+    if (params[param] == null && !params.genotypes_sequenced) {
+      exit 1, "Parameter ${param} is required for single-variant testing."
+    }
+}
+
+for (param in requiredParamsGeneTests) {
+    if (params[param] == null && params.genotypes_sequenced) {
+      exit 1, "Parameter ${param} is required for gene-based testing."
     }
 }
 
 if(params.outdir == null) {
-  outdir = "output/${params.project}"
+    outdir = "output/${params.project}"
 } else {
-  outdir = params.outdir
+    outdir = params.outdir
 }
 
 phenotypes_array = params.phenotypes_columns.trim().split(',')
 
 covariates_array= []
 if(!params.covariates_columns.isEmpty()){
-  covariates_array = params.covariates_columns.trim().split(',')
+    covariates_array = params.covariates_columns.trim().split(',')
 }
 
-gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
 r_functions_file = file("$baseDir/reports/functions.R",checkIfExists: true)
 rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics.Rmd",checkIfExists: true)
 rmd_valdiation_logs_file = file("$baseDir/reports/child_validationlogs.Rmd",checkIfExists: true)
@@ -53,18 +65,38 @@ if (!params.regenie_sample_file) {
     sample_file = file(params.regenie_sample_file, checkIfExists: true)
 }
 
-//Check specified test
-if (params.regenie_test != 'additive' && params.regenie_test != 'recessive' && params.regenie_test != 'dominant'){
-  exit 1, "Test ${params.regenie_test} not supported."
-}
-
-//Check imputed file format
-if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
-  exit 1, "File format ${params.genotypes_imputed_format} not supported."
-}
-
-//Array genotypes
+//Load Array genotypes
 Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
+
+// Double check that user don't mix up modi
+if (params.genotypes_sequenced && params.genotypes_imputed){
+  exit 1, "Ambiguous input detected! Please specify either (a) genotypes_sequenced (gene-based tests) or (b) genotypes_imputed (single-variant testing)."
+}
+
+// Load required files for gene-based tests
+if (params.genotypes_sequenced) {
+    gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
+    regenie_anno_file    = file(params.regenie_gene_anno, checkIfExists: true)
+    regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
+    regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
+    Channel.fromFilePairs("${params.genotypes_sequenced}", size: 3).set {step2_gene_tests_ch}
+
+    if (params.regenie_gene_test != 'skat' && params.regenie_gene_test != 'skato' && params.regenie_gene_test != 'skato-acat' && params.regenie_gene_test != 'acatv' && params.regenie_gene_test != 'acato' && params.regenie_gene_test != 'acato-full'){
+          exit 1, "Test ${params.regenie_gene_test} not supported for gene-based testing."
+      }
+
+} else {
+    gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+    //Check if tests exists
+    if (params.regenie_test != 'additive' && params.regenie_test != 'recessive' && params.regenie_test != 'dominant'){
+          exit 1, "Test ${params.regenie_test} not supported for single-variant testing."
+      }
+
+    //Check imputed file format
+    if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
+      exit 1, "File format ${params.genotypes_imputed_format} not supported."
+    }
+}
 
 include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
 include { VALIDATE_COVARIATES         } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
@@ -74,6 +106,7 @@ include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyp
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
 include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
+include { REGENIE_STEP2_GENE_TESTS    } from '../modules/local/regenie_step2_gene_tests' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
@@ -162,20 +195,42 @@ workflow NF_GWAS {
 
     }
 
-    REGENIE_STEP2 (
-        regenie_step1_out_ch.collect(),
-        imputed_plink2_ch,
-        VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-        sample_file,
-        covariates_file_validated
-    )
+    if (params.genotypes_sequenced){
+
+      REGENIE_STEP2_GENE_TESTS (
+          regenie_step1_out_ch.collect(),
+          step2_gene_tests_ch,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          covariates_file_validated,
+          regenie_anno_file,
+          regenie_setlist_file,
+          regenie_masks_file
+      )
+
+      regenie_step2_log_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out_log
+      regenie_step2_out_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out
+
+    } else {
+
+      REGENIE_STEP2 (
+          regenie_step1_out_ch.collect(),
+          imputed_plink2_ch,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          sample_file,
+          covariates_file_validated
+      )
+
+      regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
+      regenie_step2_out_ch = REGENIE_STEP2.out.regenie_step2_out
+
+    }
 
     REGENIE_LOG_PARSER_STEP2 (
-        REGENIE_STEP2.out.regenie_step2_out_log.collect()
+        regenie_step2_log_ch.collect()
     )
 
 // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
-REGENIE_STEP2.out.regenie_step2_out
+regenie_step2_out_ch
   .transpose()
   .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
   .set { regenie_step2_by_phenotype }
@@ -185,12 +240,12 @@ REGENIE_STEP2.out.regenie_step2_out
         regenie_step2_by_phenotype
     )
 
-    MERGE_RESULTS_FILTERED (
-        FILTER_RESULTS.out.results_filtered.groupTuple()
-    )
-
     MERGE_RESULTS (
         regenie_step2_by_phenotype.groupTuple()
+    )
+
+    MERGE_RESULTS_FILTERED (
+        FILTER_RESULTS.out.results_filtered.groupTuple()
     )
 
     ANNOTATE_FILTERED (
