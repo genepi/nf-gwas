@@ -11,7 +11,7 @@ requiredParamsGeneTests = [
     'project', 'genotypes_array',
     'genotypes_sequenced', 'phenotypes_filename',
     'phenotypes_columns', 'phenotypes_binary_trait','regenie_gene_anno',
-    'regenie_gene_setlist','regenie_gene_masks','regenie_gene_test'
+    'regenie_gene_setlist','regenie_gene_masks'
 ]
 
 for (param in requiredParams) {
@@ -282,7 +282,7 @@ workflow.onComplete {
     println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
 }
 
-// extract phenotype name from regenie output file.
+// extract phenotype name from regenie output file
 def getPhenotype(prefix, file ) {
     return file.baseName.replaceAll(prefix + "_", '').replaceAll('.regenie', '')
 }

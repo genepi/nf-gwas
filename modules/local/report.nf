@@ -42,7 +42,6 @@ process REPORT {
       annotated_tophits_filename='${annotated_tophits}',
       manhattan_annotation_enabled = $annotation_as_string,
       annotation_min_log10p = ${params.annotation_min_log10p},
-      rmd_pheno_stats='${rmd_pheno_stats_file}',
       mask_file='${mask_file}',
       r_functions='${r_functions_file}',
       rmd_pheno_stats='${rmd_pheno_stats_file}',
