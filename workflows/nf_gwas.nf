@@ -159,6 +159,10 @@ workflow NF_GWAS {
 
     }
 
+
+    regenie_step1_out_ch.collect().view{ it -> "STEP-1 OUTPUT : $it"}
+
+    /*
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
         imputed_plink2_ch,
@@ -209,7 +213,7 @@ REGENIE_STEP2.out.regenie_step2_out
         regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
-
+*/
 }
 
 workflow.onComplete {
