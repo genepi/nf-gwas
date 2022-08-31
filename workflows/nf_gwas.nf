@@ -1,39 +1,52 @@
+//check deprecated option
+ANSI_RESET = "\u001B[0m"
+ANSI_YELLOW = "\u001B[33m"
+
+if(params.genotypes_imputed){
+genotypes_association = params.genotypes_imputed
+println ANSI_YELLOW + "WARN: Option genotypes_imputed is deprecated. Please use genotypes_association instead." + ANSI_RESET
+} else {
+genotypes_association = params.genotypes_association
+}
+
+//check deprecated option
+if(params.genotypes_imputed_format){
+genotypes_association_format = params.genotypes_imputed_format
+println ANSI_YELLOW + "WARN: Option genotypes_imputed_format is deprecated. Please use genotypes_association_format instead." + ANSI_RESET
+} else {
+genotypes_association_format = params.genotypes_association_format
+}
+
+if(params.genotypes_array){
+genotypes_prediction = params.genotypes_array
+println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use genotypes_prediction instead." + ANSI_RESET
+} else {
+genotypes_prediction = params.genotypes_prediction
+}
+
 
 requiredParams = [
-    'project', 'genotypes_build', 'phenotypes_filename',
-    'phenotypes_columns', 'phenotypes_binary_trait',
+    'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait',
+    'genotypes_association_format', 'genotypes_prediction','genotypes_association', 'genotypes_build',
     'regenie_test'
 ]
 
 requiredParamsGeneTests = [
-    'project', 'phenotypes_filename',
-    'phenotypes_columns', 'phenotypes_binary_trait','regenie_gene_anno',
-    'regenie_gene_setlist','regenie_gene_masks'
+    'project', 'phenotypes_filename', 'phenotypes_columns', 'phenotypes_binary_trait',
+    'genotypes_association_format', 'genotypes_prediction','genotypes_association',
+    'regenie_gene_anno', 'regenie_gene_setlist','regenie_gene_masks'
 ]
 
 for (param in requiredParams) {
-    if (params[param] == null && !params.regenie_run_gene_based_tests) {
+    if (params[param] == null && param == null) {
       exit 1, "Parameter ${param} is required for single-variant testing."
     }
 }
 
 for (param in requiredParamsGeneTests) {
-    if (params[param] == null && params.regenie_run_gene_based_tests) {
+    if (params[param] == null && param == null) {
       exit 1, "Parameter ${param} is required for gene-based testing."
     }
-}
-
-//check if assocation input is set
-if (!params.genotypes_association && !params.genotypes_imputed){
-      exit 1, "Parameter genotypes_association is required."
-}
-//check if prediction input is set
-if (!params.genotypes_prediction && !params.genotypes_array){
-        exit 1, "Parameter genotypes_prediction is required."
-}
-//check if assocation format input is set
-if (!params.genotypes_association_format && !params.genotypes_imputed_format){
-        exit 1, "Parameter genotypes_association_format is required."
 }
 
 if(params.outdir == null) {
@@ -75,32 +88,7 @@ if (!params.regenie_sample_file) {
     sample_file = file(params.regenie_sample_file, checkIfExists: true)
 }
 
-//check deprecated option
-ANSI_RESET = "\u001B[0m"
-ANSI_YELLOW = "\u001B[33m"
-
-if(params.genotypes_array){
-Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
-println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use genotypes_prediction instead." + ANSI_RESET
-} else {
-Channel.fromFilePairs("${params.genotypes_prediction}", size: 3).set {genotyped_plink_ch}
-}
-
-//check deprecated option
-if(params.genotypes_imputed){
-genotypes_association = params.genotypes_imputed
-println ANSI_YELLOW + "WARN: Option genotypes_imputed is deprecated. Please use genotypes_association instead." + ANSI_RESET
-} else {
-genotypes_association = params.genotypes_association
-}
-
-//check deprecated option
-if(params.genotypes_imputed_format){
-genotypes_association_format = params.genotypes_imputed_format
-println ANSI_YELLOW + "WARN: Option genotypes_imputed_format is deprecated. Please use genotypes_association_format instead." + ANSI_RESET
-} else {
-genotypes_association_format = params.genotypes_association_format
-}
+Channel.fromFilePairs(genotypes_prediction, size: 3).set {genotyped_plink_ch}
 
 
 // set to empty array since it's required for report
