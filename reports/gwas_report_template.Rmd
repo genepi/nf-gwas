@@ -7,6 +7,7 @@ output:
     lightbox: true
     gallery: false
     highlight: tango
+    toc_depth: 3
 params:
   project: test-gwas
   date: 2021-08-09
@@ -16,18 +17,18 @@ params:
   phenotype: Y1
   covariates:
   phenotype_file: ../output/test-gwas/validated_input/phenotype.validated.txt
-  regenie_step1_log: ../output/test-gwas/logs/test-gwas.step1.log
-  regenie_step2_log: ../output/test-gwas/logs/test-gwas.step2.log
+  regenie_step1_log: ../output/test-gwas/logs/test-gwas-additive.step1.log
+  regenie_step2_log: ../output/test-gwas/logs/test-gwas-additive.step2.log
   phenotype_log: ../output/test-gwas/logs/phenotype.validated.log
   covariate_log: NO_COV_LOG
   plot_ylimit: 0
   manhattan_annotation_enabled: true
   annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
-  mask_file: ../tests/input/gene_based_tests/example.masks 
+  mask_file: ../tests/input/gene_based_tests/example.masks
   r_functions: ./functions.R
-  rmd_pheno_stats: ./child_phenostatistics.Rmd
-  rmd_valdiation_logs: ./child_validationlogs.Rmd
+  rmd_pheno_stats: child_phenostatistics.Rmd
+  rmd_valdiation_logs: child_validationlogs.Rmd
 ---
 
 ```{r setup, include=FALSE}
@@ -38,22 +39,23 @@ library(R.utils)
 library(ggplot2)
 library(skimr)
 library(kableExtra)
-library(ramwas)
 library(dplyr)
+library(ramwas)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, cache=FALSE)
 source(params$r_functions)
 ```
 
 ## Project Summary
 
-| Parameter     | Value                                      |
-| ------------- |--------------------------------------------|
-| Project       | `r params$project`                         |
-| Pipeline Version       | `r params$version`                |
-| Date       | `r params$date`                         |
-| Phenotype File      | `r params$phenotype_file`            |
-| Phenotype       | `r params$phenotype`                     |
-| Covariates       | `r params$covariates`                     |
-| Regenie Output      | `r params$regenie_filename`             |
+| Parameter        | Value                       |
+|------------------|-----------------------------|
+| Project          | `r params$project`          |
+| Pipeline Version | `r params$version`          |
+| Date             | `r params$date`             |
+| Phenotype File   | `r params$phenotype_file`   |
+| Phenotype        | `r params$phenotype`        |
+| Covariates       | `r params$covariates`       |
+| Regenie Output   | `r params$regenie_filename` |
 
 ## Phenotype Statistics
 
@@ -63,7 +65,7 @@ source(params$r_functions)
 
 ## Manhattan Plot
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, dpi=300}
+```{r, dpi=300}
 regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE, tmpdir="$PWD")
 annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
 
@@ -106,7 +108,7 @@ if(params$plot_ylimit == 0) {
 
 ## QQ Plot
 
-```{r, echo=FALSE, results='asis'}
+```{r, results='asis'}
 qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
 
 if(params$plot_ylimit == 0) {
@@ -124,7 +126,9 @@ rm(regenieTable)
 
 ## Top Loci
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+Filtered for a minimun -log<sub>10</sub>(*P*) = `r params$annotation_min_log10p`.
+
+```{r}
 
 annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
 
@@ -139,8 +143,6 @@ datatable(topHitsGroupedByGene)
 ```
 
 ## Validation and Logs
-
-### Phenotype File Validation
 
 ```{r child=params$rmd_valdiation_logs}
 

@@ -1,16 +1,16 @@
 ### Phenotype File Validation
 
-```{r, echo=FALSE}
+```{r}
 phenotype_log <- read.table(params$phenotype_log,
-                      sep ="\t", header = TRUE, dec =".")
+                      sep ="\t", header = TRUE, dec =".", fill = TRUE)
 kable(phenotype_log)
 ```
 
 ### Covariate File Validation
 
-```{r, echo=FALSE, results='asis'}
+```{r, results='asis'}
 if(file.exists(params$covariate_log)) {
-step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".")
+step1_log <- read.table(params$covariate_log,sep ="\t", header = TRUE, dec =".", fill = TRUE)
 kable(step1_log)
 } else {
     cat("*No covariates available.*")
@@ -19,9 +19,9 @@ kable(step1_log)
 
 ### Regenie Step 1 Log
 
-```{r, echo=FALSE, results='asis'}
+```{r, results='asis'}
 if(file.exists(params$regenie_step1_log)) {
-step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".")
+step1_log <- read.table(params$regenie_step1_log,sep ="\t", header = TRUE, dec =".", fill = TRUE)
 kable(step1_log)
 } else {
     cat("*Regenie step 1 skipped.*")
@@ -30,8 +30,8 @@ kable(step1_log)
 
 ### Regenie Step 2 Log
 
-```{r, echo=FALSE}
+```{r}
 step2_log <- read.table(params$regenie_step2_log,
-                      sep ="\t", header = TRUE, dec =".")
+                      sep ="\t", header = TRUE, dec =".", fill = TRUE)
 kable(step2_log)
 ```
