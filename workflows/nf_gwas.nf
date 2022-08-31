@@ -1,29 +1,39 @@
 
 requiredParams = [
-    'project', 'genotypes_array',
-    'genotypes_imputed', 'genotypes_build',
-    'genotypes_imputed_format', 'phenotypes_filename',
+    'project', 'genotypes_build', 'phenotypes_filename',
     'phenotypes_columns', 'phenotypes_binary_trait',
     'regenie_test'
 ]
 
 requiredParamsGeneTests = [
-    'project', 'genotypes_array',
-    'genotypes_sequenced', 'phenotypes_filename',
+    'project', 'phenotypes_filename',
     'phenotypes_columns', 'phenotypes_binary_trait','regenie_gene_anno',
     'regenie_gene_setlist','regenie_gene_masks'
 ]
 
 for (param in requiredParams) {
-    if (params[param] == null && !params.genotypes_sequenced) {
+    if (params[param] == null && !params.regenie_run_gene_based_tests) {
       exit 1, "Parameter ${param} is required for single-variant testing."
     }
 }
 
 for (param in requiredParamsGeneTests) {
-    if (params[param] == null && params.genotypes_sequenced) {
+    if (params[param] == null && params.regenie_run_gene_based_tests) {
       exit 1, "Parameter ${param} is required for gene-based testing."
     }
+}
+
+//check if assocation input is set
+if (!params.genotypes_association && !params.genotypes_imputed){
+      exit 1, "Parameter genotypes_association is required."
+}
+//check if prediction input is set
+if (!params.genotypes_prediction && !params.genotypes_array){
+        exit 1, "Parameter genotypes_prediction is required."
+}
+//check if assocation format input is set
+if (!params.genotypes_association_format && !params.genotypes_imputed_format){
+        exit 1, "Parameter genotypes_association_format is required."
 }
 
 if(params.outdir == null) {
@@ -65,24 +75,44 @@ if (!params.regenie_sample_file) {
     sample_file = file(params.regenie_sample_file, checkIfExists: true)
 }
 
-//Load Array genotypes
-Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
+//check deprecated option
+ANSI_RESET = "\u001B[0m"
+ANSI_YELLOW = "\u001B[33m"
 
-// Double check that user don't mix up modi
-if (params.genotypes_sequenced && params.genotypes_imputed){
-  exit 1, "Ambiguous input detected! Please specify either (a) genotypes_sequenced (gene-based tests) or (b) genotypes_imputed (single-variant testing)."
+if(params.genotypes_array){
+Channel.fromFilePairs("${params.genotypes_array}", size: 3).set {genotyped_plink_ch}
+println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use genotypes_prediction instead." + ANSI_RESET
+} else {
+Channel.fromFilePairs("${params.genotypes_prediction}", size: 3).set {genotyped_plink_ch}
 }
+
+//check deprecated option
+if(params.genotypes_imputed){
+genotypes_association = params.genotypes_imputed
+println ANSI_YELLOW + "WARN: Option genotypes_imputed is deprecated. Please use genotypes_association instead." + ANSI_RESET
+} else {
+genotypes_association = params.genotypes_association
+}
+
+//check deprecated option
+if(params.genotypes_imputed_format){
+genotypes_association_format = params.genotypes_imputed_format
+println ANSI_YELLOW + "WARN: Option genotypes_imputed_format is deprecated. Please use genotypes_association_format instead." + ANSI_RESET
+} else {
+genotypes_association_format = params.genotypes_association_format
+}
+
 
 // set to empty array since it's required for report
 regenie_masks_file = []
 
 // Load required files for gene-based tests
-if (params.genotypes_sequenced) {
+if (params.regenie_run_gene_based_tests) {
     gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
     regenie_anno_file    = file(params.regenie_gene_anno, checkIfExists: true)
     regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
     regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
-    Channel.fromFilePairs("${params.genotypes_sequenced}", size: 3).set {step2_gene_tests_ch}
+    Channel.fromFilePairs(genotypes_association, size: 3).set {step2_gene_tests_ch}
 
     if (params.regenie_gene_test != 'skat' && params.regenie_gene_test != 'skato' && params.regenie_gene_test != 'skato-acat' && params.regenie_gene_test != 'acatv' && params.regenie_gene_test != 'acato' && params.regenie_gene_test != 'acato-full'){
           exit 1, "Test ${params.regenie_gene_test} not supported for gene-based testing."
@@ -96,8 +126,8 @@ if (params.genotypes_sequenced) {
       }
 
     //Check imputed file format
-    if (params.genotypes_imputed_format != 'vcf' && params.genotypes_imputed_format != 'bgen'){
-      exit 1, "File format ${params.genotypes_imputed_format} not supported."
+    if (genotypes_association_format != 'vcf' && genotypes_association_format != 'bgen'){
+      exit 1, "File format " + genotypes_association_format + " not supported."
     }
 }
 
@@ -140,8 +170,8 @@ workflow NF_GWAS {
    }
 
     //convert vcf files to plink2 format (not bgen!)
-    if (params.genotypes_imputed_format == "vcf"){
-        imputed_files =  channel.fromPath("${params.genotypes_imputed}", checkIfExists: true)
+    if (genotypes_association_format == "vcf"){
+        imputed_files =  channel.fromPath(genotypes_association, checkIfExists: true)
 
         IMPUTED_TO_PLINK2 (
             imputed_files
@@ -152,7 +182,7 @@ workflow NF_GWAS {
     }  else {
 
         //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
-        channel.fromPath("${params.genotypes_imputed}")
+        channel.fromPath(genotypes_association)
         .map { tuple(it.baseName, it, [], []) }
         .set {imputed_plink2_ch}
     }
@@ -198,7 +228,7 @@ workflow NF_GWAS {
 
     }
 
-    if (params.genotypes_sequenced){
+    if (params.regenie_run_gene_based_tests){
 
       REGENIE_STEP2_GENE_TESTS (
           regenie_step1_out_ch.collect(),
