@@ -160,7 +160,6 @@ workflow NF_GWAS {
     }
 
 
-    /*
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
         imputed_plink2_ch,
@@ -168,7 +167,7 @@ workflow NF_GWAS {
         sample_file,
         covariates_file_validated
     )
-
+/*
     REGENIE_LOG_PARSER_STEP2 (
         REGENIE_STEP2.out.regenie_step2_out_log.collect()
     )
