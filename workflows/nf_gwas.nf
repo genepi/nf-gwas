@@ -160,8 +160,6 @@ workflow NF_GWAS {
     }
 
 
-    regenie_step1_out_ch.collect().view{ it -> "STEP-1 OUTPUT : $it"}
-
     /*
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
