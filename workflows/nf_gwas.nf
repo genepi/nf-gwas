@@ -167,7 +167,7 @@ workflow NF_GWAS {
         sample_file,
         covariates_file_validated
     )
-/*
+
     REGENIE_LOG_PARSER_STEP2 (
         REGENIE_STEP2.out.regenie_step2_out_log.collect()
     )
@@ -210,7 +210,7 @@ REGENIE_STEP2.out.regenie_step2_out
         regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
-*/
+
 }
 
 workflow.onComplete {
