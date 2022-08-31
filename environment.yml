@@ -8,24 +8,24 @@ channels:
 dependencies:
   - plink2
   - r=4.1.0
-  - r-rmarkdown=2.11
-  - r-ggplot2=3.3.5
+  - r-rmarkdown=2.16
+  - r-ggplot2=3.3.6
   - r-dplyr=1.0.9
-  - r-dt=0.19
+  - r-dt=0.24
   - r-qqman=0.1.8
-  - r-htmltools=0.5.2
-  - r-rmdformats=1.0.3
-  - r-skimr=2.1.3
+  - r-htmltools=0.5.3
+  - r-rmdformats=1.0.4
+  - r-skimr=2.1.4
   - r-kableextra=1.3.4
-  - r-data.table=1.14.0
-  - r-r.utils=2.10.1
+  - r-data.table=1.14.2
+  - r-r.utils=2.12.0
   - r-ggrepel=0.9.1
-  - pandoc=2.14.2
+  - pandoc=2.19.2
   - cairo=1.16.0
   - xorg-libxt=1.2.1
   - fonts-anaconda=1
-  - openjdk=11.0.9
+  - openjdk=17.0.3
   - unzip=6.0
-  - bioconductor-ramwas=1.16.0
+  - bioconductor-ramwas=1.18.0
   - bedtools=2.30.0
-  - htslib=1.14
+  - htslib=1.15.1
