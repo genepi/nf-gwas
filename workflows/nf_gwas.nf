@@ -159,7 +159,6 @@ workflow NF_GWAS {
 
     }
 
-
     REGENIE_STEP2 (
         regenie_step1_out_ch.collect(),
         imputed_plink2_ch,
