@@ -30,13 +30,6 @@ process REGENIE_STEP2 {
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
 
   """
-
-  # Back up the file
-  mv regenie_step1_out_pred.list regenie_step1_out_pred.list.bak
-
-  # Update the file paths to source local files
-  awk '{n=split(\$NF,a,"/"); print \$1, a[n]}'  regenie_step1_out_pred.list.bak > regenie_step1_out_pred.list
-
   regenie \
     --step 2 \
     $format ${filename}${extension} \
