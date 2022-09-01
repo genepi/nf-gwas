@@ -38,7 +38,7 @@ process REGENIE_STEP1 {
     --lowmem-prefix tmp_rg \
     --threads ${task.cpus} \
     --out regenie_step1_out \
-    --use-relative-paths
+    --use-relative-path
   """
 
 }
