@@ -34,7 +34,7 @@ nextflow_process {
                     assert get(2) ==~ ".*.bed"
                     assert path(get(2)).md5 == "ed400a8df66d275f9bcf70be9259dae8"
                     assert get(3) ==~ ".*.fam"
-                    assert path(get(3)).md5 == "fd6ece51dceed54af8945ccfb9d4b7c"
+                    assert path(get(3)).md5 == "0fd6ece51dceed54af8945ccfb9d4b7c"
                     assert path(get(1)).readLines().size() == 758
                     }
 
