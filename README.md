@@ -33,6 +33,14 @@ docker build -t genepi/nf-gwas . # don't ignore the dot
 nextflow run main.nf -profile test,development
 ```
 
+## nf-test
+nf-gwas makes use of [nf-test](https://github.com/askimed/nf-test), a unit-style test framework for Nextflow. 
+```
+cd nf-gwas
+curl -fsSL https://code.askimed.com/install/nf-test | bash
+./nf-test test 
+```
+
 ## License
 nf-gwas is MIT Licensed.
 
