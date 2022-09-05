@@ -6,7 +6,8 @@ process REGENIE_STEP2_GENE_TESTS {
 
   input:
     path step1_out
-    tuple val(plink_filename), path(genotyped_plink_file)
+    tuple val(filename), path(genotyped_plink_file)
+    val assoc_format
 	  path phenotypes_file
     path covariates_file
     path regenie_gene_anno_file
@@ -14,14 +15,14 @@ process REGENIE_STEP2_GENE_TESTS {
     path regenie_gene_masks_file
 
   output:
-    tuple val(plink_filename), path("*regenie.gz"), emit: regenie_step2_out
-    path "${plink_filename}.log", emit: regenie_step2_out_log
-    path "${plink_filename}_masks_report.txt"
-    path "${plink_filename}_masks.snplist"
+    tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
+    path "${filename}.log", emit: regenie_step2_out_log
+    path "${filename}_masks_report.txt"
+    path "${filename}_masks.snplist"
 
   script:
-    def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
-    def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
+    def format = assoc_format == 'bed' ? "--bed" : '--bgen'
+    def extension = assoc_format == 'bgen' ? ".bgen" : ''
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
@@ -38,7 +39,7 @@ process REGENIE_STEP2_GENE_TESTS {
   """
   regenie \
     --step 2 \
-    --bed ${plink_filename}\
+    $format ${filename}${extension} \
     --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     --bsize ${params.regenie_bsize_step2} \
@@ -60,6 +61,6 @@ process REGENIE_STEP2_GENE_TESTS {
     $vcMACThr \
     $buildMask \
     $joint \
-    --out ${plink_filename}
+    --out ${filename}
   """
 }

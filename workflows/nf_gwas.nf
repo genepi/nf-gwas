@@ -106,6 +106,11 @@ if (params.regenie_run_gene_based_tests) {
           exit 1, "Test ${params.regenie_gene_test} not supported for gene-based testing."
       }
 
+      //Check association file format for gene-based tests
+      if (genotypes_association_format != 'bed'){
+        exit 1, "File format " + genotypes_association_format + " currently not supported for gene-based tests. Please use 'bed' input instead. "
+      }
+
 } else {
     gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
     //Check if tests exists
@@ -113,7 +118,7 @@ if (params.regenie_run_gene_based_tests) {
           exit 1, "Test ${params.regenie_test} not supported for single-variant testing."
       }
 
-    //Check imputed file format
+    //Check association file format
     if (genotypes_association_format != 'vcf' && genotypes_association_format != 'bgen'){
       exit 1, "File format " + genotypes_association_format + " not supported."
     }
@@ -221,6 +226,7 @@ workflow NF_GWAS {
       REGENIE_STEP2_GENE_TESTS (
           regenie_step1_out_ch.collect(),
           step2_gene_tests_ch,
+          genotypes_association_format,
           VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
           covariates_file_validated,
           regenie_anno_file,
@@ -236,6 +242,7 @@ workflow NF_GWAS {
       REGENIE_STEP2 (
           regenie_step1_out_ch.collect(),
           imputed_plink2_ch,
+          genotypes_association_format,
           VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
           sample_file,
           covariates_file_validated
