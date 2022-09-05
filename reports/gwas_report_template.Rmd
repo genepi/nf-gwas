@@ -40,7 +40,6 @@ library(ggplot2)
 library(skimr)
 library(kableExtra)
 library(dplyr)
-library(ramwas)
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, cache=FALSE)
 source(params$r_functions)
 ```
@@ -66,7 +65,7 @@ source(params$r_functions)
 ## Manhattan Plot
 
 ```{r, dpi=300}
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID"), header=TRUE, tmpdir="$PWD")
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ"), header=TRUE, tmpdir="$PWD")
 annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
 
 #merge gene names of tophits to regenieTable
@@ -108,25 +107,40 @@ if(params$plot_ylimit == 0) {
 
 ## QQ Plot
 
-```{r, results='asis'}
-qqPrepare <- qqPlotPrepare(pvalues=regenieTable$LOG10P,ismlog10 = T)
-
+```{r, results='asis', dpi=300}
 if(params$plot_ylimit == 0) {
   limit = NULL
 } else {
   limit = c(0, params$plot_ylimit )
-    cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
+  pp <- pp + ylim(0, params$plot_ylimit)
+  cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
 }
 
-qqPlotFast(qqPrepare, ylim = limit)
+cat('\n\n')
+cat('### Overall')
+cat('\n\n')
+pp <- qq_plot(df=regenieTable)
+print(pp)
 
-rm(qqPrepare)
-rm(regenieTable)
+cat('\n\n')
+cat('### Split by MAF')
+cat('\n\n')
+pp <- qq_plot(df=regenieTable,
+              mafsplitting = TRUE)
+print(pp)
+
 ```
+
+Please note that the QQ Plot is split by the following MAFs if any variants fall in the respective interval:
+
+* (0, 0.0005]
+* (0.0005, 0.005]
+* (0.005, 0.05]
+* (0.05, 1]
 
 ## Top Loci
 
-Filtered for a minimun -log<sub>10</sub>(*P*) = `r params$annotation_min_log10p`.
+Filtered for a minimun -log<sub>10</sub>(p-value) = `r params$annotation_min_log10p`.
 
 ```{r}
 
