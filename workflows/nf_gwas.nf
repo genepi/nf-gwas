@@ -74,6 +74,8 @@ genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
+run_gene_tests = params.regenie_run_gene_based_tests
+
 //Optional covariates file
 if (!params.covariates_filename) {
     covariates_file = []
@@ -95,14 +97,13 @@ Channel.fromFilePairs(genotypes_prediction, size: 3).set {genotyped_plink_ch}
 regenie_masks_file = []
 
 // Load required files for gene-based tests
-if (params.regenie_run_gene_based_tests) {
+if (run_gene_tests) {
     gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
     regenie_anno_file    = file(params.regenie_gene_anno, checkIfExists: true)
     regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
     regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
-    Channel.fromFilePairs(genotypes_association, size: 3).set {step2_gene_tests_ch}
 
-    if (params.regenie_gene_test != 'skat' && params.regenie_gene_test != 'skato' && params.regenie_gene_test != 'skato-acat' && params.regenie_gene_test != 'acatv' && params.regenie_gene_test != 'acato' && params.regenie_gene_test != 'acato-full'){
+     if (params.regenie_gene_test != 'skat' && params.regenie_gene_test != 'skato' && params.regenie_gene_test != 'skato-acat' && params.regenie_gene_test != 'acatv' && params.regenie_gene_test != 'acato' && params.regenie_gene_test != 'acato-full'){
           exit 1, "Test ${params.regenie_gene_test} not supported for gene-based testing."
       }
 
@@ -162,22 +163,35 @@ workflow NF_GWAS {
 
    }
 
-    //convert vcf files to plink2 format (not bgen!)
-    if (genotypes_association_format == "vcf"){
-        imputed_files =  channel.fromPath(genotypes_association, checkIfExists: true)
+    //single-variant tests: convert vcf files to plink2 format (not bgen!)
+    if (!run_gene_tests) {
 
-        IMPUTED_TO_PLINK2 (
-            imputed_files
-        )
+      if (genotypes_association_format == "vcf"){
 
-        imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
+          imputed_files =  channel.fromPath(genotypes_association, checkIfExists: true)
 
-    }  else {
+          IMPUTED_TO_PLINK2 (
+              imputed_files
+          )
 
-        //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
-        channel.fromPath(genotypes_association)
-        .map { tuple(it.baseName, it, [], []) }
-        .set {imputed_plink2_ch}
+          imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
+
+      } else {
+          //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
+          channel.fromPath(genotypes_association)
+          .map { tuple(it.baseName, it, [], []) }
+          .set {imputed_plink2_ch}
+      }
+
+    //gene-based tests
+    } else {
+
+      if (genotypes_association_format == 'bed') {
+
+        Channel.fromFilePairs(genotypes_association, size: 3).set {step2_gene_tests_ch}
+
+      }
+
     }
 
     QC_FILTER_GENOTYPED (
@@ -221,7 +235,7 @@ workflow NF_GWAS {
 
     }
 
-    if (params.regenie_run_gene_based_tests){
+    if (run_gene_tests){
 
       REGENIE_STEP2_GENE_TESTS (
           regenie_step1_out_ch.collect(),
