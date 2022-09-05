@@ -20,7 +20,7 @@ jobs:
     - name: Add nextflow to path
       run: echo "/opt/nextflow" >> $GITHUB_PATH;
     - name: Install nf-test
-      run: sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.5.0/nf-test-0.5.0.tar.gz; tar xvfz nf-test-0.5.0.tar.gz; chmod +x nf-test;
+      run: sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
     - name: Add nf-test to path
       run: echo "/opt/nf-test" >> $GITHUB_PATH;
     - name: Run nf-test tests

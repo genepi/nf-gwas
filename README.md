@@ -14,13 +14,13 @@ Documentation can be found [here](https://genepi.github.io/nf-gwas/).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/nf-gwas -r v0.4.1 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -r v0.4.2 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/nf-gwas -c <nextflow.config> -r v0.4.1 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -c <nextflow.config> -r v0.4.2 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 
 Please click [here](tests) for available test config files.
@@ -31,6 +31,14 @@ git clone https://github.com/genepi/nf-gwas
 cd nf-gwas
 docker build -t genepi/nf-gwas . # don't ignore the dot
 nextflow run main.nf -profile test,development
+```
+
+## nf-test
+nf-gwas makes use of [nf-test](https://github.com/askimed/nf-test), a unit-style test framework for Nextflow. 
+```
+cd nf-gwas
+curl -fsSL https://code.askimed.com/install/nf-test | bash
+./nf-test test 
 ```
 
 ## License
