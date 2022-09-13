@@ -1,8 +1,7 @@
 process REGENIE_STEP2_GENE_TESTS {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
-    publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.txt'
-      publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.snplist'
+  publishDir "${params.outdir}/masks", mode: 'copy', pattern: '*masks*.{txt,snplist,bed,bim,fam}'
 
   input:
     path step1_out
@@ -17,8 +16,7 @@ process REGENIE_STEP2_GENE_TESTS {
   output:
     tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
     path "${filename}.log", emit: regenie_step2_out_log
-    path "${filename}_masks_report.txt"
-    path "${filename}_masks.snplist"
+    path "${filename}_masks*"
 
   script:
     def format = assoc_format == 'bed' ? "--bed" : '--bgen'
@@ -34,6 +32,7 @@ process REGENIE_STEP2_GENE_TESTS {
     def maxAaf = params.regenie_gene_vc_max_aaf ? "--vc-maxAAF ${params.regenie_gene_vc_max_aaf}":''
     def vcMACThr = params.regenie_gene_vc_mac_thr ? "--vc-MACthr ${params.regenie_gene_vc_mac_thr}":''
     def buildMask = params.regenie_gene_build_mask ? "--build-mask ${params.regenie_gene_build_mask}":''
+    def writeMasks = params.regenie_write_bed_masks  ? "--write-mask" : ''
     def joint = params.regenie_gene_joint ? "--joint ${params.regenie_gene_joint}":''
 
   """
@@ -49,9 +48,9 @@ process REGENIE_STEP2_GENE_TESTS {
     --mask-def ${regenie_gene_masks_file} \
     --threads ${task.cpus} \
     --gz \
-    --write-mask \
     --check-burden-files \
     --write-mask-snplist \
+    $writeMasks \
     $binaryTrait \
     $covariants \
     $predictions \

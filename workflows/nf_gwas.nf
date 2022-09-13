@@ -103,8 +103,8 @@ if (run_gene_tests) {
     regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
     regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
 
-     if (params.regenie_gene_test != 'skat' && params.regenie_gene_test != 'skato' && params.regenie_gene_test != 'skato-acat' && params.regenie_gene_test != 'acatv' && params.regenie_gene_test != 'acato' && params.regenie_gene_test != 'acato-full'){
-          exit 1, "Test ${params.regenie_gene_test} not supported for gene-based testing."
+     if (params.regenie_write_bed_masks && params.regenie_gene_build_mask == 'sum'){
+          exit 1, "Invalid config file. The 'write-mask' option does not work when building masks with 'sum'."
       }
 
       //Check association file format for gene-based tests
