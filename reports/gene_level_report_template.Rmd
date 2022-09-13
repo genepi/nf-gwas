@@ -11,7 +11,7 @@ output:
 params:
   project: test-gene-level
   date: 2022-05-27
-  version: v0.3.0
+  version: v0.4.2
   regenie_merged: ../output/test-gene-based-test/results/Y1.regenie.gz
   regenie_filename: test-gene-level.Y1.regenie.all.gz
   phenotype: Y1
@@ -25,7 +25,6 @@ params:
   mask_file: ./example.masks
   manhattan_annotation_enabled: true
   annotation_min_log10p: 1
-  annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
   r_functions: ./functions.R
   rmd_pheno_stats: ./child_phenostatistics.Rmd
   rmd_valdiation_logs: ./child_validationlogs.Rmd
