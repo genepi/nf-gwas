@@ -31,12 +31,11 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-library(qqman)
 library(DT)
 library(data.table)
 library(R.utils)
 library(ggplot2)
-library(skimr)
+#library(skimr)
 library(kableExtra)
 library(dplyr)
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, cache=FALSE)
@@ -72,9 +71,9 @@ regenieTable <- regenieTable %>% tidyr::separate(ID,
                                                  into=c("Set", "Mask", "AAF"),
                                                  sep="\\.",
                                                  extra="merge")
-
-regenieTable_burdenJoint <- regenieTable[is.na(regenieTable$Mask) == TRUE, ]
-regenieTable <- regenieTable[is.na(regenieTable$Mask) == FALSE, ]
+regenieTable$joint <- ifelse(grepl("BURDEN", regenieTable$TEST), "yes", "no")
+regenieTable_burdenJoint <- select(filter(regenieTable, joint == "yes"), c(CHROM:Set,TEST,CHISQ:joint))
+regenieTable <- filter(regenieTable, joint == "no")
 regenieTable <- regenieTable %>% tidyr::unite(.,
                                               "Settings",
                                               TEST, AAF, Mask,
@@ -111,8 +110,9 @@ kable(masks)
 ```{r, results='asis'}
 if(nrow(regenieTable_burdenJoint) > 0) {
 test_joint <- unique(regenieTable_burdenJoint$TEST)
-test_joint <- test_joint %>% tidyr::separate(TEST, into=c("Model", "Test", "Joint"), sep="-.", extra="merge")
-cat("The following joint test was used for burden masks:", unique(test_joint$Joint))
+test_joint <- as.data.frame(test_joint)
+test_joint <- test_joint %>% tidyr::separate(test_joint, into=c("Model", "Test", "Joint"), sep="-", extra="merge")
+cat("The following joint tests were used for burden masks:", unique(test_joint$Joint), ".")
 } else {
     cat("No joint test was performed for burden masks and AAF thresholds.")
 }
@@ -120,39 +120,46 @@ cat("The following joint test was used for burden masks:", unique(test_joint$Joi
 ```
 
 
-```{r, eval=nrow(regenieTable_burdenJoint) > 0, results='asis'}
+```{r, eval=nrow(regenieTable_burdenJoint) > 0, results='asis', dpi=300}
 cat('\n\n')
-cat('## Joint test for burden masks and AAF thresholds')
+cat('## Joint test(s) for burden masks and AAF thresholds')
 cat('\n\n')
 if(params$plot_ylimit == 0) {
   limit = NULL
   } else {
     limit = c(0, params$plot_ylimit )
     cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
-      }
-#manhattan plot
-cat('\n\n')
-cat('**Manhattan Plot**')
-cat('\n\n')
-df_prep <- manhattan_prep(regenieTable_burdenJoint)
-plot <- manhattan_plot(df_prep, ymax = params$plot_ylimit, hlines = FALSE)
-print(plot)
-#annotatate plot (if it is enabled)
-if(!params$manhattan_annotation_enabled) {
-  plot
-  } else {
-    plot <- plot + ggrepel::geom_text_repel(data = df_prep %>% group_by(Set) %>%
+  }
+
+for (test in unique(regenieTable_burdenJoint$TEST)){
+  regenieTable_tmp01 <- regenieTable_burdenJoint[regenieTable_burdenJoint$TEST == test, ]
+  cat('\n\n')
+  cat('### Test: ', unique(regenieTable_tmp01$TEST))
+  cat('\n\n')
+  #manhattan plot
+  cat('\n\n')
+  cat('**Manhattan Plot**')
+  cat('\n\n')
+  df_prep <- manhattan_prep(regenieTable_tmp01)
+  plot <- manhattan_plot(df_prep, ymax = params$plot_ylimit, hlines = FALSE)
+  #annotatate plot (if it is enabled)
+  if(!params$manhattan_annotation_enabled) {
+    plot
+    } else {
+      plot <- plot + ggrepel::geom_text_repel(data = df_prep %>% group_by(Set) %>%
                              top_n(1, LOG10P) %>%
                                slice(1) %>%
                              filter(LOG10P > params$annotation_min_log10p),
                             aes(label=Set), color = 1, fontface = "italic")
     }
-#qqplot
-cat('\n\n')
-cat('**QQ Plot**')
-cat('\n\n')
-pp <- qq_plot(df=regenieTable_burdenJoint)
-print(pp)
+  print(plot)
+  #qqplot
+  cat('\n\n')
+  cat('**QQ Plot**')
+  cat('\n\n')
+  pp <- qq_plot(df=regenieTable_tmp01)
+  print(pp)
+}
 
 ```
 
@@ -183,7 +190,6 @@ for (test in unique(regenieTable$TEST)){
     cat('\n\n')
     df_prep <- manhattan_prep(regenieTable_tmp02)
     plot <- manhattan_plot(df_prep, ymax = params$plot_ylimit, hlines = FALSE)
-    print(plot)
     #annotatate plot (if it is enabled)
     if(!params$manhattan_annotation_enabled) {
       plot
@@ -193,7 +199,8 @@ for (test in unique(regenieTable$TEST)){
                                slice(1) %>%
                              filter(LOG10P > params$annotation_min_log10p),
                             aes(label=Set), color = 1, fontface = "italic")
-        }
+      }
+    print(plot)
     #qqplot
     cat('\n\n')
     cat('**QQ Plot**')

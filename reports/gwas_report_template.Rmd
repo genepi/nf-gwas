@@ -31,7 +31,6 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-library(qqman)
 library(DT)
 library(data.table)
 library(R.utils)
