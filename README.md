@@ -3,7 +3,7 @@
 [![nf-gwas](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml)
 [![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
 
-A nextflow pipeline to perform genome-wide association studies (GWAS) using [regenie](https://github.com/rgcgithub/regenie).
+This cloud-ready GWAS pipeline allows you to run single variant tests and gene-based tests using [regenie](https://github.com/rgcgithub/regenie) in an automated and reproducible way. The pipeline outputs tabixed association results (e.g. for LocusZoom), gene-annotated tophits and an interactive HTML report including numerous statistics and plots (e.g. Manhattan Plat, QQ-Plot by MAF).
 
 ## Documentation
 Documentation can be found [here](https://genepi.github.io/nf-gwas/).
