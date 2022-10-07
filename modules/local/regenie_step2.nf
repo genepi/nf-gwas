@@ -7,6 +7,7 @@ process REGENIE_STEP2 {
   input:
 	  path step1_out
     tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file)
+    val assoc_format
     path phenotypes_file
     path sample_file
     path covariates_file
@@ -16,8 +17,8 @@ process REGENIE_STEP2 {
     path "${filename}.log", emit: regenie_step2_out_log
 
   script:
-    def format = params.genotypes_imputed_format == 'bgen' ? "--bgen" : '--pgen'
-    def extension = params.genotypes_imputed_format == 'bgen' ? ".bgen" : ''
+    def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
+    def extension = assoc_format == 'bgen' ? ".bgen" : ''
     def bgen_sample = sample_file ? "--sample $sample_file" : ''
     def test = "--test $params.regenie_test"
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""

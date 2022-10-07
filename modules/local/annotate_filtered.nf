@@ -16,7 +16,7 @@ process ANNOTATE_FILTERED {
   """
   #!/bin/bash
   set -e
-  (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -T $PWD/work -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
+  (zcat ${regenie_merged} | head -n 1 && zcat ${regenie_merged} | tail -n +2 | sort -T \$PWD/work -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.sorted.gz
   # sort lexicographically (required by bedtools)
   zcat ${regenie_merged.baseName}.sorted.gz | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n"}' > ${regenie_merged.baseName}.sorted.txt
   # duplicate 2nd column (to write valid bed)

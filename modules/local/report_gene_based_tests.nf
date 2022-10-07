@@ -1,14 +1,15 @@
-process REPORT {
+process REPORT_GENE_BASED_TESTS {
 
   publishDir "${params.outdir}", mode: 'copy'
 
   label 'required_memory_report'
 
   input:
-    tuple val(phenotype), path(regenie_merged), path(annotated_tophits)
+    tuple val(phenotype), path(regenie_merged)
     path phenotype_file_validated
     path gwas_report_template
     path r_functions_file
+    path mask_file
     path rmd_pheno_stats_file
     path rmd_valdiation_logs_file
     path phenotype_log
@@ -38,9 +39,9 @@ process REPORT {
       regenie_step1_log='${step1_log}',
       regenie_step2_log='${step2_log}',
       plot_ylimit=${params.plot_ylimit},
-      annotated_tophits_filename='${annotated_tophits}',
       manhattan_annotation_enabled = $annotation_as_string,
       annotation_min_log10p = ${params.annotation_min_log10p},
+      mask_file='${mask_file}',
       r_functions='${r_functions_file}',
       rmd_pheno_stats='${rmd_pheno_stats_file}',
       rmd_valdiation_logs='${rmd_valdiation_logs_file}'
