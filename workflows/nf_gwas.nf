@@ -24,29 +24,43 @@ println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use ge
 genotypes_prediction = params.genotypes_prediction
 }
 
+run_gene_tests = params.regenie_run_gene_based_tests
+
+skip_predictions = params.regenie_skip_predictions
+
 
 requiredParams = [
-    'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait',
-    'genotypes_association_format', 'genotypes_prediction','genotypes_association', 'genotypes_build',
+    'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait', 'genotypes_build',
     'regenie_test'
 ]
 
 requiredParamsGeneTests = [
     'project', 'phenotypes_filename', 'phenotypes_columns', 'phenotypes_binary_trait',
-    'genotypes_association_format', 'genotypes_prediction','genotypes_association',
     'regenie_gene_anno', 'regenie_gene_setlist','regenie_gene_masks'
 ]
 
 for (param in requiredParams) {
-    if (params[param] == null && param == null) {
+    if (params[param] == null  && !run_gene_tests) {
       exit 1, "Parameter ${param} is required for single-variant testing."
     }
 }
 
 for (param in requiredParamsGeneTests) {
-    if (params[param] == null && param == null) {
+    if (params[param] == null && run_gene_tests) {
       exit 1, "Parameter ${param} is required for gene-based testing."
     }
+}
+
+if(params["genotypes_association"] == null && params["genotypes_imputed"] == null ) {
+  exit 1, "Parameter genotypes_association is required."
+}
+
+if(params["genotypes_association_format"] == null && params["genotypes_imputed_format"] == null ) {
+  exit 1, "Parameter genotypes_association_format is required."
+}
+
+if(params["genotypes_array"] == null && params["genotypes_prediction"] == null && !skip_predictions ) {
+  exit 1, "Parameter genotypes_prediction is required."
 }
 
 if(params.outdir == null) {
@@ -74,8 +88,6 @@ genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
-run_gene_tests = params.regenie_run_gene_based_tests
-
 //Optional covariates file
 if (!params.covariates_filename) {
     covariates_file = []
@@ -90,8 +102,9 @@ if (!params.regenie_sample_file) {
     sample_file = file(params.regenie_sample_file, checkIfExists: true)
 }
 
+if (!skip_predictions){
 Channel.fromFilePairs(genotypes_prediction, size: 3).set {genotyped_plink_ch}
-
+}
 
 // Load required files for gene-based tests
 if (run_gene_tests) {
@@ -192,25 +205,26 @@ workflow NF_GWAS {
 
     }
 
-    QC_FILTER_GENOTYPED (
-        genotyped_plink_ch
-    )
-
-    if(params.prune_enabled) {
-
-        PRUNE_GENOTYPED (
-            QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
-        )
-
-        genotyped_final_ch = PRUNE_GENOTYPED.out.genotypes_pruned_ch
-
-      } else {
-          //no pruning applied, set QCed directly to genotyped_final_ch
-          genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
-      }
-
     regenie_step1_parsed_logs_ch = Channel.empty()
-    if (!params.regenie_skip_predictions){
+
+    if (!skip_predictions){
+
+      QC_FILTER_GENOTYPED (
+          genotyped_plink_ch
+      )
+
+      if(params.prune_enabled) {
+
+          PRUNE_GENOTYPED (
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
+          )
+
+          genotyped_final_ch = PRUNE_GENOTYPED.out.genotypes_pruned_ch
+
+        } else {
+            //no pruning applied, set QCed directly to genotyped_final_ch
+            genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
+        }
 
         REGENIE_STEP1 (
             genotyped_final_ch,
