@@ -29,6 +29,7 @@ process REGENIE_STEP2 {
     def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
+    def interaction = params.regenie_interaction ? "--interaction $params.regenie_interaction" : ''
 
   """
   regenie \
@@ -50,6 +51,7 @@ process REGENIE_STEP2 {
     $deleteMissingData \
     $predictions \
     $refFirst \
+    $interaction \
     --out ${filename}
   """
 }
