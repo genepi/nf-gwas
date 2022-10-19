@@ -26,6 +26,7 @@ process REGENIE_STEP2 {
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
     def range = params.regenie_range != '' ? "--range $params.regenie_range" : ''
     def covariants = covariates_file ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
+    def cat_covariants = params.covariates_cat_columns ? "--catCovarList ${params.covariates_cat_columns}" : ''
     def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
@@ -48,6 +49,7 @@ process REGENIE_STEP2 {
     $bgen_sample \
     $range \
     $covariants \
+    $cat_covariants \
     $deleteMissingData \
     $predictions \
     $refFirst \
