@@ -31,7 +31,10 @@ process REGENIE_STEP2 {
     def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
+    def apply_rint = params.phenotypes_apply_rint ? "--apply-rint" : ''
     def interaction = params.regenie_interaction ? "--interaction $params.regenie_interaction" : ''
+    def rare_mac = params.regenie_rare_mac ? "--rare-mac $params.regenie_rare_mac" : ''
+    def no_condtl = params.regenie_no_condtl ? "--no-condtl $params.regenie_no_condtl" : ''
 
   """
   regenie \
@@ -55,7 +58,10 @@ process REGENIE_STEP2 {
     $deleteMissingData \
     $predictions \
     $refFirst \
+    $apply_rint \
     $interaction \
+    $rare_mac \
+    $no_condtl \
     --out ${filename}
   """
 }

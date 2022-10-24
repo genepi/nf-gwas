@@ -29,6 +29,7 @@ process REGENIE_STEP2_GENE_TESTS {
     def cat_covariants = params.covariates_cat_columns ? "--catCovarList ${params.covariates_cat_columns}" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
+    def apply_rint = params.phenotypes_apply_rint ? "--apply-rint" : ''
     def geneTest = params.regenie_gene_test ? "--vc-tests ${params.regenie_gene_test}":''
     def aaf = params.regenie_gene_aaf ? "--aaf-bins ${params.regenie_gene_aaf}":''
     def maxAaf = params.regenie_gene_vc_max_aaf ? "--vc-maxAAF ${params.regenie_gene_vc_max_aaf}":''
@@ -58,6 +59,7 @@ process REGENIE_STEP2_GENE_TESTS {
     $quant_covariants \
     $cat_covariants \
     $predictions \
+    $apply_rint \
     $geneTest \
     $aaf \
     $maxAaf \
