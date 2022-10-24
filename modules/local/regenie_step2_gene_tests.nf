@@ -24,7 +24,8 @@ process REGENIE_STEP2_GENE_TESTS {
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
-    def covariants = covariates_file ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
+    def covariants = covariates_file ? "--covarFile $covariates_file" : ''
+    def quant_covariants = params.covariates_columns ? "--covarColList ${params.covariates_columns}" : ''
     def cat_covariants = params.covariates_cat_columns ? "--catCovarList ${params.covariates_cat_columns}" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
@@ -54,6 +55,7 @@ process REGENIE_STEP2_GENE_TESTS {
     $writeMasks \
     $binaryTrait \
     $covariants \
+    $quant_covariants \
     $cat_covariants \
     $predictions \
     $geneTest \
