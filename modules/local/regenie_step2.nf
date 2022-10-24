@@ -34,7 +34,7 @@ process REGENIE_STEP2 {
     def apply_rint = params.phenotypes_apply_rint ? "--apply-rint" : ''
     def interaction = params.regenie_interaction ? "--interaction $params.regenie_interaction" : ''
     def rare_mac = params.regenie_rare_mac ? "--rare-mac $params.regenie_rare_mac" : ''
-    def no_condtl = params.regenie_no_condtl ? "--no-condtl $params.regenie_no_condtl" : ''
+    def no_condtl = params.regenie_no_condtl ? "--no-condtl" : ''
 
   """
   regenie \
