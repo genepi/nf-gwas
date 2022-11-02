@@ -11,7 +11,6 @@ nextflow_process {
                 //set required phenotypes_column
                 phenotypes_columns = 'Y1,Y2'
                 regenie_test = 'additive'
-                genotypes_imputed_format = 'bgen'
                 regenie_skip_predictions = true
             }
             process {
@@ -19,9 +18,10 @@ nextflow_process {
                 input[0] = Channel.fromPath("tests/input/regenie_step2/regenie_step1_out*")
                 input[1] = Channel.fromPath("tests/input/pipeline/example.bgen")
                 .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
-                input[2] = file("tests/input/pipeline/phenotype.txt")
-                input[3] = []
+                input[2] = 'bgen'
+                input[3] = file("tests/input/pipeline/phenotype.txt")
                 input[4] = []
+                input[5] = []
                 """
             }
         }

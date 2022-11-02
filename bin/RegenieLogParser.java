@@ -69,7 +69,7 @@ public class RegenieLogParser implements Callable<Integer> {
 					String value = line.split("=")[1].trim();
 					countVariants += Integer.valueOf(value);
 				} else if (line.contains("WARNING:")) {
-					warningMsgs.append(line + "\n");
+						warningMsgs.append(line.replace("WARNING:", ""));
 				}
 
 				// Several log files produced (step 1+2), therefore skip everything from here.
