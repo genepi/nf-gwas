@@ -6,7 +6,8 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - plink2
+  - plink2=2.00a2.3
+  - plink=1.90b6.21
   - r=4.1.0
   - r-rmarkdown=2.16
   - r-ggplot2=3.3.6
