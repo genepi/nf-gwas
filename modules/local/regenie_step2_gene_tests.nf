@@ -12,6 +12,7 @@ process REGENIE_STEP2_GENE_TESTS {
     path regenie_gene_anno_file
     path regenie_gene_setlist_file
     path regenie_gene_masks_file
+    path condition_list_file
 
   output:
     tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
@@ -37,6 +38,7 @@ process REGENIE_STEP2_GENE_TESTS {
     def buildMask = params.regenie_gene_build_mask ? "--build-mask ${params.regenie_gene_build_mask}":''
     def writeMasks = params.regenie_write_bed_masks  ? "--write-mask" : ''
     def joint = params.regenie_gene_joint ? "--joint ${params.regenie_gene_joint}":''
+    def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
 
   """
   regenie \
@@ -58,6 +60,7 @@ process REGENIE_STEP2_GENE_TESTS {
     $covariants \
     $quant_covariants \
     $cat_covariants \
+    $condition_list \
     $predictions \
     $apply_rint \
     $geneTest \

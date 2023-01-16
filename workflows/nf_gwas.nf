@@ -106,6 +106,13 @@ if (!skip_predictions){
 Channel.fromFilePairs(genotypes_prediction, size: 3).set {genotyped_plink_ch}
 }
 
+//Optional condition-list file
+if (!params.regenie_condition_list ) {
+    condition_list_file = []
+} else {
+    condition_list_file = file(params.regenie_condition_list, checkIfExists: true)
+}
+
 // Load required files for gene-based tests
 if (run_gene_tests) {
     gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
@@ -231,7 +238,8 @@ workflow NF_GWAS {
             QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
             QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
             VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-            covariates_file_validated
+            covariates_file_validated,
+            condition_list_file
         )
 
         REGENIE_LOG_PARSER_STEP1 (
@@ -257,7 +265,8 @@ workflow NF_GWAS {
           covariates_file_validated,
           regenie_anno_file,
           regenie_setlist_file,
-          regenie_masks_file
+          regenie_masks_file,
+          condition_list_file
       )
 
       regenie_step2_log_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out_log
@@ -271,7 +280,8 @@ workflow NF_GWAS {
           genotypes_association_format,
           VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
           sample_file,
-          covariates_file_validated
+          covariates_file_validated,
+          condition_list_file
       )
 
       regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log

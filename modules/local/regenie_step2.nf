@@ -11,6 +11,7 @@ process REGENIE_STEP2 {
     path phenotypes_file
     path sample_file
     path covariates_file
+    path condition_list_file
 
   output:
     tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
@@ -37,6 +38,7 @@ process REGENIE_STEP2 {
     def rare_mac = params.regenie_rare_mac ? "--rare-mac $params.regenie_rare_mac" : ''
     def no_condtl = params.regenie_no_condtl ? "--no-condtl" : ''
     def force_condtl = params.regenie_force_condtl ? "--force-condtl" : ''
+    def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
 
   """
   regenie \
@@ -57,6 +59,7 @@ process REGENIE_STEP2 {
     $covariants \
     $quant_covariants \
     $cat_covariants \
+    $condition_list \
     $deleteMissingData \
     $predictions \
     $refFirst \
