@@ -33,8 +33,10 @@ process REGENIE_STEP2 {
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
     def apply_rint = params.phenotypes_apply_rint ? "--apply-rint" : ''
     def interaction = params.regenie_interaction ? "--interaction $params.regenie_interaction" : ''
+    def interaction_snp = params.regenie_interaction_snp ? "--interaction-snp $params.regenie_interaction_snp" : ''
     def rare_mac = params.regenie_rare_mac ? "--rare-mac $params.regenie_rare_mac" : ''
     def no_condtl = params.regenie_no_condtl ? "--no-condtl" : ''
+    def force_condtl = params.regenie_force_condtl ? "--force-condtl" : ''
 
   """
   regenie \
@@ -60,8 +62,10 @@ process REGENIE_STEP2 {
     $refFirst \
     $apply_rint \
     $interaction \
+    $interaction_snp \
     $rare_mac \
     $no_condtl \
+    $force_condtl \
     --out ${filename}
   """
 }
