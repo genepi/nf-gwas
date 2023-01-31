@@ -16,6 +16,8 @@ params:
   regenie_filename: test-gwas.Y1.regenie.all.gz
   phenotype: Y1
   covariates:
+  interaction_gxe: 
+  interaction_gxg:
   phenotype_file: ../output/test-gwas/validated_input/phenotype.validated.txt
   regenie_step1_log: ../output/test-gwas/logs/test-gwas-additive.step1.log
   regenie_step2_log: ../output/test-gwas/logs/test-gwas-additive.step2.log

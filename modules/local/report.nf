@@ -33,6 +33,8 @@ process REPORT {
       phenotype_file='${phenotype_file_validated}',
       phenotype='${phenotype}',
       covariates='${params.covariates_columns}',
+      interaction_gxe='${params.regenie_interaction}',
+      interaction_gxg='${params.regenie_interaction_snp}',
       phenotype_log='${phenotype_log}',
       covariate_log='${covariate_log}',
       regenie_step1_log='${step1_log}',
