@@ -16,6 +16,7 @@ params:
   regenie_filename: test-gwas.Y1.regenie.all.gz
   phenotype: Y1
   covariates:
+  condition_list:
   interaction_gxe: 
   interaction_gxg:
   phenotype_file: ../output/test-gwas/validated_input/phenotype.validated.txt
@@ -54,6 +55,7 @@ source(params$r_functions)
 | Phenotype File   | `r params$phenotype_file`   |
 | Phenotype        | `r params$phenotype`        |
 | Covariates       | `r params$covariates`       |
+| Condition list   | `r params$condition_list`   |
 | Regenie Output   | `r params$regenie_filename` |
 
 ## Phenotype Statistics
