@@ -17,7 +17,7 @@ process REPORT {
     path step2_log
 
   output:
-    path "*.html"
+    tuple val(phenotype), path("${params.project}.${regenie_merged.baseName}.html"), emit: phenotype_report
 
   script:
       def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()

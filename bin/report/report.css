@@ -1,0 +1,93 @@
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+  }
+}
+
+#wrapper {
+  overflow-x: hidden;
+}
+
+#sidebar-wrapper {
+  height: 100%;
+  position: fixed;
+  margin-left: 0rem;
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out;
+}
+
+#page-content-wrapper {
+  padding-left: 250px;
+  margin-top: 90px;
+  width: 100%;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+.sidebar-search {
+  margin-top: 80px;
+  width: 250px;
+}
+
+.sidebar-list {
+  width: 242px;
+  top: 135px;
+  position: fixed;
+  overflow-y: scroll;
+  bottom: 0px;
+  padding-top: 0px;
+  padding-right: 8px;
+}
+
+.coverage-low {
+  border-left-width: 8px;
+  border-left-color: #dc3545;
+}
+
+.coverage-medium {
+  border-left-width: 8px;
+  border-left-color: #ffc107;
+}
+
+.coverage-high {
+  border-left-width: 8px;
+  border-left-color: #28a745;
+}
+
+.coverage-zero {
+  border-left-width: 8px;
+  border-left-color: #dc3545;
+}
+
+.badge-low {
+  color: #ffffff;
+  background: #dc3545;
+}
+
+.badge-medium {
+  color: #ffffff;
+  background: #ffc107;
+}
+
+.badge-high {
+  color: #ffffff;
+  background: #28a745;
+}
+
+.badge-zero {
+  color: #ffffff;
+  background: #dc3545;
+}

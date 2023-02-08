@@ -151,6 +151,8 @@ include { MERGE_RESULTS               } from '../modules/local/merge_results'  a
 include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
+include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
+
 
 workflow NF_GWAS {
 
@@ -325,6 +327,10 @@ regenie_step2_out_ch
         covariates_file_validated_log.collect().ifEmpty([]),
         regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
         REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+    )
+
+    REPORT_INDEX (
+      REPORT.out.phenotype_report.collect(flat: false)
     )
 
 } else {
