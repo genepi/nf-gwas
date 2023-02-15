@@ -25,14 +25,9 @@ genotypes_prediction = params.genotypes_prediction
 }
 
 run_gene_tests = params.regenie_run_gene_based_tests
+run_interaction_tests = params.regenie_run_interaction_tests
 
 skip_predictions = params.regenie_skip_predictions
-
-if(params.regenie_interaction){
-    run_interaction = params.regenie_interaction
-} else {
-    run_interaction = params.regenie_interaction_snp
-}
 
 requiredParams = [
     'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait', 'genotypes_build',
@@ -54,6 +49,14 @@ for (param in requiredParamsGeneTests) {
     if (params[param] == null && run_gene_tests) {
       exit 1, "Parameter ${param} is required for gene-based testing."
     }
+}
+
+if(run_interaction_tests && (params["regenie_interaction"] == null && params["regenie_interaction_snp"] == null) ) {
+  exit 1, "Parameter regenie_interaction or regenie_interaction_snp must be set."
+}
+
+if(!run_interaction_tests && (params["regenie_interaction"] != null || params["regenie_interaction_snp"] != null)){
+exit 1, "Interaction parameters are set but regenie_run_interaction_tests is set to false."
 }
 
 if(params["genotypes_association"] == null && params["genotypes_imputed"] == null ) {
@@ -135,7 +138,7 @@ if (run_gene_tests) {
       }
 
 } else {
-    if (run_interaction) {
+    if (run_interaction_tests) {
         gwas_report_template = file("$baseDir/reports/gwas_report_interaction_template.Rmd",checkIfExists: true)
     } else {
         gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
