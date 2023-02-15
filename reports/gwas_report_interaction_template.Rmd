@@ -1,0 +1,171 @@
+---
+title: "Report: `r params$project`"
+output:
+  rmdformats::robobook:
+    self_contained: true
+    thumbnails: false
+    lightbox: true
+    gallery: false
+    highlight: tango
+    toc_depth: 3
+params:
+  project: test-gwas
+  date: 2021-08-09
+  version: v0.4.2
+  regenie_merged: ../output/test-gwas/results/Y1.regenie.gz
+  regenie_filename: test-gwas.Y1.regenie.all.gz
+  phenotype: Y1
+  covariates:
+  condition_list:
+  interaction_gxe: 
+  interaction_gxg:
+  phenotype_file: ../output/test-gwas/validated_input/phenotype.validated.txt
+  regenie_step1_log: ../output/test-gwas/logs/test-gwas-additive.step1.log
+  regenie_step2_log: ../output/test-gwas/logs/test-gwas-additive.step2.log
+  phenotype_log: ../output/test-gwas/logs/phenotype.validated.log
+  covariate_log: NO_COV_LOG
+  plot_ylimit: 0
+  manhattan_annotation_enabled: true
+  annotation_min_log10p: 5
+  annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
+  r_functions: ./functions.R
+  rmd_pheno_stats: child_phenostatistics.Rmd
+  rmd_valdiation_logs: child_validationlogs.Rmd
+---
+
+```{r setup, include=FALSE}
+library(DT)
+library(data.table)
+library(R.utils)
+library(ggplot2)
+library(skimr)
+library(kableExtra)
+library(dplyr)
+library(ramwas)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, cache=FALSE)
+source(params$r_functions)
+```
+
+## Project Summary
+
+| Parameter                | Value                       |
+|--------------------------|-----------------------------|
+| Project                  | `r params$project`          |
+| Pipeline Version         | `r params$version`          |
+| Date                     | `r params$date`             |
+| Phenotype File           | `r params$phenotype_file`   |
+| Phenotype                | `r params$phenotype`        |
+| Covariates               | `r params$covariates`       |
+| Condition list           | `r params$condition_list`   |
+| Interaction variable GxE | `r params$interaction_gxe`  |
+| Interaction variable GxG | `r params$interaction_gxg`  |
+| Regenie Output           | `r params$regenie_filename` |
+
+
+## Phenotype Statistics
+
+```{r child=params$rmd_pheno_stats}
+
+```
+
+## Results
+
+```{r, results='asis', dpi=300}
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ", "TEST"), header=TRUE, tmpdir="$PWD")
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "TEST", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
+
+#merge gene names of tophits to regenieTable
+annotatedTopHits <- annotatedTopHits %>%  
+    mutate(ID = as.character(ID),
+           TEST = as.character(TEST))
+regenieTable <- regenieTable %>%  
+    mutate(ID = as.character(ID),
+           TEST = as.character(TEST))
+
+regenieTable_annotated <- left_join(regenieTable, annotatedTopHits, by = c("ID",
+                                                                           "TEST"))
+#subset by test variable
+
+split_regenieTable_annotated <- split(regenieTable_annotated, regenieTable_annotated$TEST)
+rm(regenieTable_annotated)
+
+#generate manhattan and qq plots by test
+for (test in 1:length(split_regenieTable_annotated)) {
+  test_name <- unique(split_regenieTable_annotated[[test]]$TEST)
+  cat('\n\n')
+  cat('### Test: ', test_name)
+  cat('\n\n')
+  #manhattan plot
+  cat('\n\n')
+  cat('**Manhattan Plot**')
+  cat('\n\n')
+  df_prep <- manhattan_prep(split_regenieTable_annotated[[test]])
+  plot <- manhattan_plot(df_prep)
+  if(!params$manhattan_annotation_enabled) {
+  plot
+  } else {
+    plot <- plot +
+      ggrepel::geom_text_repel(data = df_prep %>% group_by(GENE_NAME) %>%
+                                 top_n(1, LOG10P) %>%
+                                 slice(1) %>%
+                                 filter(LOG10P > params$annotation_min_log10p),
+                               aes(label=GENE_NAME), color = 1, fontface = "italic")
+    }
+  print(plot)
+  #qq plot
+  cat('\n\n')
+  cat('**QQ Plot**')
+  cat('\n\n')
+  qqPrepare <- qqPlotPrepare(pvalues=split_regenieTable_annotated[[test]]$LOG10P,ismlog10 = T)
+  qqPlotFast(qqPrepare)
+}
+```
+
+
+## Top Loci
+
+Filtered for a minimun -log<sub>10</sub>(p-value) = `r params$annotation_min_log10p` (no loci are depicted if there are no results above this threshold).
+
+```{r, echo=FALSE,include = FALSE}
+DT::datatable(matrix())
+```
+
+```{r, results='asis'}
+
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "TEST", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
+
+split_annotatedTopHits <- split(annotatedTopHits, annotatedTopHits$TEST)
+
+for (test in 1:length(split_annotatedTopHits)) {
+  test_name <- unique(split_annotatedTopHits[[test]]$TEST)
+  cat('\n\n')
+  cat('### Test: ', test_name)
+  cat('\n\n')
+  #Top loci
+  annotatedTopHits_1test <- split_annotatedTopHits[[test]]
+  
+  topHitsGroupedByGene <-
+  annotatedTopHits_1test %>%
+  group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END) %>%
+  summarise(GENE_LOG10P = max(LOG10P), VARIANTS = n()) %>%
+  arrange(desc(GENE_LOG10P))
+  
+  cat(knitr::knit_print(datatable(topHitsGroupedByGene, width = 
+                                    "100%")))
+  cat("\n\n")
+}
+
+```
+
+## Validation and Logs
+
+```{r child=params$rmd_valdiation_logs}
+
+```
+
+
+---
+
+<small>
+This report has been created with **[nf-gwas `r params$version`](https://github.com/genepi/nf-gwas)**, a nextflow pipeline developed by [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at), [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
+</small>
