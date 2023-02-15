@@ -24,10 +24,11 @@ println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use ge
 genotypes_prediction = params.genotypes_prediction
 }
 
+// nf-gwas supports three different modi. Single-variant (default), gene-based and interaction-testing
 run_gene_tests = params.regenie_run_gene_based_tests
+run_interaction_tests = params.regenie_run_interaction_tests
 
 skip_predictions = params.regenie_skip_predictions
-
 
 requiredParams = [
     'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait', 'genotypes_build',
@@ -45,12 +46,23 @@ for (param in requiredParams) {
     }
 }
 
+//check if all gene-based options are set
 for (param in requiredParamsGeneTests) {
     if (params[param] == null && run_gene_tests) {
       exit 1, "Parameter ${param} is required for gene-based testing."
     }
 }
 
+//check if all interaction options are set
+if(run_interaction_tests && (params["regenie_interaction"] == null && params["regenie_interaction_snp"] == null) ) {
+  exit 1, "Parameter regenie_interaction or regenie_interaction_snp must be set."
+}
+
+if(!run_interaction_tests && (params["regenie_interaction"] != null || params["regenie_interaction_snp"] != null)){
+exit 1, "Interaction parameters are set but regenie_run_interaction_tests is set to false."
+}
+
+//check general parameters
 if(params["genotypes_association"] == null && params["genotypes_imputed"] == null ) {
   exit 1, "Parameter genotypes_association is required."
 }
@@ -63,6 +75,10 @@ if(params["genotypes_array"] == null && params["genotypes_prediction"] == null &
   exit 1, "Parameter genotypes_prediction is required."
 }
 
+if(params["covariates_filename"] != null && (params.covariates_columns.isEmpty() && params.covariates_cat_columns.isEmpty())) {
+  println ANSI_YELLOW+  "WARN: Option covariates_filename is set but no specific covariate columns (params: covariates_columns, covariates_cat_columns) are specified." + ANSI_RESET
+}
+
 if(params.outdir == null) {
     outdir = "output/${params.project}"
 } else {
@@ -70,11 +86,6 @@ if(params.outdir == null) {
 }
 
 phenotypes_array = params.phenotypes_columns.trim().split(',')
-
-covariates_array= []
-if(!params.covariates_columns.isEmpty()){
-    covariates_array = params.covariates_columns.trim().split(',')
-}
 
 r_functions_file = file("$baseDir/reports/functions.R",checkIfExists: true)
 rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics.Rmd",checkIfExists: true)
@@ -106,6 +117,13 @@ if (!skip_predictions){
 Channel.fromFilePairs(genotypes_prediction, size: 3).set {genotyped_plink_ch}
 }
 
+//Optional condition-list file
+if (!params.regenie_condition_list ) {
+    condition_list_file = []
+} else {
+    condition_list_file = file(params.regenie_condition_list, checkIfExists: true)
+}
+
 // Load required files for gene-based tests
 if (run_gene_tests) {
     gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
@@ -123,7 +141,12 @@ if (run_gene_tests) {
       }
 
 } else {
-    gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+    // load interaction report template
+    if (run_interaction_tests) {
+        gwas_report_template = file("$baseDir/reports/gwas_report_interaction_template.Rmd",checkIfExists: true)
+    } else {
+        gwas_report_template = file("$baseDir/reports/gwas_report_template.Rmd",checkIfExists: true)
+    }
     //Check if tests exists
     if (params.regenie_test != 'additive' && params.regenie_test != 'recessive' && params.regenie_test != 'dominant'){
           exit 1, "Test ${params.regenie_test} not supported for single-variant testing."
@@ -231,7 +254,8 @@ workflow NF_GWAS {
             QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
             QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
             VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-            covariates_file_validated
+            covariates_file_validated,
+            condition_list_file
         )
 
         REGENIE_LOG_PARSER_STEP1 (
@@ -257,7 +281,8 @@ workflow NF_GWAS {
           covariates_file_validated,
           regenie_anno_file,
           regenie_setlist_file,
-          regenie_masks_file
+          regenie_masks_file,
+          condition_list_file
       )
 
       regenie_step2_log_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out_log
@@ -271,7 +296,8 @@ workflow NF_GWAS {
           genotypes_association_format,
           VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
           sample_file,
-          covariates_file_validated
+          covariates_file_validated,
+          condition_list_file
       )
 
       regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
@@ -315,16 +341,16 @@ regenie_step2_out_ch
                                                 .combine( ANNOTATE_FILTERED.out.annotated_ch, by: 0)
 
     REPORT (
-        merged_results_and_annotated_filtered,
-        VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-        gwas_report_template,
-        r_functions_file,
-        rmd_pheno_stats_file,
-        rmd_valdiation_logs_file,
-        VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
-        covariates_file_validated_log.collect().ifEmpty([]),
-        regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
-        REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+    merged_results_and_annotated_filtered,
+    VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+    gwas_report_template,
+    r_functions_file,
+    rmd_pheno_stats_file,
+    rmd_valdiation_logs_file,
+    VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
+    covariates_file_validated_log.collect().ifEmpty([]),
+    regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
+    REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
 
 } else {

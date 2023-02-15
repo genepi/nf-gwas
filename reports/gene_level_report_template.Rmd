@@ -16,6 +16,7 @@ params:
   regenie_filename: test-gene-level.Y1.regenie.all.gz
   phenotype: Y1
   covariates:
+  condition_list:
   phenotype_file: ../output/test-gene-based-test/validated_input/phenotype_bin.validated.txt
   regenie_step1_log: ../output/test-gene-based-test/logs/test-gene-based-test.step1.log
   regenie_step2_log: ../output/test-gene-based-test/logs/test-gene-based-test.step2.log
@@ -53,6 +54,7 @@ source(params$r_functions)
 | Phenotype File   | `r params$phenotype_file`   |
 | Phenotype        | `r params$phenotype`        |
 | Covariates       | `r params$covariates`       |
+| Condition list   | `r params$condition_list`   |
 | Mask File        | `r params$mask_file`        |
 | Regenie Output   | `r params$regenie_filename` |
 
