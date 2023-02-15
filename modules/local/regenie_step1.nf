@@ -8,6 +8,7 @@ process REGENIE_STEP1 {
     path id
     path phenotypes_file
     path covariates_file
+    path condition_list_file
 
   output:
     path "regenie_step1_out*", emit: regenie_step1_out
@@ -21,6 +22,7 @@ process REGENIE_STEP1 {
   def apply_rint = params.phenotypes_apply_rint ? "--apply-rint" : ''
   def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
   def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
+  def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
   """
   # qcfiles path required for keep and extract (but not actually set below)
   regenie \
@@ -33,6 +35,7 @@ process REGENIE_STEP1 {
     $covariants \
     $quant_covariants \
     $cat_covariants \
+    $condition_list \
     $deleteMissings \
     $apply_rint \
     $forceStep1 \

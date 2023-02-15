@@ -34,6 +34,7 @@ process REPORT_GENE_BASED_TESTS {
       phenotype_file='${phenotype_file_validated}',
       phenotype='${phenotype}',
       covariates='${params.covariates_columns}',
+      condition_list='${params.regenie_condition_list}',
       phenotype_log='${phenotype_log}',
       covariate_log='${covariate_log}',
       regenie_step1_log='${step1_log}',
