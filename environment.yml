@@ -11,7 +11,7 @@ dependencies:
   - r=4.1.0
   - r-rmarkdown=2.16
   - r-ggplot2=3.3.6
-  - r-dplyr=1.0.9
+  - r-dplyr=1.1.0
   - r-dt=0.24
   - r-qqman=0.1.8
   - r-htmltools=0.5.3
