@@ -8,16 +8,21 @@ process REGENIE_STEP1 {
     path id
     path phenotypes_file
     path covariates_file
+    path condition_list_file
 
   output:
     path "regenie_step1_out*", emit: regenie_step1_out
     path "regenie_step1_out.log", emit: regenie_step1_out_log
 
   script:
-  def covariants = covariates_file ? "--covarFile $covariates_file --covarColList ${params.covariates_columns}" : ''
+  def covariants = covariates_file ? "--covarFile $covariates_file" : ''
+  def quant_covariants = !params.covariates_columns.isEmpty() ? "--covarColList ${params.covariates_columns}" : ''
+  def cat_covariants = !params.covariates_cat_columns.isEmpty() ? "--catCovarList ${params.covariates_cat_columns}" : ''
   def deleteMissings = params.phenotypes_delete_missings  ? "--strict" : ''
+  def apply_rint = params.phenotypes_apply_rint ? "--apply-rint" : ''
   def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
   def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
+  def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
   """
   # qcfiles path required for keep and extract (but not actually set below)
   regenie \
@@ -28,7 +33,11 @@ process REGENIE_STEP1 {
     --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     $covariants \
+    $quant_covariants \
+    $cat_covariants \
+    $condition_list \
     $deleteMissings \
+    $apply_rint \
     $forceStep1 \
     $refFirst \
     --bsize ${params.regenie_bsize_step1} \
