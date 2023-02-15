@@ -24,6 +24,7 @@ println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use ge
 genotypes_prediction = params.genotypes_prediction
 }
 
+// nf-gwas supports three different modi. Single-variant (default), gene-based and interaction-testing
 run_gene_tests = params.regenie_run_gene_based_tests
 run_interaction_tests = params.regenie_run_interaction_tests
 
@@ -45,12 +46,14 @@ for (param in requiredParams) {
     }
 }
 
+//check if all gene-based options are set
 for (param in requiredParamsGeneTests) {
     if (params[param] == null && run_gene_tests) {
       exit 1, "Parameter ${param} is required for gene-based testing."
     }
 }
 
+//check if all interaction options are set
 if(run_interaction_tests && (params["regenie_interaction"] == null && params["regenie_interaction_snp"] == null) ) {
   exit 1, "Parameter regenie_interaction or regenie_interaction_snp must be set."
 }
@@ -59,6 +62,7 @@ if(!run_interaction_tests && (params["regenie_interaction"] != null || params["r
 exit 1, "Interaction parameters are set but regenie_run_interaction_tests is set to false."
 }
 
+//check general parameters
 if(params["genotypes_association"] == null && params["genotypes_imputed"] == null ) {
   exit 1, "Parameter genotypes_association is required."
 }
@@ -138,6 +142,7 @@ if (run_gene_tests) {
       }
 
 } else {
+    // load interaction report template
     if (run_interaction_tests) {
         gwas_report_template = file("$baseDir/reports/gwas_report_interaction_template.Rmd",checkIfExists: true)
     } else {
