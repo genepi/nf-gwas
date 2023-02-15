@@ -75,6 +75,10 @@ if(params["genotypes_array"] == null && params["genotypes_prediction"] == null &
   exit 1, "Parameter genotypes_prediction is required."
 }
 
+if(params["covariates_filename"] != null && (params.covariates_columns.isEmpty() && params.covariates_cat_columns.isEmpty())) {
+  println ANSI_YELLOW+  "WARN: Option covariates_filename is set but no specific covariate columns (params: covariates_columns, covariates_cat_columns) are specified." + ANSI_RESET
+}
+
 if(params.outdir == null) {
     outdir = "output/${params.project}"
 } else {
@@ -82,11 +86,6 @@ if(params.outdir == null) {
 }
 
 phenotypes_array = params.phenotypes_columns.trim().split(',')
-
-covariates_array= []
-if(!params.covariates_columns.isEmpty()){
-    covariates_array = params.covariates_columns.trim().split(',')
-}
 
 r_functions_file = file("$baseDir/reports/functions.R",checkIfExists: true)
 rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics.Rmd",checkIfExists: true)
