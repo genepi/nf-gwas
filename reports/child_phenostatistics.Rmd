@@ -2,8 +2,8 @@
 
 ```{r}
 phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
-kable(skim_without_charts(phenotypeTable) %>%
-  dplyr::filter(skim_variable == params$phenotype))
+phenotypeColumn <- phenotypeTable  %>% select(params$phenotype)
+summary(phenotypeColumn)
 ```
 
 ### Histogram
