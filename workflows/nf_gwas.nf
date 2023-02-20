@@ -171,6 +171,7 @@ include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parse
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
+include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids'
 include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
@@ -329,11 +330,15 @@ regenie_step2_out_ch
   MERGE_RESULTS_FILTERED (
         FILTER_RESULTS.out.results_filtered.groupTuple()
   )
+  DOWNLOAD_RSIDS (
+
+  )
 
   ANNOTATE_FILTERED (
         MERGE_RESULTS_FILTERED.out.results_filtered_merged,
         genes_hg19,
-        genes_hg38
+        genes_hg38,
+        rsids_ch
   )
 
     //combined merge results and annotated filtered results by phenotype (index 0)
