@@ -33,8 +33,6 @@ ENV PATH="/opt/jbang/bin:${PATH}"
 WORKDIR "/opt"
 RUN wget https://github.com/lukfor/tabix-merge/releases/download/v0.1.0/tabix-merge.jar
 
-ENV PATH="/opt/tabix-merge/bin:${PATH}"
-
 COPY ./bin/RegenieFilter.java ./
 RUN jbang export portable -O=RegenieFilter.jar RegenieFilter.java
 

@@ -39,7 +39,7 @@ process ANNOTATE_FILTERED {
   # sort by p-value again
   (cat  ${regenie_merged.baseName}.annotated.merged.bed | head -n 1 && cat ${regenie_merged.baseName}.annotated.merged.bed | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.annotated.gene.txt.gz
   # annotate rsids with tabix-merge command
-  java -jar tabix-merge.jar annotate \
+  java -jar /opt/tabix-merge.jar annotate \
   --input ${regenie_merged.baseName}.annotated.gene.txt.gz \
   --chr CHROM \
   --pos GENPOS \
