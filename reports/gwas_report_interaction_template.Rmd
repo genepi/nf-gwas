@@ -133,8 +133,7 @@ DT::datatable(matrix())
 
 ```{r, results='asis'}
 
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "TEST", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
-
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
 split_annotatedTopHits <- split(annotatedTopHits, annotatedTopHits$TEST)
 
 for (test in 1:length(split_annotatedTopHits)) {
@@ -146,7 +145,7 @@ for (test in 1:length(split_annotatedTopHits)) {
   annotatedTopHits_1test <- split_annotatedTopHits[[test]]
 
   topHitsGroupedByGene <-
-    annotatedTopHits %>%
+    annotatedTopHits_1test %>%
     group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END) %>%
      slice(which.max(LOG10P)) %>%
     ungroup() %>%
