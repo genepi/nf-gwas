@@ -10,9 +10,9 @@ process DOWNLOAD_RSIDS {
   #!/bin/bash
   if [ $rsbuild -eq 19 ]
   then
-  wget https://resources.pheweb.org/rsids-v154-hg19.tsv.gz > rsids-v154-hg${rsbuild}.tsv.gz
+  wget https://resources.pheweb.org/rsids-v154-hg19.tsv.gz -O rsids-v154-hg${rsbuild}.tsv.gz
   else
-  wget https://resources.pheweb.org/rsids-v154-hg38.tsv.gz > rsids-v154-hg${rsbuild}.tsv.gz
+  wget https://resources.pheweb.org/rsids-v154-hg38.tsv.gz -O rsids-v154-hg${rsbuild}.tsv.gz
   fi
 
   echo -e "CHROM\tPOS\tRSID\tREF\tALT" | bgzip -c > rsids-v154-hg${rsbuild}.index.gz

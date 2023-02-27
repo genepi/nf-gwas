@@ -331,8 +331,9 @@ regenie_step2_out_ch
         FILTER_RESULTS.out.results_filtered.groupTuple()
   )
   DOWNLOAD_RSIDS (
-
-  )
+    
+      )
+  rsids_ch = DOWNLOAD_RSIDS.out.rsids_ch
 
   ANNOTATE_FILTERED (
         MERGE_RESULTS_FILTERED.out.results_filtered_merged,
