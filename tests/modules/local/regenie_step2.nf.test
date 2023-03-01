@@ -22,6 +22,7 @@ nextflow_process {
                 input[3] = file("tests/input/pipeline/phenotype.txt")
                 input[4] = []
                 input[5] = []
+                input[6] = []
                 """
             }
         }
