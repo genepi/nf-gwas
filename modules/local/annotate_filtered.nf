@@ -6,7 +6,8 @@ process ANNOTATE_FILTERED {
     tuple val(phenotype), path(regenie_merged)
     path genes_hg19
     path genes_hg38
-    path rsids_indexed
+    path rsids_file
+    path rsids_tbi_file
 
   output:
     tuple val(phenotype), path("${regenie_merged.baseName}.annotated.txt.gz"), emit: annotated_ch
@@ -38,17 +39,26 @@ process ANNOTATE_FILTERED {
   rm ${regenie_merged.baseName}.annotated.header.bed
   # sort by p-value again
   (cat  ${regenie_merged.baseName}.annotated.merged.bed | head -n 1 && cat ${regenie_merged.baseName}.annotated.merged.bed | tail -n +2 | sort -k12 --general-numeric-sort --reverse) | gzip > ${regenie_merged.baseName}.annotated.gene.txt.gz
-  # annotate rsids with tabix-merge command
+  # annotate rsids with tabix-merge if file is provided
+  if [ -e ${rsids_file} ]
+  then
   java -jar /opt/tabix-merge.jar annotate \
   --input ${regenie_merged.baseName}.annotated.gene.txt.gz \
   --chr CHROM \
   --pos GENPOS \
   --ref ALLELE0 \
   --alt ALLELE1 \
-  --anno ${rsids_indexed}\
+  --anno ${rsids_file}\
   --anno-columns RSID \
   --strategy CHROM_POS_ALLELES \
   --output ${regenie_merged.baseName}.annotated.txt.gz
+  else
+  mv ${regenie_merged.baseName}.annotated.gene.txt.gz ${regenie_merged.baseName}.annotated.txt.gz
+  fi
+
+
+
+
 
  
   """
