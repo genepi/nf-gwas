@@ -21,9 +21,9 @@ jobs:
       run: echo "/opt/nextflow" >> $GITHUB_PATH;
     - name: Install nf-test
       run: sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
-    - name: Add nf-test to path
+    - name: Add nf-test to pathdocker build -t genepi/nf-gwas .
       run: echo "/opt/nf-test" >> $GITHUB_PATH;
     - name: Run nf-test tests with docker profile
-      run:  nf-test test
+      run:  docker build -t genepi/nf-gwas .; nf-test test
     - name: Run static Tests with development profile
       run:  ./run-tests.sh
