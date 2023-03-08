@@ -1,6 +1,4 @@
-process ANNOTATE_FILTERED {
-
-  publishDir "${params.outdir}/results/tophits", mode: 'copy'
+process ANNOTATE_RESULTS {
 
   input:
     tuple val(phenotype), path(regenie_merged)
@@ -8,7 +6,7 @@ process ANNOTATE_FILTERED {
     path genes_hg38
     tuple path(rsids_file), path(rsids_tbi_file)
   output:
-    tuple val(phenotype), path("${regenie_merged.baseName}.annotated.txt.gz"), emit: annotated_ch
+    tuple val(phenotype), path("${regenie_merged.baseName}.gz"), emit: annotated_ch
 
   script:
   def genes = params.genotypes_build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
@@ -50,8 +48,9 @@ process ANNOTATE_FILTERED {
     --anno ${rsids_file}\
     --anno-columns RSID \
     --strategy CHROM_POS_ALLELES \
-    --output ${regenie_merged.baseName}.annotated.txt
-    gzip ${regenie_merged.baseName}.annotated.txt
+    --output ${regenie_merged.baseName}
+    rm ${regenie_merged.baseName}.gz
+    gzip ${regenie_merged.baseName}
   fi
   """
 

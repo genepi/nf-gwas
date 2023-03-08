@@ -181,7 +181,7 @@ include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parse
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
+include { ANNOTATE_RESULTS            } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
 include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
@@ -320,45 +320,53 @@ workflow NF_GWAS {
         regenie_step2_log_ch.collect()
     )
 
-// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
-regenie_step2_out_ch
-  .transpose()
-  .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-  .set { regenie_step2_by_phenotype }
+    if(rsids == null) {
+      DOWNLOAD_RSIDS()
+      annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
+    } else {
+      annotation_files = tuple(rsids_file, rsids_tbi_file)
+    }
+
+    if (!run_gene_tests) {
+
+      ANNOTATE_RESULTS (
+      regenie_step2_out_ch.transpose(),
+      genes_hg19,
+      genes_hg38,
+      annotation_files
+      )
+
+     // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
+      ANNOTATE_RESULTS.out.annotated_ch
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+
+    } else {
+      regenie_step2_out_ch
+      .transpose()
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+    }
 
 
   MERGE_RESULTS (
-      regenie_step2_by_phenotype.groupTuple()
+  regenie_step2_by_phenotype.groupTuple()
   )
 
   if (!run_gene_tests) {
 
-  FILTER_RESULTS (
+    FILTER_RESULTS (
         regenie_step2_by_phenotype
   )
 
-  MERGE_RESULTS_FILTERED (
+    MERGE_RESULTS_FILTERED (
         FILTER_RESULTS.out.results_filtered.groupTuple()
   )
 
-
-if(rsids == null) {
-  DOWNLOAD_RSIDS()
-  annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
-} else {
-  annotation_files = tuple(rsids_file, rsids_tbi_file)
-}
-
-  ANNOTATE_FILTERED (
-        MERGE_RESULTS_FILTERED.out.results_filtered_merged,
-        genes_hg19,
-        genes_hg38,
-        annotation_files
-  )
-
+    //TODO: change with list coming from new interactive manhattan plot
     //combined merge results and annotated filtered results by phenotype (index 0)
     merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
-                                                .combine( ANNOTATE_FILTERED.out.annotated_ch, by: 0)
+                                                .combine( MERGE_RESULTS_FILTERED.out.results_filtered_merged, by: 0)
 
     REPORT (
     merged_results_and_annotated_filtered,
@@ -375,7 +383,7 @@ if(rsids == null) {
 
 } else {
 
-  REPORT_GENE_BASED_TESTS (
+      REPORT_GENE_BASED_TESTS (
       MERGE_RESULTS.out.results_merged,
       VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
       gwas_report_template,
@@ -387,9 +395,10 @@ if(rsids == null) {
       covariates_file_validated_log.collect().ifEmpty([]),
       regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
       REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
-  )
+      )
 
-}
+ }
+
 }
 
 workflow.onComplete {
