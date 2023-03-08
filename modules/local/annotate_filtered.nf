@@ -22,7 +22,7 @@ process ANNOTATE_FILTERED {
   awk 'BEGIN{} {\$2 = \$2 OFS \$2} 1' OFS='\t' ${regenie_merged.baseName}.sorted.txt > ${regenie_merged.baseName}.sorted.bed
   rm ${regenie_merged.baseName}.sorted.txt
   # run bedtools
-  bedtools closest -a ${regenie_merged.baseName}.sorted.bed -b ${genes} -d -header > ${regenie_merged.baseName}.annotated.bed
+  bedtools closest -a ${regenie_merged.baseName}.sorted.bed -b ${genes} -d -header -t first > ${regenie_merged.baseName}.annotated.bed
   rm ${regenie_merged.baseName}.sorted.bed
   # remove duplication of 2nd column
   cut -f1,3- ${regenie_merged.baseName}.annotated.bed > ${regenie_merged.baseName}.annotated.fixed.bed
