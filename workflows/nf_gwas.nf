@@ -383,8 +383,12 @@ workflow NF_GWAS {
     REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
 
+   // create a tuple(phenotype, annotated, htmlreport) that can be used to create index.html
+   annotated_phenotypes =  MERGE_RESULTS.out.results_merged
+                                 .combine(REPORT.out.phenotype_report, by: 0)
+
     REPORT_INDEX (
-      REPORT.out.phenotype_report.collect(flat: false)
+      annotated_phenotypes.collect(flat: false)
     )
 
 } else {

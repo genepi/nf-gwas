@@ -1,7 +1,5 @@
 process REPORT {
 
-  publishDir "${params.outdir}", mode: 'copy', pattern: '*.html'
-
   label 'required_memory_report'
 
   input:
@@ -18,7 +16,7 @@ process REPORT {
 
   output:
     tuple val(phenotype), path("${params.project}.${regenie_merged.baseName}.html"), emit: phenotype_report
-    tuple val(phenotype), path("loci_${regenie_merged.baseName}.txt"), emit: phenotype_loci_n
+    tuple val(phenotype), path("loci_${regenie_merged.baseName}.txt"), emit: phenotype_loci_n, optional: true
 
   script:
       def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()
