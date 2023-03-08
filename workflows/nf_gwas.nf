@@ -95,6 +95,16 @@ rmd_valdiation_logs_file = file("$baseDir/reports/child_validationlogs.Rmd",chec
 genes_hg19 = file("$baseDir/genes/genes.GRCh37.sorted.bed", checkIfExists: true)
 genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
 
+//Optional rsids annotation file and _tbi file
+rsids = params.rsids_filename
+if (rsids != null) {
+  rsids_file = file(rsids, checkIfExists: true)
+  rsids_tbi_file = file(rsids+".tbi", checkIfExists: true)
+} else {
+  println ANSI_YELLOW+  "WARN: A large rsID file will be downloaded for annotation. Please specify in config to avoid download." + ANSI_RESET
+
+}
+
 //Phenotypes
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
@@ -126,7 +136,7 @@ if (!params.regenie_condition_list ) {
 
 // Load required files for gene-based tests
 if (run_gene_tests) {
-    gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
+    gwas_report_template = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
     regenie_anno_file    = file(params.regenie_gene_anno, checkIfExists: true)
     regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
     regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
@@ -171,9 +181,10 @@ include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parse
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
+include { ANNOTATE_RESULTS            } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
+include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
 
 workflow NF_GWAS {
 
@@ -309,36 +320,53 @@ workflow NF_GWAS {
         regenie_step2_log_ch.collect()
     )
 
-// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
-regenie_step2_out_ch
-  .transpose()
-  .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-  .set { regenie_step2_by_phenotype }
+    if(rsids == null) {
+      DOWNLOAD_RSIDS()
+      annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
+    } else {
+      annotation_files = tuple(rsids_file, rsids_tbi_file)
+    }
+
+    if (!run_gene_tests) {
+
+      ANNOTATE_RESULTS (
+      regenie_step2_out_ch.transpose(),
+      genes_hg19,
+      genes_hg38,
+      annotation_files
+      )
+
+     // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
+      ANNOTATE_RESULTS.out.annotated_ch
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+
+    } else {
+      regenie_step2_out_ch
+      .transpose()
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+    }
 
 
   MERGE_RESULTS (
-      regenie_step2_by_phenotype.groupTuple()
+  regenie_step2_by_phenotype.groupTuple()
   )
 
   if (!run_gene_tests) {
 
-  FILTER_RESULTS (
+    FILTER_RESULTS (
         regenie_step2_by_phenotype
   )
 
-  MERGE_RESULTS_FILTERED (
+    MERGE_RESULTS_FILTERED (
         FILTER_RESULTS.out.results_filtered.groupTuple()
   )
 
-  ANNOTATE_FILTERED (
-        MERGE_RESULTS_FILTERED.out.results_filtered_merged,
-        genes_hg19,
-        genes_hg38
-  )
-
+    //TODO: change with list coming from new interactive manhattan plot
     //combined merge results and annotated filtered results by phenotype (index 0)
     merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
-                                                .combine( ANNOTATE_FILTERED.out.annotated_ch, by: 0)
+                                                .combine( MERGE_RESULTS_FILTERED.out.results_filtered_merged, by: 0)
 
     REPORT (
     merged_results_and_annotated_filtered,
@@ -355,7 +383,7 @@ regenie_step2_out_ch
 
 } else {
 
-  REPORT_GENE_BASED_TESTS (
+      REPORT_GENE_BASED_TESTS (
       MERGE_RESULTS.out.results_merged,
       VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
       gwas_report_template,
@@ -367,9 +395,10 @@ regenie_step2_out_ch
       covariates_file_validated_log.collect().ifEmpty([]),
       regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
       REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
-  )
+      )
 
-}
+ }
+
 }
 
 workflow.onComplete {

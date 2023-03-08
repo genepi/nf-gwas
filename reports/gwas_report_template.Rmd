@@ -17,7 +17,7 @@ params:
   phenotype: Y1
   covariates:
   condition_list:
-  interaction_gxe: 
+  interaction_gxe:
   interaction_gxg:
   phenotype_file: ../output/test-gwas/validated_input/phenotype.validated.txt
   regenie_step1_log: ../output/test-gwas/logs/test-gwas-additive.step1.log
@@ -67,21 +67,10 @@ source(params$r_functions)
 ## Manhattan Plot
 
 ```{r, dpi=300}
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ"), header=TRUE, tmpdir="$PWD")
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
-
-#merge gene names of tophits to regenieTable
-annotatedTopHits <- annotatedTopHits %>%  
-    mutate(ID = as.character(ID))
-regenieTable <- regenieTable %>%  
-    mutate(ID = as.character(ID))
-
-regenieTable_annotated <- left_join(regenieTable, annotatedTopHits, by = "ID")
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
 
 #prepare data for plotting
-df_prep <- manhattan_prep(regenieTable_annotated)
-
-rm(regenieTable_annotated)
+df_prep <- manhattan_prep(regenieTable)
 
 #create plot
 p <- manhattan_plot(df_prep,
