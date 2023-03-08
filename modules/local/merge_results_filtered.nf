@@ -1,6 +1,7 @@
 process MERGE_RESULTS_FILTERED {
 
   tag "${phenotype}"
+  publishDir "${params.outdir}/results/tophits", mode: 'copy'
 
   input:
     tuple val(phenotype), path(regenie_chromosomes)
