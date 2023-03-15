@@ -31,7 +31,8 @@ ENV PATH="/opt/jbang/bin:${PATH}"
 
 # Install tabix-merge (not as conda package available)
 WORKDIR "/opt"
-RUN wget https://github.com/lukfor/tabix-merge/releases/download/v0.1.0/tabix-merge.jar
+#RUN wget https://github.com/lukfor/tabix-merge/releases/download/v0.1.0/tabix-merge.jar
+COPY ./bin/tabix-merge.jar ./
 
 COPY ./bin/RegenieFilter.java ./
 RUN jbang export portable -O=RegenieFilter.jar RegenieFilter.java
