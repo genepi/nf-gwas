@@ -184,7 +184,9 @@ include { MERGE_RESULTS               } from '../modules/local/merge_results'  a
 include { ANNOTATE_RESULTS            } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
+include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
 include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
+
 
 workflow NF_GWAS {
 
@@ -379,6 +381,14 @@ workflow NF_GWAS {
     covariates_file_validated_log.collect().ifEmpty([]),
     regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
     REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+    )
+
+   // create a tuple(phenotype, annotated, htmlreport) that can be used to create index.html
+   annotated_phenotypes =  MERGE_RESULTS.out.results_merged
+                                 .combine(REPORT.out.phenotype_report, by: 0)
+
+    REPORT_INDEX (
+      annotated_phenotypes.collect(flat: false)
     )
 
 } else {
