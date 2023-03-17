@@ -5,11 +5,12 @@ process ANNOTATE_RESULTS {
     path genes_hg19
     path genes_hg38
     tuple path(rsids_file), path(rsids_tbi_file)
+    val hg_build_source
   output:
     tuple val(phenotype), path("${regenie_merged.baseName}.gz"), emit: annotated_ch
 
   script:
-  def genes = params.genotypes_build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
+  def genes = hg_build_source == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
   """
   #!/bin/bash
   set -e

@@ -8,6 +8,7 @@ process MERGE_RESULTS {
 
   output:
     tuple val(phenotype), path ("${phenotype}.regenie.gz"), emit: results_merged
+    path "${phenotype}.regenie.gz", emit: results_merged_regenie_only
     path "${phenotype}.regenie.gz.tbi"
 
   """
@@ -20,7 +21,6 @@ process MERGE_RESULTS {
   zcat ${phenotype}.regenie.tmp2.gz | sed 's/ /\t/g' | bgzip -c > ${phenotype}.regenie.gz
   rm ${phenotype}.regenie.tmp2.gz
   tabix -f -b 2 -e 2 -s 1 -S 1 ${phenotype}.regenie.gz
-
   """
 
 }
