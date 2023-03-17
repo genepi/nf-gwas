@@ -41,6 +41,7 @@ library(ggplot2)
 library(skimr)
 library(kableExtra)
 library(dplyr)
+library(tidyr)
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, cache=FALSE)
 source(params$r_functions)
 ```
@@ -135,15 +136,57 @@ Filtered for a minimun -log<sub>10</sub>(p-value) = `r params$annotation_min_log
 
 ```{r}
 
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
 
-topHitsGroupedByGene <-
+annotatedTopHits <- annotatedTopHits %>%
+  group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END)
+
+topHitsN <- 
   annotatedTopHits %>%
-  group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END) %>%
-  summarise(GENE_LOG10P = max(LOG10P), VARIANTS = n()) %>%
-  arrange(desc(GENE_LOG10P))
+  summarise(VARIANTS = n()) %>%
+  select(VARIANTS)
 
-datatable(topHitsGroupedByGene)
+topHitsLead <- annotatedTopHits %>%
+  slice(which.max(LOG10P))
+
+rm(annotatedTopHits)
+
+topHitsGroupedByGene <- right_join(topHitsN, topHitsLead) %>%
+  ungroup() %>%
+  select(GENE_NAME, VARIANTS, CHROM, GENPOS, ID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, DISTANCE, INFO, N, TEST) %>%
+  unite("Position", CHROM:GENPOS, sep=":")  %>%
+  unite("Allele 0/1", ALLELE0:ALLELE1, sep="/")  %>%
+  arrange(desc(LOG10P))
+
+# create custom table container
+sketch = htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(rowspan = 2, 'Locus (nearest gene)'),
+      th(rowspan = 2, 'No. of SNPs'),
+      th(colspan = 11, 'lead SNP')
+      ),
+    tr(
+      th('Position'),
+      th('ID'),
+      th('Allele 0/1'),
+      th('Allele 1 Freq'),
+      th('Beta'),
+      th('Standard error (SE)'),
+      th('-log10(p)'),
+      th('Distance to gene'),
+      th('Imputation info'),
+      th('N'),
+      th('Test')
+    )
+  )
+))
+
+datatable(topHitsGroupedByGene,
+          container = sketch,
+          rownames = FALSE,
+          width = "100%")
 
 # output number of toploci for phenotype
 loci <- nrow(topHitsGroupedByGene)
