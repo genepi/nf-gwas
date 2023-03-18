@@ -25,13 +25,14 @@ genotypes_prediction = params.genotypes_prediction
 }
 
 if(params.genotypes_build){
-hg_build_source = params.genotypes_build
-println ANSI_YELLOW+  "WARN: Option genotypes_build is deprecated. Please use hg_build_source instead." + ANSI_RESET
+association_build = params.genotypes_build
+println ANSI_YELLOW+  "WARN: Option genotypes_build is deprecated. Please use association_build instead." + ANSI_RESET
 } else {
-hg_build_source = params.hg_build_source
+association_build = params.association_build
 }
 
-hg_build_target = params.hg_build_target
+target_build = params.target_build
+prediction_build = params.prediction_build
 
 // nf-gwas supports three different modi. Single-variant (default), gene-based and interaction-testing
 run_gene_tests = params.regenie_run_gene_based_tests
@@ -88,8 +89,8 @@ if(params["covariates_filename"] != null && (params.covariates_columns.isEmpty()
   println ANSI_YELLOW+  "WARN: Option covariates_filename is set but no specific covariate columns (params: covariates_columns, covariates_cat_columns) are specified." + ANSI_RESET
 }
 
-if(params["genotypes_build"] == null && params["hg_build_source"] == null ) {
-  exit 1, "Parameter hg_build_source is required."
+if(params["genotypes_build"] == null && params["association_build"] == null ) {
+  exit 1, "Parameter association_build is required."
 }
 
 if(params.outdir == null) {
@@ -199,7 +200,8 @@ include { REPORT                      } from '../modules/local/report'  addParam
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
 include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
 include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
-include { LIFTOVER                    } from '../modules/local/liftover.nf'  addParams(outdir: "$outdir")
+include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
+include { LIFTOVER_PREDICTION         } from '../modules/local/liftover_prediction.nf'  addParams(outdir: "$outdir")
 
 
 workflow NF_GWAS {
@@ -259,6 +261,18 @@ workflow NF_GWAS {
 
     if (!skip_predictions){
 
+      if(prediction_build != null && !prediction_build.equals(association_build)) {
+
+          chain_file = file("$baseDir/files/chains/${prediction_build}To${association_build}.over.chain.gz", checkIfExists: true)
+
+          LIFTOVER_PREDICTION (
+            genotyped_plink_ch,
+            chain_file
+            )
+
+          genotyped_plink_ch = LIFTOVER_PREDICTION.out.genotyped_plink_lifted_ch
+      }
+
       QC_FILTER_GENOTYPED (
           genotyped_plink_ch
       )
@@ -276,13 +290,14 @@ workflow NF_GWAS {
             genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
         }
 
-        REGENIE_STEP1 (
-            genotyped_final_ch,
-            QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
-            QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-            VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-            covariates_file_validated,
-            condition_list_file
+
+      REGENIE_STEP1 (
+          genotyped_final_ch,
+          QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
+          QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          covariates_file_validated,
+          condition_list_file
         )
 
         REGENIE_LOG_PARSER_STEP1 (
@@ -350,7 +365,7 @@ workflow NF_GWAS {
       genes_hg19,
       genes_hg38,
       annotation_files,
-      hg_build_source
+      association_build
       )
 
      // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
@@ -370,14 +385,14 @@ workflow NF_GWAS {
   regenie_step2_by_phenotype.groupTuple()
   )
 
-  if(hg_build_target != null && !hg_build_source.equals(hg_build_target)) {
+  if(target_build != null && !association_build.equals(target_build)) {
 
-    chain_file = file("$baseDir/files/chains/${hg_build_source}To${hg_build_target}.over.chain.gz", checkIfExists: true)
+    chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
 
-    LIFTOVER (
+    LIFTOVER_RESULTS (
     MERGE_RESULTS.out.results_merged_regenie_only,
     chain_file,
-    hg_build_target
+    target_build
     )
 
   }

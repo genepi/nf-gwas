@@ -1,4 +1,4 @@
-process LIFTOVER {
+process LIFTOVER_RESULTS {
 
   publishDir "${params.outdir}/results", mode: 'copy'
 
