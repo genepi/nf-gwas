@@ -11,7 +11,7 @@ process LIFTOVER_RESULTS {
     path "${regenie_file.baseName}_${hg_build_target}.gz*"
 
   """
-  java -jar /opt/tabix-merge.jar liftover \
+  java -jar /opt/genomic-utils.jar liftover \
   --position GENPOS --alt ALLELE1 --chr CHROM --ref ALLELE0 \
   --chain ${chain_file} \
   --input ${regenie_file} --output ${regenie_file.baseName}_${hg_build_target}

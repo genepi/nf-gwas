@@ -40,7 +40,7 @@ process ANNOTATE_RESULTS {
     then
     mv ${regenie_merged.baseName}.annotated.gene.txt.gz ${regenie_merged.baseName}.annotated.txt.gz
   else
-    java -jar /opt/tabix-merge.jar annotate \
+    java -jar /opt/genomic-utils.jar annotate \
     --input ${regenie_merged.baseName}.annotated.gene.txt.gz \
     --chr CHROM \
     --pos GENPOS \

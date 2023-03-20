@@ -9,7 +9,7 @@ process LIFTOVER_PREDICTION {
   """
   # TODO: CHANGE TO HEADERLESS LIFTOVER. For now: add first line
   sed -i '1i CHROM\tID\tDUMMY_COLUMN\tGENPOS\tALLELE0\tALLELE1'  ${genotyped_plink_filename}.bim
-  java -jar /opt/tabix-merge.jar liftover \
+  java -jar /opt/genomic-utils.jar liftover \
   --position GENPOS --alt ALLELE1 --chr CHROM --ref ALLELE0 \
   --chain ${chain_file} \
   --input ${genotyped_plink_filename}.bim --output ${genotyped_plink_filename}_updated.bim
