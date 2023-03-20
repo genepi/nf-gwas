@@ -47,7 +47,7 @@ process ANNOTATE_RESULTS {
     --ref ALLELE0 \
     --alt ALLELE1 \
     --anno ${rsids_file}\
-    --anno-columns RSID \
+    --anno-columns REF,ALT,RSID \
     --strategy CHROM_POS_ALLELES \
     --output ${regenie_merged.baseName}
     rm ${regenie_merged.baseName}.gz
