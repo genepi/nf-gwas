@@ -32,7 +32,6 @@ association_build = params.association_build
 }
 
 target_build = params.target_build
-prediction_build = params.prediction_build
 
 // nf-gwas supports three different modi. Single-variant (default), gene-based and interaction-testing
 run_gene_tests = params.regenie_run_gene_based_tests
@@ -201,7 +200,6 @@ include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based
 include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
 include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
 include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
-include { LIFTOVER_PREDICTION         } from '../modules/local/liftover_prediction.nf'  addParams(outdir: "$outdir")
 
 
 workflow NF_GWAS {
@@ -260,18 +258,6 @@ workflow NF_GWAS {
     regenie_step1_parsed_logs_ch = Channel.empty()
 
     if (!skip_predictions){
-
-      if(prediction_build != null && !prediction_build.equals(association_build)) {
-
-          chain_file = file("$baseDir/files/chains/${prediction_build}To${association_build}.over.chain.gz", checkIfExists: true)
-
-          LIFTOVER_PREDICTION (
-            genotyped_plink_ch,
-            chain_file
-            )
-
-          genotyped_plink_ch = LIFTOVER_PREDICTION.out.genotyped_plink_lifted_ch
-      }
 
       QC_FILTER_GENOTYPED (
           genotyped_plink_ch
