@@ -24,6 +24,15 @@ println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use ge
 genotypes_prediction = params.genotypes_prediction
 }
 
+if(params.genotypes_build){
+association_build = params.genotypes_build
+println ANSI_YELLOW+  "WARN: Option genotypes_build is deprecated. Please use association_build instead." + ANSI_RESET
+} else {
+association_build = params.association_build
+}
+
+target_build = params.target_build
+
 // nf-gwas supports three different modi. Single-variant (default), gene-based and interaction-testing
 run_gene_tests = params.regenie_run_gene_based_tests
 run_interaction_tests = params.regenie_run_interaction_tests
@@ -31,7 +40,7 @@ run_interaction_tests = params.regenie_run_interaction_tests
 skip_predictions = params.regenie_skip_predictions
 
 requiredParams = [
-    'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait', 'genotypes_build',
+    'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait',
     'regenie_test'
 ]
 
@@ -77,6 +86,10 @@ if(params["genotypes_array"] == null && params["genotypes_prediction"] == null &
 
 if(params["covariates_filename"] != null && (params.covariates_columns.isEmpty() && params.covariates_cat_columns.isEmpty())) {
   println ANSI_YELLOW+  "WARN: Option covariates_filename is set but no specific covariate columns (params: covariates_columns, covariates_cat_columns) are specified." + ANSI_RESET
+}
+
+if(params["genotypes_build"] == null && params["association_build"] == null ) {
+  exit 1, "Parameter association_build is required."
 }
 
 if(params.outdir == null) {
@@ -186,6 +199,8 @@ include { REPORT                      } from '../modules/local/report'  addParam
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
 include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
 include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
+include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
+
 
 
 workflow NF_GWAS {
@@ -262,13 +277,14 @@ workflow NF_GWAS {
             genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
         }
 
-        REGENIE_STEP1 (
-            genotyped_final_ch,
-            QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
-            QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-            VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-            covariates_file_validated,
-            condition_list_file
+
+      REGENIE_STEP1 (
+          genotyped_final_ch,
+          QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
+          QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          covariates_file_validated,
+          condition_list_file
         )
 
         REGENIE_LOG_PARSER_STEP1 (
@@ -335,7 +351,8 @@ workflow NF_GWAS {
       regenie_step2_out_ch.transpose(),
       genes_hg19,
       genes_hg38,
-      annotation_files
+      annotation_files,
+      association_build
       )
 
      // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
@@ -354,6 +371,19 @@ workflow NF_GWAS {
   MERGE_RESULTS (
   regenie_step2_by_phenotype.groupTuple()
   )
+
+  if(target_build != null && !association_build.equals(target_build)) {
+
+    chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
+
+    LIFTOVER_RESULTS (
+    MERGE_RESULTS.out.results_merged_regenie_only,
+    chain_file,
+    target_build
+    )
+
+  }
+
 
   if (!run_gene_tests) {
 

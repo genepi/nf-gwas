@@ -29,9 +29,12 @@ RUN wget https://github.com/jbangdev/jbang/releases/download/v0.91.0/jbang-0.91.
 
 ENV PATH="/opt/jbang/bin:${PATH}"
 
-# Install tabix-merge (not as conda package available)
+# Install genomic-utils
 WORKDIR "/opt"
-RUN wget https://github.com/lukfor/tabix-merge/releases/download/v0.1.0/tabix-merge.jar
+RUN wget https://github.com/genepi/genomic-utils/releases/download/v0.1.1/genomic-utils.jar
+
+
+ENV JAVA_TOOL_OPTIONS="-Djdk.lang.Process.launchMechanism=vfork"
 
 WORKDIR "/opt"
 ENV GWAS_REPORT_VERSION="v0.3.1"

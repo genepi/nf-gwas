@@ -23,7 +23,7 @@ process REPORT {
       def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()
 
   """
- java -jar /opt/gwas-report.jar report \
+ java -jar /opt/genomic-utils.jar gwas-report \
     ${regenie_merged} \
     --rsid RSID \
     --gene GENE_NAME \

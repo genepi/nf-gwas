@@ -5,11 +5,12 @@ process ANNOTATE_RESULTS {
     path genes_hg19
     path genes_hg38
     tuple path(rsids_file), path(rsids_tbi_file)
+    val hg_build_source
   output:
     tuple val(phenotype), path("${regenie_merged.baseName}.gz"), emit: annotated_ch
 
   script:
-  def genes = params.genotypes_build == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
+  def genes = hg_build_source == 'hg19' ? "${genes_hg19}" : "${genes_hg38}"
   """
   #!/bin/bash
   set -e
@@ -39,14 +40,14 @@ process ANNOTATE_RESULTS {
     then
     mv ${regenie_merged.baseName}.annotated.gene.txt.gz ${regenie_merged.baseName}.annotated.txt.gz
   else
-    java -jar /opt/tabix-merge.jar annotate \
+    java -jar /opt/genomic-utils.jar annotate \
     --input ${regenie_merged.baseName}.annotated.gene.txt.gz \
     --chr CHROM \
     --pos GENPOS \
     --ref ALLELE0 \
     --alt ALLELE1 \
     --anno ${rsids_file}\
-    --anno-columns RSID \
+    --anno-columns REF,ALT,RSID \
     --strategy CHROM_POS_ALLELES \
     --output ${regenie_merged.baseName}
     rm ${regenie_merged.baseName}.gz
