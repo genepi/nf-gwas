@@ -33,9 +33,6 @@ ENV PATH="/opt/jbang/bin:${PATH}"
 WORKDIR "/opt"
 RUN wget https://github.com/genepi/genomic-utils/releases/download/v0.1.1/genomic-utils.jar
 
-WORKDIR "/opt"
-ENV GWAS_REPORT_VERSION="v0.3.1"
-RUN wget "https://github.com/lukfor/gwas-report/releases/download/${GWAS_REPORT_VERSION}/gwas-report.jar"
 
 ENV JAVA_TOOL_OPTIONS="-Djdk.lang.Process.launchMechanism=vfork"
 

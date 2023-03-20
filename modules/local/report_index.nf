@@ -25,7 +25,7 @@ process REPORT_INDEX {
     }
 
   """
-  java -jar /opt/gwas-report.jar report \
+  java -jar /opt/genomic-utils.jar gwas-report \
     ${files.join(" ")} \
     --rsid RSID \
     --gene GENE_NAME \
