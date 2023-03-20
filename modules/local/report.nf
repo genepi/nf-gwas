@@ -1,7 +1,5 @@
 process REPORT {
 
-  publishDir "${params.outdir}", mode: 'copy'
-
   label 'required_memory_report'
 
   input:
@@ -17,12 +15,26 @@ process REPORT {
     path step2_log
 
   output:
-    path "*.html"
+    tuple val(phenotype), path("${params.project}.${regenie_merged.baseName}.html"), emit: phenotype_report
+    tuple val(phenotype), path("loci_${regenie_merged.baseName}.txt"), emit: phenotype_loci_n, optional: true
+    path "${phenotype}.binned.txt"
 
   script:
       def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()
 
   """
+ java -jar /opt/genomic-utils.jar gwas-report \
+    ${regenie_merged} \
+    --rsid RSID \
+    --gene GENE_NAME \
+    --annotation GENE \
+    --peak-variant-Counting-pval-threshold ${params.annotation_min_log10p} \
+    --peak-pval-threshold 1.5 \
+    --format CSV \
+    --binning BIN_TO_POINTS \
+    --output ${phenotype}.binned.txt
+
+
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
       project = '${params.project}',

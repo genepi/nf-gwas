@@ -188,6 +188,15 @@ datatable(topHitsGroupedByGene,
           rownames = FALSE,
           width = "100%")
 
+# output number of toploci for phenotype
+loci <- nrow(topHitsGroupedByGene)
+toplociN <- data.frame(params$phenotype, loci)
+write.table(toplociN, 
+            quote = FALSE,
+            row.names = FALSE,
+            file = paste("loci_", params$regenie_filename, ".txt",
+                       sep = ""))
+
 ```
 
 ## Validation and Logs
