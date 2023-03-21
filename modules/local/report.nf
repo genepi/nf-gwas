@@ -54,6 +54,7 @@ process REPORT {
       regenie_step2_log='${step2_log}',
       plot_ylimit=${params.plot_ylimit},
       annotated_tophits_filename='${annotated_tophits}',
+      binned_results='${phenotype}.binned.txt',
       manhattan_annotation_enabled = $annotation_as_string,
       annotation_min_log10p = ${params.annotation_min_log10p},
       r_functions='${r_functions_file}',

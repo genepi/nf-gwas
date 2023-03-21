@@ -28,6 +28,7 @@ params:
   manhattan_annotation_enabled: true
   annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
+  binned_results:
   r_functions: ./functions.R
   rmd_pheno_stats: child_phenostatistics.Rmd
   rmd_valdiation_logs: child_validationlogs.Rmd
@@ -49,10 +50,13 @@ source(params$r_functions)
 ## Manhattan Plot
 
 ```{r, dpi=300}
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
+resultsBinned <- fread(params$binned_results, header=TRUE, tmpdir="$PWD")
+
+resultsBinned$LOG10P <- case_when(!is.na(resultsBinned$LOG10P) == TRUE ~ resultsBinned$LOG10P,
+                                    TRUE ~ resultsBinned$y1)
 
 #prepare data for plotting
-df_prep <- manhattan_prep(regenieTable)
+df_prep <- manhattan_prep(resultsBinned)
 
 #create plot
 p <- manhattan_plot(df_prep,
@@ -70,10 +74,7 @@ if(params$plot_ylimit == 0) {
  if(!params$manhattan_annotation_enabled) {
   p
 } else {
-  p + ggrepel::geom_text_repel(data = df_prep %>% group_by(GENE_NAME) %>%
-                             top_n(1, LOG10P) %>%
-                               slice(1) %>%
-                             filter(LOG10P > params$annotation_min_log10p),
+  p + ggrepel::geom_text_repel(data = df_prep %>% filter(type == "peak"),
                             aes(label=GENE_NAME), color = 1, fontface = "italic")
 }
 ```
@@ -83,6 +84,9 @@ if(params$plot_ylimit == 0) {
 Filtered for a minimun -log<sub>10</sub>(p-value) = `r params$annotation_min_log10p`.
 
 ```{r}
+annotatedTopHits <- fread(params$binned_results, header=TRUE, tmpdir="$PWD")
+
+head(annotatedTopHits)
 
 annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
 
