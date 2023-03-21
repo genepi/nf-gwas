@@ -1,5 +1,5 @@
 ---
-title: "Report: `r params$project`"
+title: "Report: `r params$phenotype` (project: `r params$project`)"
 output:
   rmdformats::robobook:
     self_contained: true
@@ -46,25 +46,6 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, ca
 source(params$r_functions)
 ```
 
-## Project Summary
-
-| Parameter        | Value                       |
-|------------------|-----------------------------|
-| Project          | `r params$project`          |
-| Pipeline Version | `r params$version`          |
-| Date             | `r params$date`             |
-| Phenotype File   | `r params$phenotype_file`   |
-| Phenotype        | `r params$phenotype`        |
-| Covariates       | `r params$covariates`       |
-| Condition list   | `r params$condition_list`   |
-| Regenie Output   | `r params$regenie_filename` |
-
-## Phenotype Statistics
-
-```{r child=params$rmd_pheno_stats}
-
-```
-
 ## Manhattan Plot
 
 ```{r, dpi=300}
@@ -96,39 +77,6 @@ if(params$plot_ylimit == 0) {
                             aes(label=GENE_NAME), color = 1, fontface = "italic")
 }
 ```
-
-## QQ Plot
-
-```{r, results='asis', dpi=300}
-if(params$plot_ylimit == 0) {
-  limit = NULL
-} else {
-  limit = c(0, params$plot_ylimit )
-  pp <- pp + ylim(0, params$plot_ylimit)
-  cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
-}
-
-cat('\n\n')
-cat('### Overall')
-cat('\n\n')
-pp <- qq_plot(df=regenieTable)
-print(pp)
-
-cat('\n\n')
-cat('### Split by MAF')
-cat('\n\n')
-pp <- qq_plot(df=regenieTable,
-              mafsplitting = TRUE)
-print(pp)
-
-```
-
-Please note that the QQ Plot is split by the following MAFs if any variants fall in the respective interval:
-
-* (0, 0.0005]
-* (0.0005, 0.005]
-* (0.005, 0.05]
-* (0.05, 1]
 
 ## Top Loci
 
@@ -198,6 +146,59 @@ write.table(toplociN,
                        sep = ""))
 
 ```
+
+## QQ Plot
+
+```{r, results='asis', dpi=300}
+if(params$plot_ylimit == 0) {
+  limit = NULL
+} else {
+  limit = c(0, params$plot_ylimit )
+  pp <- pp + ylim(0, params$plot_ylimit)
+  cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
+}
+
+cat('\n\n')
+cat('### Overall')
+cat('\n\n')
+pp <- qq_plot(df=regenieTable)
+print(pp)
+
+cat('\n\n')
+cat('### Split by MAF')
+cat('\n\n')
+pp <- qq_plot(df=regenieTable,
+              mafsplitting = TRUE)
+print(pp)
+
+```
+
+Please note that the QQ Plot is split by the following MAFs if any variants fall in the respective interval:
+
+* (0, 0.0005]
+* (0.0005, 0.005]
+* (0.005, 0.05]
+* (0.05, 1]
+
+## Phenotype Statistics
+
+```{r child=params$rmd_pheno_stats}
+
+```
+
+## Project Summary
+
+| Parameter        | Value                       |
+|------------------|-----------------------------|
+| Project          | `r params$project`          |
+| Pipeline Version | `r params$version`          |
+| Date             | `r params$date`             |
+| Phenotype File   | `r params$phenotype_file`   |
+| Phenotype        | `r params$phenotype`        |
+| Covariates       | `r params$covariates`       |
+| Condition list   | `r params$condition_list`   |
+| Regenie Output   | `r params$regenie_filename` |
+
 
 ## Validation and Logs
 
