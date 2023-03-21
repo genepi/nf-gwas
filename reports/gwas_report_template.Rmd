@@ -84,11 +84,7 @@ if(params$plot_ylimit == 0) {
 Filtered for a minimun -log<sub>10</sub>(p-value) = `r params$annotation_min_log10p`.
 
 ```{r}
-annotatedTopHits <- fread(params$binned_results, header=TRUE, tmpdir="$PWD")
-
-head(annotatedTopHits)
-
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "RSID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
 
 annotatedTopHits <- annotatedTopHits %>%
   group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END)
@@ -105,7 +101,7 @@ rm(annotatedTopHits)
 
 topHitsGroupedByGene <- right_join(topHitsN, topHitsLead) %>%
   ungroup() %>%
-  select(GENE_NAME, VARIANTS, CHROM, GENPOS, ID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, DISTANCE, INFO, N, TEST) %>%
+  select(GENE_NAME, VARIANTS, CHROM, GENPOS, RSID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, DISTANCE, INFO, N, TEST) %>%
   unite("Position", CHROM:GENPOS, sep=":")  %>%
   unite("Allele 0/1", ALLELE0:ALLELE1, sep="/")  %>%
   arrange(desc(LOG10P))
@@ -121,7 +117,7 @@ sketch = htmltools::withTags(table(
       ),
     tr(
       th('Position'),
-      th('ID'),
+      th('rsID'),
       th('Allele 0/1'),
       th('Allele 1 Freq'),
       th('Beta'),
@@ -154,6 +150,8 @@ write.table(toplociN,
 ## QQ Plot
 
 ```{r, results='asis', dpi=300}
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
+
 if(params$plot_ylimit == 0) {
   limit = NULL
 } else {
