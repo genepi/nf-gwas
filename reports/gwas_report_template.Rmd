@@ -149,7 +149,8 @@ sketch = htmltools::withTags(table(
   class = 'display',
   thead(
     tr(
-      th(rowspan = 2, 'Locus (nearest gene)'),
+      th(rowspan = 2, ''),
+      th(rowspan = 2, 'Nearest gene'),
       th(rowspan = 2, 'No. of signif. SNPs'),
       th(colspan = 11, 'lead SNP')
       ),
@@ -172,7 +173,7 @@ sketch = htmltools::withTags(table(
 # create table
 datatable(lociByPeak,
           container = sketch,
-          rownames = FALSE,
+          rownames = TRUE,
           width = "100%")
 
 # output number of toploci for phenotype
