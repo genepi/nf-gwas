@@ -1,5 +1,5 @@
 ---
-title: "Report: `r params$phenotype` (project: `r params$project`)"
+title: "`r params$phenotype` (`r params$project`)"
 output:
   rmdformats::robobook:
     self_contained: true
