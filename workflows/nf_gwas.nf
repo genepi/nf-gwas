@@ -202,6 +202,7 @@ include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf
 include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
 
 
+
 workflow NF_GWAS {
 
     VALIDATE_PHENOTYPES (

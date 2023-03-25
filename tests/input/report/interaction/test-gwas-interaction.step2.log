@@ -1,0 +1,10 @@
+Name	Value
+Regenie Version 	v3.2.5.gz
+MAC limit	5
+Imputation info score limit	0.0
+Number of defined phenotypes	2
+Phenotyped individuals total	500
+Phenotyped individuals used	500
+Variants used (\*.bgen or \*.pvar)	1000
+Warnings	 Dosages are not present in the genotype file. Option --minINFO is skipped.    + HLM should be used with RINTed traits (otherwise use option --apply-rint)
+Regenie Call	  --step 2   --pgen example.vcf   --phenoFile phenotype.validated.txt   --phenoColList Y1,Y2   --bsize 400   --pred regenie_step1_out_pred.list   --threads 1   --minMAC 5   --minINFO 0.00   --gz   --test additive   --covarFile covariates.validated.txt   --covarColList V1,V2   --interaction V3   --rare-mac 1000 

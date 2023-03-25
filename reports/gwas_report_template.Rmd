@@ -1,5 +1,5 @@
 ---
-title: "Report: `r params$project`"
+title: "`r params$phenotype` (`r params$project`)"
 output:
   rmdformats::robobook:
     self_contained: true
@@ -28,6 +28,7 @@ params:
   manhattan_annotation_enabled: true
   annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
+  binned_results:
   r_functions: ./functions.R
   rmd_pheno_stats: child_phenostatistics.Rmd
   rmd_valdiation_logs: child_validationlogs.Rmd
@@ -42,36 +43,21 @@ library(skimr)
 library(kableExtra)
 library(dplyr)
 library(tidyr)
+library(ramwas)
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, cache=FALSE)
 source(params$r_functions)
-```
-
-## Project Summary
-
-| Parameter        | Value                       |
-|------------------|-----------------------------|
-| Project          | `r params$project`          |
-| Pipeline Version | `r params$version`          |
-| Date             | `r params$date`             |
-| Phenotype File   | `r params$phenotype_file`   |
-| Phenotype        | `r params$phenotype`        |
-| Covariates       | `r params$covariates`       |
-| Condition list   | `r params$condition_list`   |
-| Regenie Output   | `r params$regenie_filename` |
-
-## Phenotype Statistics
-
-```{r child=params$rmd_pheno_stats}
-
 ```
 
 ## Manhattan Plot
 
 ```{r, dpi=300}
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ", "GENE_NAME"), header=TRUE, tmpdir="$PWD")
+resultsBinned <- fread(params$binned_results, header=TRUE, tmpdir="$PWD")
+
+resultsBinned$LOG10P <- case_when(!is.na(resultsBinned$LOG10P) == TRUE ~ resultsBinned$LOG10P,
+                                    TRUE ~ resultsBinned$y1)
 
 #prepare data for plotting
-df_prep <- manhattan_prep(regenieTable)
+df_prep <- manhattan_prep(resultsBinned)
 
 #create plot
 p <- manhattan_plot(df_prep,
@@ -89,71 +75,72 @@ if(params$plot_ylimit == 0) {
  if(!params$manhattan_annotation_enabled) {
   p
 } else {
-  p + ggrepel::geom_text_repel(data = df_prep %>% group_by(GENE_NAME) %>%
-                             top_n(1, LOG10P) %>%
-                               slice(1) %>%
-                             filter(LOG10P > params$annotation_min_log10p),
+  p + ggrepel::geom_text_repel(data = df_prep %>% filter(type == "peak"),
                             aes(label=GENE_NAME), color = 1, fontface = "italic")
 }
 ```
 
-## QQ Plot
+## Significant loci
 
-```{r, results='asis', dpi=300}
-if(params$plot_ylimit == 0) {
-  limit = NULL
-} else {
-  limit = c(0, params$plot_ylimit )
-  pp <- pp + ylim(0, params$plot_ylimit)
-  cat(paste("Please note that the Y-axis limit has been set to '", params$plot_ylimit,"'. Please use the 'plot_ylimit' parameter to adapt this behaviour."))
-}
-
-cat('\n\n')
-cat('### Overall')
-cat('\n\n')
-pp <- qq_plot(df=regenieTable)
-print(pp)
-
-cat('\n\n')
-cat('### Split by MAF')
-cat('\n\n')
-pp <- qq_plot(df=regenieTable,
-              mafsplitting = TRUE)
-print(pp)
-
-```
-
-Please note that the QQ Plot is split by the following MAFs if any variants fall in the respective interval:
-
-* (0, 0.0005]
-* (0.0005, 0.005]
-* (0.005, 0.05]
-* (0.05, 1]
-
-## Top Loci
-
-Filtered for a minimun -log<sub>10</sub>(p-value) = `r params$annotation_min_log10p`.
+Loci are defined ±200 kb around lead SNPs. Significance level is set to -log<sub>10</sub>(p-value) = `r params$annotation_min_log10p`.
 
 ```{r}
+results <- fread(params$regenie_merged, header=TRUE, tmpdir="$PWD")
 
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
+results <- results %>%
+  unite("Position", 
+        CHROM:GENPOS, 
+        sep=":",
+        remove = FALSE)
 
-annotatedTopHits <- annotatedTopHits %>%
-  group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END)
+resultsBinned <- resultsBinned %>%
+  unite("Position", 
+        CHROM:GENPOS, 
+        sep=":",
+        remove = FALSE)
+
+# merge peak info to all significant SNPs
+results_peak <- left_join(results %>% filter(LOG10P > params$annotation_min_log10p), 
+                          resultsBinned %>% select(Position, type) %>% filter(type == "peak"),
+                          by = "Position")
+
+# create peak range +- 200kb
+peak_range <- resultsBinned %>% 
+  select(CHROM, GENPOS, Position, type) %>% 
+  filter(type == "peak") %>% 
+  rename(peak_group = Position)
+peak_range$min <- peak_range$GENPOS - 200000
+peak_range$max <- peak_range$GENPOS + 200000
+peak_range <- peak_range %>%
+  select(CHROM, peak_group, min, max)
+
+#assign peak_group to significant SNPs
+peak_range <- setDT(peak_range)
+results_peak <- setDT(results_peak)
+results_peakgroup <- peak_range[results_peak, on = .(CHROM, min <= GENPOS, max >= GENPOS)]
+results_peakgroup$GENPOS <- results_peakgroup$min
+
+rm(results_peak)
+rm(peak_range)
+
+#calculate no. of significant variants pear peak_group
+results_peakgroup <- results_peakgroup %>%
+  group_by(peak_group)
 
 topHitsN <- 
-  annotatedTopHits %>%
-  summarise(VARIANTS = n()) %>%
-  select(VARIANTS)
+  results_peakgroup %>%
+  summarise(VARIANTS = n())
 
-topHitsLead <- annotatedTopHits %>%
-  slice(which.max(LOG10P))
+#filter out peak/lead variants
+topHitsLead <- results_peakgroup %>%
+  filter(type == "peak")
 
-rm(annotatedTopHits)
 
-topHitsGroupedByGene <- right_join(topHitsN, topHitsLead) %>%
+#join variant no. to lead variants and restructure
+lociByPeak <- right_join(topHitsN, topHitsLead,
+                         by = c("peak_group" = "Position")) %>%
   ungroup() %>%
-  select(GENE_NAME, VARIANTS, CHROM, GENPOS, ID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, DISTANCE, INFO, N, TEST) %>%
+  select(GENE_NAME, VARIANTS, CHROM, GENPOS, RSID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, DISTANCE, INFO, N, TEST) %>%
   unite("Position", CHROM:GENPOS, sep=":")  %>%
   unite("Allele 0/1", ALLELE0:ALLELE1, sep="/")  %>%
   arrange(desc(LOG10P))
@@ -163,13 +150,14 @@ sketch = htmltools::withTags(table(
   class = 'display',
   thead(
     tr(
-      th(rowspan = 2, 'Locus (nearest gene)'),
-      th(rowspan = 2, 'No. of SNPs'),
+      th(rowspan = 2, ''),
+      th(rowspan = 2, 'Nearest gene'),
+      th(rowspan = 2, 'No. of signif. SNPs'),
       th(colspan = 11, 'lead SNP')
       ),
     tr(
       th('Position'),
-      th('ID'),
+      th('rsID'),
       th('Allele 0/1'),
       th('Allele 1 Freq'),
       th('Beta'),
@@ -183,13 +171,14 @@ sketch = htmltools::withTags(table(
   )
 ))
 
-datatable(topHitsGroupedByGene,
+# create table
+datatable(lociByPeak,
           container = sketch,
-          rownames = FALSE,
+          rownames = TRUE,
           width = "100%")
 
 # output number of toploci for phenotype
-loci <- nrow(topHitsGroupedByGene)
+loci <- nrow(lociByPeak)
 toplociN <- data.frame(params$phenotype, loci)
 write.table(toplociN, 
             quote = FALSE,
@@ -198,6 +187,35 @@ write.table(toplociN,
                        sep = ""))
 
 ```
+
+## QQ Plot
+
+```{r, results='asis', dpi=300}
+
+qqPrepare <- qqPlotPrepare(pvalues=results$LOG10P,ismlog10 = T)
+qqPlotFast(qqPrepare)
+
+```
+
+## Phenotype Statistics
+
+```{r child=params$rmd_pheno_stats}
+
+```
+
+## Project Summary
+
+| Parameter        | Value                       |
+|------------------|-----------------------------|
+| Project          | `r params$project`          |
+| Pipeline Version | `r params$version`          |
+| Date             | `r params$date`             |
+| Phenotype File   | `r params$phenotype_file`   |
+| Phenotype        | `r params$phenotype`        |
+| Covariates       | `r params$covariates`       |
+| Condition list   | `r params$condition_list`   |
+| Regenie Output   | `r params$regenie_filename` |
+
 
 ## Validation and Logs
 
