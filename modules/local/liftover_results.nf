@@ -12,7 +12,7 @@ process LIFTOVER_RESULTS {
 
   """
   java -jar /opt/genomic-utils.jar liftover \
-  --position GENPOS --alt ALLELE1 --chr CHROM --ref ALLELE0 \
+  --position GENPOS --alt ALLELE1 --chr CHROM --ref ALLELE0 --id ID --update-id \
   --chain ${chain_file} \
   --input ${regenie_file} --output ${regenie_file.baseName}_${hg_build_target}
   bgzip ${regenie_file.baseName}_${hg_build_target}
