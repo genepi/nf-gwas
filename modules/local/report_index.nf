@@ -36,6 +36,7 @@ process REPORT_INDEX {
     --title "${params.project}" \
     --peak-variant-Counting-pval-threshold ${params.annotation_min_log10p} \
     --peak-pval-threshold 1.5 \
+    --index ALWAYS \
     --output index.html
   """
 }
