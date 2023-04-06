@@ -25,4 +25,24 @@ ggplot(phenotypeTable, aes_string(x=params$phenotype)) +
       axis.ticks = element_line(color = "black")) +
   scale_x_continuous(expand = c(0.1, 0.1)) +
   scale_y_continuous(expand = c(0, 0.1))
+
+  if(!params$phenotypes_apply_rint) {
+    cat('\n\n')
+} else {
+  phenotypeTable$rint <- qnorm((rank(phenotypeTable[,params$phenotype], na.last = "keep") - 0.5) / sum(!is.na(phenotypeTable[,params$phenotype])))
+
+  ggplot(phenotypeTable, aes(x=rint)) +
+  geom_histogram(color="black", fill="gray",bins=30) +
+  theme_classic() +
+    theme(
+      legend.position="none",
+      panel.border = element_blank(),
+      axis.text = element_text(size = 12,
+                               color = "black"),
+      axis.title = element_text(size = 14),
+      axis.ticks = element_line(color = "black")) +
+  scale_x_continuous(expand = c(0.1, 0.1)) +
+  scale_y_continuous(expand = c(0, 0.1)) +
+  ggtitle("Rank inverse normal transformed phenotype (used for analysis)")
+}
 ```
