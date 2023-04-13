@@ -8,21 +8,15 @@ process REPORT_INDEX {
   label 'required_memory_report'
 
   input:
-    val phenotype_tuples
+    val phenotypes
+    path files
+    path reports
 
   output:
     path "index.html"
     path "index_reports/*"
 
   script:
-    phenotypes = []
-    files = []
-    reports = []
-    for (phenotype_tuple: phenotype_tuples){
-      phenotypes.push(phenotype_tuple[0])
-      files.push(phenotype_tuple[1])
-      reports.push(phenotype_tuple[2])
-    }
 
   """
   java -jar /opt/genomic-utils.jar gwas-report \

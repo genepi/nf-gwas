@@ -417,8 +417,23 @@ workflow NF_GWAS {
    annotated_phenotypes =  MERGE_RESULTS.out.results_merged
                                  .combine(REPORT.out.phenotype_report, by: 0)
 
+    annotated_phenotypes
+      .map{ row -> row[0] }
+      .set { annotated_phenotypes_phenotypes }
+
+    annotated_phenotypes
+      .map{ row -> row[1] }
+      .set { annotated_phenotypes_files }
+
+    annotated_phenotypes
+      .map{ row -> row[2] }
+      .set { annotated_phenotypes_reports }
+
+
     REPORT_INDEX (
-      annotated_phenotypes.collect(flat: false)
+      annotated_phenotypes_phenotypes.collect(),
+      annotated_phenotypes_files.collect(),
+      annotated_phenotypes_reports.collect(),
     )
 
 } else {
