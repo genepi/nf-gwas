@@ -462,5 +462,31 @@ nextflow_pipeline {
         }
 
     }
+    
+    test("Should execute pipeline applying RINTing of the phenotype") {
+
+        when {
+
+            params {
+                project                       = 'gwas-additive'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+                outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                phenotypes_apply_rint         = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
 
 }
