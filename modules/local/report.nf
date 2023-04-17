@@ -21,7 +21,6 @@ process REPORT {
 
   script:
       def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()
-      def rint_as_string = params.phenotypes_apply_rint.toString().toUpperCase()
 
   """
  java -jar /opt/genomic-utils.jar gwas-report \
@@ -60,8 +59,7 @@ process REPORT {
       annotation_min_log10p = ${params.annotation_min_log10p},
       r_functions='${r_functions_file}',
       rmd_pheno_stats='${rmd_pheno_stats_file}',
-      rmd_valdiation_logs='${rmd_valdiation_logs_file}',
-      phenotypes_apply_rint= $rint_as_string
+      rmd_valdiation_logs='${rmd_valdiation_logs_file}'
     ),
     intermediates_dir='\$PWD',
     knit_root_dir='\$PWD',

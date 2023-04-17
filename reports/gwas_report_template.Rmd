@@ -32,7 +32,6 @@ params:
   r_functions: ./functions.R
   rmd_pheno_stats: child_phenostatistics.Rmd
   rmd_valdiation_logs: child_validationlogs.Rmd
-  phenotypes_apply_rint: false
 ---
 
 ```{r setup, include=FALSE}
