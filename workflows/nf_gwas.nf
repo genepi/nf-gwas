@@ -9,6 +9,10 @@ println ANSI_YELLOW + "WARN: Option genotypes_imputed is deprecated. Please use 
 genotypes_association = params.genotypes_association
 }
 
+genotypes_association_manifest = params.genotypes_imputed_manifest
+//TODO Move to files and use correct one depending on genotype format (1 vs chr1)
+genotypes_imputed_chunks = params.genotypes_imputed_chunks
+
 //check deprecated option
 if(params.genotypes_imputed_format){
 genotypes_association_format = params.genotypes_imputed_format
@@ -239,10 +243,39 @@ workflow NF_GWAS {
           imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
 
       } else {
+
+          if(!genotypes_association_manifest) {
+
           //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
           channel.fromPath(genotypes_association)
-          .map { tuple(it.baseName, it, [], []) }
+          .map { tuple(it.baseName, it, [], [], []) }
           .set {imputed_plink2_ch}
+
+
+          } else {
+            
+            if(!genotypes_imputed_chunks){
+              println("SPECIFY CHUNKS!")
+            }
+
+            Channel
+              .fromPath(genotypes_imputed_chunks)
+              .splitCsv(header:true, sep:'\t')
+              .map(row -> tuple(row['CONTIG'], row['RANGE']))
+              .set { chunks }
+
+            Channel
+              .fromPath(genotypes_association_manifest)
+              .splitCsv(header:false, sep:'\t')
+              .map(row -> tuple("${row[0]}",file("${row[1]}"),file("${row[1]}").baseName))
+              .set { manifest }
+
+          
+            manifest.combine(chunks, by: 0)
+              .map{ row -> tuple(row[2],file(row[1]),[],[],row[3]) }
+              .set {imputed_plink2_ch}
+                    }
+
       }
 
     //gene-based tests
@@ -365,7 +398,10 @@ workflow NF_GWAS {
       .transpose()
       .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
       .set { regenie_step2_by_phenotype }
+
+   
     }
+ 
 
 
   MERGE_RESULTS (
@@ -448,5 +484,5 @@ workflow.onComplete {
 
 // extract phenotype name from regenie output file
 def getPhenotype(prefix, file ) {
-    return file.baseName.replaceAll(prefix + "_", '').replaceAll('.regenie', '')
+    return file.baseName.split('_')[1].replaceAll('.regenie', '')
 }

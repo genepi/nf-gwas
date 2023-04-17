@@ -6,7 +6,7 @@ process REGENIE_STEP2 {
 
   input:
 	  path step1_out
-    tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file)
+    tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file), val(range)
     val assoc_format
     path phenotypes_file
     path sample_file
@@ -15,7 +15,7 @@ process REGENIE_STEP2 {
 
   output:
     tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
-    path "${filename}.log", emit: regenie_step2_out_log
+    path "${filename}*.log", emit: regenie_step2_out_log
 
   script:
     def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
@@ -25,7 +25,6 @@ process REGENIE_STEP2 {
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
-    def range = params.regenie_range != '' ? "--range $params.regenie_range" : ''
     def covariants = covariates_file ? "--covarFile $covariates_file" : ''
     def quant_covariants = !params.covariates_columns.isEmpty() ? "--covarColList ${params.covariates_columns}" : ''
     def cat_covariants = !params.covariates_cat_columns.isEmpty() ? "--catCovarList ${params.covariates_cat_columns}" : ''
@@ -39,6 +38,9 @@ process REGENIE_STEP2 {
     def no_condtl = params.regenie_no_condtl ? "--no-condtl" : ''
     def force_condtl = params.regenie_force_condtl ? "--force-condtl" : ''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
+    def range_output = range ? range.replaceAll(":", "-"):''
+    def regenie_range = range ? "--range ${range}":''
+    def output_name = range ? "${filename}-${range_output}":"$filename" 
 
   """
   regenie \
@@ -55,7 +57,7 @@ process REGENIE_STEP2 {
     $binaryTrait \
     $test \
     $bgen_sample \
-    $range \
+    $regenie_range \
     $covariants \
     $quant_covariants \
     $cat_covariants \
@@ -69,6 +71,6 @@ process REGENIE_STEP2 {
     $rare_mac \
     $no_condtl \
     $force_condtl \
-    --out ${filename}
+    --out $output_name
   """
 }
