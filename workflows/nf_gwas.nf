@@ -242,15 +242,16 @@ workflow NF_GWAS {
 
           imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
 
+
       } else {
 
           if(!genotypes_association_manifest) {
 
           //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
+          // -1 denotes that no range is applied
           channel.fromPath(genotypes_association)
-          .map { tuple(it.baseName, it, [], [], []) }
+          .map { tuple(it.baseName, it, [], [], -1) }
           .set {imputed_plink2_ch}
-
 
           } else {
             

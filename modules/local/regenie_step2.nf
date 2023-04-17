@@ -38,9 +38,9 @@ process REGENIE_STEP2 {
     def no_condtl = params.regenie_no_condtl ? "--no-condtl" : ''
     def force_condtl = params.regenie_force_condtl ? "--force-condtl" : ''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
-    def range_output = range ? range.replaceAll(":", "-"):''
-    def regenie_range = range ? "--range ${range}":''
-    def output_name = range ? "${filename}-${range_output}":"$filename" 
+    def range_output = (range != -1) ? range.replaceAll(":", "-"):''
+    def regenie_range = (range != -1)  ? "--range ${range}":''
+    def output_name = (range != -1)  ? "${filename}-${range_output}":"$filename" 
 
   """
   regenie \
