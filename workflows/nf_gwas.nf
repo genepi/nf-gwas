@@ -404,7 +404,6 @@ workflow NF_GWAS {
     }
  
 
-
   MERGE_RESULTS (
   regenie_step2_by_phenotype.groupTuple()
   )
@@ -500,5 +499,5 @@ workflow.onComplete {
 
 // extract phenotype name from regenie output file
 def getPhenotype(prefix, file ) {
-    return file.baseName.split('_')[1].replaceAll('.regenie', '')
+    return file.baseName.replaceAll(prefix, '').split('_',2)[1].replaceAll('.regenie', '')
 }
