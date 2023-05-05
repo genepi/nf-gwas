@@ -339,7 +339,7 @@ workflow NF_GWAS {
     )
 
     if(rsids == null) {
-      DOWNLOAD_RSIDS()
+      DOWNLOAD_RSIDS(association_build)
       annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
     } else {
       annotation_files = tuple(rsids_file, rsids_tbi_file)
