@@ -1,0 +1,504 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/nf-gwas/master/nextflow_schema.json",
+  "title": "nf-gwas pipeline parameters",
+  "description": "A Nextflow GWAS pipeline.",
+  "type": "object",
+  "definitions": {
+    "single_variant_tests_only": {
+      "title": "Single-variant Tests Only",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "regenie_sample_file": {
+          "type": "string",
+          "default": null,
+          "format": "file-path"
+        },
+        "regenie_min_imputation_score": {
+          "type": "integer",
+          "default": 0,
+          "description": "Minimum imputation info score (IMPUTE/MACH R^2)"
+        },
+        "regenie_min_mac": {
+          "type": "integer",
+          "default": 5,
+          "description": "Minimum minor allele count"
+        },
+        "regenie_ref_first": {
+          "type": "string",
+          "default": "false",
+          "help_text": "Specify to use the first allele as the reference allele for BGEN or PLINK bed/bim/fam file input [default is to use the last allele as the reference]",
+          "description": "Use the first allele as the reference allele"
+        }
+      }
+    },
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input data and save output data.",
+      "required": ["outdir"],
+      "properties": {
+        "outdir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+          "fa_icon": "fas fa-folder-open"
+        }
+      }
+    },
+    "general": {
+      "title": "General",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "project_date": {
+          "type": "string",
+          "default": "`date`",
+          "description": "Date in report"
+        },
+        "covariates_filename": {
+          "type": "string",
+          "default": null,
+          "format": "file-path"
+        },
+        "covariates_columns": {
+          "type": "string",
+          "description": "List of covariates"
+        },
+        "covariates_cat_columns": {
+          "type": "string",
+          "description": "List of categorical covariates"
+        },
+        "phenotypes_delete_missings": {
+          "type": "boolean",
+          "description": "Remove samples with missing data at any of the phenotypes"
+        },
+        "phenotypes_apply_rint": {
+          "type": "boolean",
+          "description": "Apply Rank Inverse Normal Transformation (RINT) to quantitative phenotypes in both steps"
+        }
+      }
+    },
+    "all_tests": {
+      "title": "All Tests",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "project": {
+          "type": "string",
+          "default": null
+        },
+        "genotypes_prediction": {
+          "type": "string",
+          "default": null
+        },
+        "genotypes_array": {
+          "type": "string",
+          "default": null
+        },
+        "genotypes_association": {
+          "type": "string",
+          "default": null
+        },
+        "genotypes_imputed": {
+          "type": "string",
+          "default": null
+        },
+        "genotypes_association_format": {
+          "type": "string",
+          "default": null
+        },
+        "genotypes_imputed_format": {
+          "type": "string",
+          "default": null
+        },
+        "genotypes_build": {
+          "type": "string",
+          "default": null,
+          "enum": ["hg19", "hg38"]
+        },
+        "phenotypes_filename": {
+          "type": "string",
+          "default": null,
+          "format": "file-path",
+          "mimetype": "text/txt"
+        },
+        "phenotypes_columns": {
+          "type": "string",
+          "default": null
+        },
+        "phenotypes_binary_trait": {
+          "type": "string",
+          "default": null
+        }
+      },
+      "required": [
+        "project",
+        "genotypes_prediction",
+        "genotypes_association",
+        "phenotypes_filename",
+        "phenotypes_columns",
+        "phenotypes_binary_trait"
+      ]
+    },
+    "single_variant_tests": {
+      "title": "Single-variant tests",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "regenie_test": {
+          "type": "string",
+          "default": null,
+          "enum": ["additive", "recessive", "dominant"]
+        }
+      }
+    },
+    "gene_based_tests": {
+      "title": "Gene-based tests",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "regenie_run_gene_based_tests": {
+          "type": "boolean",
+          "description": "Activate gene-based testing"
+        },
+        "regenie_gene_anno": {
+          "type": "string",
+          "default": null,
+          "format": "file-path"
+        },
+        "regenie_gene_setlist": {
+          "type": "string",
+          "default": null,
+          "format": "file-path"
+        },
+        "regenie_gene_masks": {
+          "type": "string",
+          "default": null,
+          "format": "file-path"
+        }
+      }
+    },
+    "conditional_analyses": {
+      "title": "Conditional analyses",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "regenie_condition_list": {
+          "type": "string",
+          "default": null,
+          "format": "file-path"
+        }
+      }
+    },
+    "interaction_tests": {
+      "title": "Interaction tests",
+      "type": "object",
+      "description": "Starting from regenie v3.0, you can perform scans for interactions (either GxE or GxG)",
+      "default": "",
+      "properties": {
+        "regenie_run_interaction_tests": {
+          "type": "boolean",
+          "description": "Activate interaction testing"
+        },
+        "regenie_interaction": {
+          "type": "string",
+          "default": null
+        },
+        "regenie_interaction_snp": {
+          "type": "string",
+          "default": null
+        }
+      }
+    },
+    "other_options": {
+      "title": "Other options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "association_build": {
+          "type": "string",
+          "default": null
+        },
+        "target_build": {
+          "type": "string",
+          "default": null
+        },
+        "rsids_filename": {
+          "type": "string",
+          "default": null
+        },
+        "regenie_range": {
+          "type": "string"
+        }
+      }
+    },
+    "pruning_step": {
+      "title": "Pruning Step",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "prune_enabled": {
+          "type": "boolean",
+          "description": "Enable pruning step"
+        },
+        "prune_maf": {
+          "type": "number",
+          "default": 0.01,
+          "description": "MAF filter"
+        },
+        "prune_window_kbsize": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Window size"
+        },
+        "prune_step_size": {
+          "type": "integer",
+          "default": 100,
+          "description": "Step size (variant ct)"
+        },
+        "prune_r2_threshold": {
+          "type": "number",
+          "default": 0.9,
+          "description": "Unphased hardcall R2 threshold"
+        }
+      }
+    },
+    "quality_control_of_predictions": {
+      "title": "Quality Control of Predictions",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "qc_maf": {
+          "type": "number",
+          "default": 0.01,
+          "description": "Minor allele frequency (MAF) filter"
+        },
+        "qc_mac": {
+          "type": "integer",
+          "default": 100,
+          "description": "Minor allele count (MAC) filter"
+        },
+        "qc_geno": {
+          "type": "number",
+          "default": 0.1,
+          "description": "Genotype missingess"
+        },
+        "qc_hwe": {
+          "type": "number",
+          "default": 1e-15,
+          "description": "Hardy-Weinberg equilibrium (HWE) filter"
+        },
+        "qc_mind": {
+          "type": "number",
+          "default": 0.1,
+          "description": "Sample missigness"
+        }
+      }
+    },
+    "vcf_to_plink_conversion": {
+      "title": "VCF to PLINK conversion",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "vcf_conversion_split_id": {
+          "type": "boolean",
+          "help_text": "If false, family and individual IDs are set to the sample ID (using plink2 --double-id option). If true, split VCF by \u201c_\u201d into FID and IID (--id-delim)",
+          "description": "Set family and individual IDs to the sample ID"
+        }
+      }
+    },
+    "prediction_step": {
+      "title": "Prediction Step",
+      "type": "object",
+      "description": "The following parameters are all regenie specific.",
+      "default": "",
+      "properties": {
+        "regenie_skip_predictions": {
+          "type": "boolean",
+          "description": "Skip Regenie Step 1 predictions"
+        },
+        "regenie_force_step1": {
+          "type": "boolean",
+          "description": "Run regenie step 1 when >1M genotyped variants are used (not recommended)"
+        },
+        "regenie_bsize_step1": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Size of the genotype blocks"
+        }
+      }
+    },
+    "single_variant_and_gene_based_tests": {
+      "title": "Single-variant and Gene-based Tests",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "regenie_bsize_step2": {
+          "type": "integer",
+          "default": 400,
+          "description": "Size of the genotype blocks"
+        },
+        "regenie_firth": {
+          "type": "string",
+          "default": "true",
+          "description": "Use Firth likelihood ratio test (LRT) as fallback for p-values less than threshold"
+        },
+        "regenie_firth_approx": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use approximate Firth LRT for computational speedup"
+        }
+      }
+    },
+    "gene_based_tests_only": {
+      "title": "Gene-based Tests Only",
+      "type": "object",
+      "description": "The following gene-based parameters are all regenie specific",
+      "default": "",
+      "properties": {
+        "regenie_gene_aaf": {
+          "type": "string",
+          "default": null
+        },
+        "regenie_gene_test": {
+          "type": "string",
+          "default": null
+        },
+        "regenie_gene_joint": {
+          "type": "string",
+          "default": null
+        },
+        "regenie_gene_build_mask": {
+          "type": "string",
+          "default": null,
+          "help_text": "Build masks using the maximum number of ALT alleles across sites, or the sum of ALT alleles (\u2018sum\u2019), or thresholding the sum to 2 (\u2018comphet\u2019)"
+        },
+        "regenie_write_bed_masks": {
+          "type": "string",
+          "default": "false",
+          "description": "Write mask to PLINK bed format",
+          "help_text": "Does not work when building masks with \u2018sum\u2019"
+        },
+        "regenie_gene_vc_mac_thr": {
+          "type": "string",
+          "default": null
+        },
+        "regenie_gene_vc_max_aaf": {
+          "type": "string",
+          "default": null
+        }
+      }
+    },
+    "interaction_tests_only": {
+      "title": "Interaction Tests Only",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "regenie_rare_mac": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Minor allele count (MAC) threshold below which to use HLM method for QTs"
+        },
+        "regenie_no_condtl": {
+          "type": "boolean",
+          "description": "Print out all the main effects from the interaction model"
+        },
+        "regenie_force_condtl": {
+          "type": "boolean",
+          "description": "Include the interacting SNP as a covariate in the marginal test"
+        }
+      }
+    },
+    "r_report": {
+      "title": "R Report",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "annotation_min_log10p": {
+          "type": "integer",
+          "default": 5,
+          "description": "Filter and annotate results with logp10 >= 5"
+        },
+        "plot_ylimit": {
+          "type": "integer",
+          "default": 0,
+          "description": "Limit y axis in Manhattan/QQ plot for large p-values"
+        },
+        "manhattan_annotation_enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use annotation for Manhattan plot"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/single_variant_tests_only"
+    },
+    {
+      "$ref": "#/definitions/input_output_options"
+    },
+    {
+      "$ref": "#/definitions/general"
+    },
+    {
+      "$ref": "#/definitions/all_tests"
+    },
+    {
+      "$ref": "#/definitions/single_variant_tests"
+    },
+    {
+      "$ref": "#/definitions/gene_based_tests"
+    },
+    {
+      "$ref": "#/definitions/conditional_analyses"
+    },
+    {
+      "$ref": "#/definitions/interaction_tests"
+    },
+    {
+      "$ref": "#/definitions/other_options"
+    },
+    {
+      "$ref": "#/definitions/pruning_step"
+    },
+    {
+      "$ref": "#/definitions/quality_control_of_predictions"
+    },
+    {
+      "$ref": "#/definitions/vcf_to_plink_conversion"
+    },
+    {
+      "$ref": "#/definitions/prediction_step"
+    },
+    {
+      "$ref": "#/definitions/single_variant_and_gene_based_tests"
+    },
+    {
+      "$ref": "#/definitions/gene_based_tests_only"
+    },
+    {
+      "$ref": "#/definitions/interaction_tests_only"
+    },
+    {
+      "$ref": "#/definitions/r_report"
+    }
+  ]
+}
