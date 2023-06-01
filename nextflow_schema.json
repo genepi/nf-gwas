@@ -6,7 +6,7 @@
   "type": "object",
   "definitions": {
     "required_input_output_options": {
-      "title": "[REQUIRED] Input/output options",
+      "title": "Input/output options",
       "type": "object",
       "fa_icon": "fas fa-terminal",
       "description": "Define where the pipeline should find input data and save output data.",
@@ -21,9 +21,9 @@
       "required": ["outdir"]
     },
     "required_all_tests": {
-      "title": "[REQUIRED] All Tests",
+      "title": "All Tests",
       "type": "object",
-      "description": "Parameters required for all tests performed by the pipeline.",
+      "description": "Required parameters for all tests performed by the pipeline.",
       "default": "",
       "properties": {
         "project": {
@@ -95,9 +95,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "required_single_variant_tests_only": {
-      "title": "[REQUIRED] Single-variant tests only",
+      "title": "Single-variant tests only",
       "type": "object",
-      "description": "Parameters required specifically for single-variant tests performed by the pipeline.",
+      "description": "Required parameters specifically for single-variant tests performed by the pipeline.",
       "default": "",
       "properties": {
         "regenie_test": {
@@ -109,9 +109,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "required_gene_based_tests_only": {
-      "title": "[REQUIRED] Gene-based tests only",
+      "title": "Gene-based tests only",
       "type": "object",
-      "description": "Parameters required specifically for gene-based tests performed by the pipeline.",
+      "description": "Required parameters specifically for gene-based tests performed by the pipeline.",
       "default": "",
       "properties": {
         "regenie_run_gene_based_tests": {
@@ -141,9 +141,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "required_interaction_tests": {
-      "title": "[REQUIRED] Interaction tests",
+      "title": "Interaction tests",
       "type": "object",
-      "description": "Starting from regenie v3.0, you can perform scans for interactions (either GxE or GxG)",
+      "description": "Required parameters for interaction tests. Starting from regenie v3.0, you can perform scans for interactions (either GxE or GxG)",
       "default": "",
       "properties": {
         "regenie_run_interaction_tests": {
@@ -165,9 +165,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "required_conditional_analyses": {
-      "title": "[REQUIRED] Conditional analyses",
+      "title": "Conditional analyses",
       "type": "object",
-      "description": "Starting from regenie v3.0, you can specify genetic variants to add to the set of covariates when performing association testing.",
+      "description": "Required parameters for conditional tests. Starting from regenie v3.0, you can specify genetic variants to add to the set of covariates when performing association testing.",
       "default": "",
       "properties": {
         "regenie_condition_list": {
@@ -180,7 +180,7 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_general_options": {
-      "title": "[OPTIONAL] General options",
+      "title": "General options",
       "type": "object",
       "description": "General parameters.",
       "default": "",
@@ -221,9 +221,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_pruning_step": {
-      "title": "[OPTIONAL] Pruning step",
+      "title": "Pruning step",
       "type": "object",
-      "description": "Parameters that can be set for the pruning step.",
+      "description": "Optional parameters that can be set for the pruning step.",
       "default": "",
       "properties": {
         "prune_enabled": {
@@ -259,9 +259,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_quality_control_of_predictions": {
-      "title": "[OPTIONAL] Quality control of predictions",
+      "title": "Quality control of predictions",
       "type": "object",
-      "description": "Parameters that can be set for quality control of predictions.",
+      "description": "Optional parameters that can be set for quality control of predictions.",
       "default": "",
       "properties": {
         "qc_maf": {
@@ -298,9 +298,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_vcf_to_plink_conversion": {
-      "title": "[OPTIONAL] VCF to PLINK conversion",
+      "title": "VCF to PLINK conversion",
       "type": "object",
-      "description": "Parameters that can be set for the VCF to PLINK conversion.",
+      "description": "Optional parameters that can be set for the VCF to PLINK conversion.",
       "default": "",
       "properties": {
         "vcf_conversion_split_id": {
@@ -313,9 +313,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_prediction_step_regenie_step_1": {
-      "title": "[OPTIONAL] Prediction step (Regenie Step 1)",
+      "title": "Prediction step (Regenie Step 1)",
       "type": "object",
-      "description": "Regenie specific parameters for the prediction step.",
+      "description": "Optional regenie specific parameters for the prediction step.",
       "default": "",
       "properties": {
         "regenie_skip_predictions": {
@@ -338,9 +338,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_single_variant_and_gene_based_tests_regenie_step_2": {
-      "title": "[OPTIONAL] Single-variant and gene-based tests (Regenie Step 2)",
+      "title": "Single-variant and gene-based tests (Regenie Step 2)",
       "type": "object",
-      "description": "Regenie specific parameters for single-variant and gene-based tests.",
+      "description": "Optional regenie specific parameters for single-variant and gene-based tests.",
       "default": "",
       "properties": {
         "regenie_bsize_step2": {
@@ -365,9 +365,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_single_variant_tests_only": {
-      "title": "[OPTIONAL] Single-variant tests only",
+      "title": "Single-variant tests only",
       "type": "object",
-      "description": "Regenie specific parameters for single-variant tests only.",
+      "description": "Optional regenie specific parameters for single-variant tests only.",
       "default": "",
       "properties": {
         "regenie_sample_file": {
@@ -378,7 +378,7 @@
         },
         "regenie_min_imputation_score": {
           "type": "number",
-          "default": 0.0,
+          "default": 0,
           "description": "Minimum imputation info score (IMPUTE/MACH R^2)",
           "fa_icon": "fas fa-project-diagram"
         },
@@ -398,9 +398,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_gene_based_tests_only": {
-      "title": "[OPTIONAL] Gene-based tests only",
+      "title": "Gene-based tests only",
       "type": "object",
-      "description": "Regenie specific parameters for gene-based tests only.",
+      "description": "Optional regenie specific parameters for gene-based tests only.",
       "default": "",
       "properties": {
         "regenie_gene_aaf": {
@@ -444,9 +444,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_interaction_tests_only": {
-      "title": "[OPTIONAL] Interaction tests only",
+      "title": "Interaction tests only",
       "type": "object",
-      "description": "Regenie specific parameters for interaction tests only.",
+      "description": "Optional regenie specific parameters for interaction tests only.",
       "default": "",
       "properties": {
         "regenie_rare_mac": {
@@ -469,9 +469,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_r_report": {
-      "title": "[OPTIONAL] R report",
+      "title": "R report",
       "type": "object",
-      "description": "Parameters that can be set for the R report",
+      "description": "Optional parameters that can be set for the R report.",
       "default": "",
       "properties": {
         "annotation_min_log10p": {
@@ -495,9 +495,9 @@
       "fa_icon": "fas fa-project-diagram"
     },
     "optional_other_options": {
-      "title": "[OPTIONAL] Other options",
+      "title": "Other options",
       "type": "object",
-      "description": "Other parameters.",
+      "description": "Other optional parameters.",
       "default": "",
       "properties": {
         "association_build": {
