@@ -29,6 +29,14 @@ RUN wget https://github.com/jbangdev/jbang/releases/download/v0.91.0/jbang-0.91.
 
 ENV PATH="/opt/jbang/bin:${PATH}"
 
+# Install genomic-utils
+WORKDIR "/opt"
+ENV GENOMIC_UTILS_VERSION="v0.1.2"
+RUN wget https://github.com/genepi/genomic-utils/releases/download/${GENOMIC_UTILS_VERSION}/genomic-utils.jar
+
+
+ENV JAVA_TOOL_OPTIONS="-Djdk.lang.Process.launchMechanism=vfork"
+
 COPY ./bin/RegenieFilter.java ./
 RUN jbang export portable -O=RegenieFilter.jar RegenieFilter.java
 

@@ -24,6 +24,15 @@ println ANSI_YELLOW+  "WARN: Option genotypes_array is deprecated. Please use ge
 genotypes_prediction = params.genotypes_prediction
 }
 
+if(params.genotypes_build){
+association_build = params.genotypes_build
+println ANSI_YELLOW+  "WARN: Option genotypes_build is deprecated. Please use association_build instead." + ANSI_RESET
+} else {
+association_build = params.association_build
+}
+
+target_build = params.target_build
+
 // nf-gwas supports three different modi. Single-variant (default), gene-based and interaction-testing
 run_gene_tests = params.regenie_run_gene_based_tests
 run_interaction_tests = params.regenie_run_interaction_tests
@@ -31,7 +40,7 @@ run_interaction_tests = params.regenie_run_interaction_tests
 skip_predictions = params.regenie_skip_predictions
 
 requiredParams = [
-    'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait', 'genotypes_build',
+    'project', 'phenotypes_filename','phenotypes_columns', 'phenotypes_binary_trait',
     'regenie_test'
 ]
 
@@ -79,6 +88,10 @@ if(params["covariates_filename"] != null && (params.covariates_columns.isEmpty()
   println ANSI_YELLOW+  "WARN: Option covariates_filename is set but no specific covariate columns (params: covariates_columns, covariates_cat_columns) are specified." + ANSI_RESET
 }
 
+if(params["genotypes_build"] == null && params["association_build"] == null ) {
+  exit 1, "Parameter association_build is required."
+}
+
 if(params.outdir == null) {
     outdir = "output/${params.project}"
 } else {
@@ -94,6 +107,16 @@ rmd_valdiation_logs_file = file("$baseDir/reports/child_validationlogs.Rmd",chec
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.GRCh37.sorted.bed", checkIfExists: true)
 genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
+
+//Optional rsids annotation file and _tbi file
+rsids = params.rsids_filename
+if (rsids != null) {
+  rsids_file = file(rsids, checkIfExists: true)
+  rsids_tbi_file = file(rsids+".tbi", checkIfExists: true)
+} else {
+  println ANSI_YELLOW+  "WARN: A large rsID file will be downloaded for annotation. Please specify in config to avoid download." + ANSI_RESET
+
+}
 
 //Phenotypes
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
@@ -126,7 +149,7 @@ if (!params.regenie_condition_list ) {
 
 // Load required files for gene-based tests
 if (run_gene_tests) {
-    gwas_report_template     = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
+    gwas_report_template = file("$baseDir/reports/gene_level_report_template.Rmd",checkIfExists: true)
     regenie_anno_file    = file(params.regenie_gene_anno, checkIfExists: true)
     regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
     regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
@@ -171,9 +194,14 @@ include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parse
 include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { ANNOTATE_FILTERED           } from '../modules/local/annotate_filtered'  addParams(outdir: "$outdir")
+include { ANNOTATE_RESULTS            } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
+include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
+include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
+include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
+
+
 
 workflow NF_GWAS {
 
@@ -249,13 +277,14 @@ workflow NF_GWAS {
             genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
         }
 
-        REGENIE_STEP1 (
-            genotyped_final_ch,
-            QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
-            QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-            VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-            covariates_file_validated,
-            condition_list_file
+
+      REGENIE_STEP1 (
+          genotyped_final_ch,
+          QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
+          QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          covariates_file_validated,
+          condition_list_file
         )
 
         REGENIE_LOG_PARSER_STEP1 (
@@ -309,36 +338,67 @@ workflow NF_GWAS {
         regenie_step2_log_ch.collect()
     )
 
-// regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
-regenie_step2_out_ch
-  .transpose()
-  .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-  .set { regenie_step2_by_phenotype }
+    if(rsids == null) {
+      DOWNLOAD_RSIDS(association_build)
+      annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
+    } else {
+      annotation_files = tuple(rsids_file, rsids_tbi_file)
+    }
+
+    if (!run_gene_tests) {
+
+      ANNOTATE_RESULTS (
+      regenie_step2_out_ch.transpose(),
+      genes_hg19,
+      genes_hg38,
+      annotation_files,
+      association_build
+      )
+
+     // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
+      ANNOTATE_RESULTS.out.annotated_ch
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+
+    } else {
+      regenie_step2_out_ch
+      .transpose()
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+    }
 
 
   MERGE_RESULTS (
-      regenie_step2_by_phenotype.groupTuple()
+  regenie_step2_by_phenotype.groupTuple()
   )
+
+  if(target_build != null && !association_build.equals(target_build)) {
+
+    chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
+
+    LIFTOVER_RESULTS (
+    MERGE_RESULTS.out.results_merged_regenie_only,
+    chain_file,
+    target_build
+    )
+
+  }
+
 
   if (!run_gene_tests) {
 
-  FILTER_RESULTS (
+    FILTER_RESULTS (
         regenie_step2_by_phenotype
   )
 
-  MERGE_RESULTS_FILTERED (
+    MERGE_RESULTS_FILTERED (
         FILTER_RESULTS.out.results_filtered.groupTuple()
   )
 
-  ANNOTATE_FILTERED (
-        MERGE_RESULTS_FILTERED.out.results_filtered_merged,
-        genes_hg19,
-        genes_hg38
-  )
-
+    //TODO: change with list coming from new interactive manhattan plot
     //combined merge results and annotated filtered results by phenotype (index 0)
     merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
-                                                .combine( ANNOTATE_FILTERED.out.annotated_ch, by: 0)
+                                                .combine( MERGE_RESULTS_FILTERED.out.results_filtered_merged, by: 0)
 
     REPORT (
     merged_results_and_annotated_filtered,
@@ -353,9 +413,32 @@ regenie_step2_out_ch
     REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
     )
 
+   // create a tuple(phenotype, annotated, htmlreport) that can be used to create index.html
+   annotated_phenotypes =  MERGE_RESULTS.out.results_merged
+                                 .combine(REPORT.out.phenotype_report, by: 0)
+
+    annotated_phenotypes
+      .map{ row -> row[0] }
+      .set { annotated_phenotypes_phenotypes }
+
+    annotated_phenotypes
+      .map{ row -> row[1] }
+      .set { annotated_phenotypes_files }
+
+    annotated_phenotypes
+      .map{ row -> row[2] }
+      .set { annotated_phenotypes_reports }
+
+
+    REPORT_INDEX (
+      annotated_phenotypes_phenotypes.collect(),
+      annotated_phenotypes_files.collect(),
+      annotated_phenotypes_reports.collect(),
+    )
+
 } else {
 
-  REPORT_GENE_BASED_TESTS (
+      REPORT_GENE_BASED_TESTS (
       MERGE_RESULTS.out.results_merged,
       VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
       gwas_report_template,
@@ -367,9 +450,10 @@ regenie_step2_out_ch
       covariates_file_validated_log.collect().ifEmpty([]),
       regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
       REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
-  )
+      )
 
-}
+ }
+
 }
 
 workflow.onComplete {

@@ -1,0 +1,7 @@
+Name	Value
+Regenie Version 	v3.2.5.gz
+Variants total (*.bim)	758
+Number of defined phenotypes	2
+Phenotyped individuals total	500
+Phenotyped individuals used	500
+Regenie Call	  --step 1   --bed example.qc   --extract example.qc.snplist   --keep example.qc.id   --phenoFile phenotype.validated.txt   --phenoColList Y1,Y2   --covarFile covariates.validated.txt   --covarColList V1,V2   --bsize 1000   --lowmem   --gz   --lowmem-prefix tmp_rg   --threads 1   --out regenie_step1_out 

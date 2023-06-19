@@ -66,12 +66,9 @@ manhattan_plot <- function(df_prep,
   # switch hlines off
   if (hlines == TRUE) {
     plot <- plot +
-      geom_hline(yintercept = -log10(5e-08),
+      geom_hline(yintercept = params$annotation_min_log10p,
                  linetype ="longdash",
-                 color ="firebrick") + # genomewide significance
-      geom_hline(yintercept = -log10(1e-5),
-                 linetype ="longdash",
-                 color ="darkgrey")  # suggestive significance
+                 color ="firebrick") # set significance level in pipeline
   } else {
     plot <- plot
   }

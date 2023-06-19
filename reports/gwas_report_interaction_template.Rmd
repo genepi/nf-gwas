@@ -17,7 +17,7 @@ params:
   phenotype: Y1
   covariates:
   condition_list:
-  interaction_gxe: 
+  interaction_gxe:
   interaction_gxg:
   phenotype_file: ../output/test-gwas/validated_input/phenotype.validated.txt
   regenie_step1_log: ../output/test-gwas/logs/test-gwas-additive.step1.log
@@ -28,6 +28,7 @@ params:
   manhattan_annotation_enabled: true
   annotation_min_log10p: 5
   annotated_tophits_filename: ../output/test-gwas/results/tophits/Y1.regenie.filtered.annotated.txt.gz
+  binned_results:
   r_functions: ./functions.R
   rmd_pheno_stats: child_phenostatistics.Rmd
   rmd_valdiation_logs: child_validationlogs.Rmd
@@ -41,6 +42,7 @@ library(ggplot2)
 library(skimr)
 library(kableExtra)
 library(dplyr)
+library(tidyr)
 library(ramwas)
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, cache=FALSE)
 source(params$r_functions)
@@ -132,9 +134,32 @@ DT::datatable(matrix())
 
 ```{r, results='asis'}
 
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "TEST", "LOG10P", "ID", "GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
-
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="$PWD")
 split_annotatedTopHits <- split(annotatedTopHits, annotatedTopHits$TEST)
+
+# create custom table container
+sketch = htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(rowspan = 2, 'Locus (nearest gene)'),
+      th(rowspan = 2, 'No. of SNPs'),
+      th(colspan = 11, 'lead SNP')
+      ),
+    tr(
+      th('Position'),
+      th('ID'),
+      th('Allele 0/1'),
+      th('Allele 1 Freq'),
+      th('Beta'),
+      th('Standard error (SE)'),
+      th('-log10(p)'),
+      th('Distance to gene'),
+      th('Imputation info'),
+      th('N')
+    )
+  )
+))
 
 for (test in 1:length(split_annotatedTopHits)) {
   test_name <- unique(split_annotatedTopHits[[test]]$TEST)
@@ -143,15 +168,32 @@ for (test in 1:length(split_annotatedTopHits)) {
   cat('\n\n')
   #Top loci
   annotatedTopHits_1test <- split_annotatedTopHits[[test]]
+
+  annotatedTopHits_1test <- annotatedTopHits_1test %>%
+  group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END)
+
+  # summarise No. of variants with same gene annotated
+  topHitsN <- annotatedTopHits_1test %>%
+  summarise(VARIANTS = n()) %>%
+  select(VARIANTS)
   
-  topHitsGroupedByGene <-
-  annotatedTopHits_1test %>%
-  group_by(GENE_NAME, GENE_CHROMOSOME, GENE_START, GENE_END) %>%
-  summarise(GENE_LOG10P = max(LOG10P), VARIANTS = n()) %>%
-  arrange(desc(GENE_LOG10P))
+  # summarise lead SNPs at loci
+  topHitsLead <- annotatedTopHits_1test %>%
+  slice(which.max(LOG10P))
   
-  cat(knitr::knit_print(datatable(topHitsGroupedByGene, width = 
-                                    "100%")))
+  rm(annotatedTopHits_1test)
+  
+  topHitsGroupedByGene <- right_join(topHitsN, topHitsLead) %>%
+  ungroup() %>%
+  select(GENE_NAME, VARIANTS, CHROM, GENPOS, ID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, DISTANCE, INFO, N) %>%
+  unite("Position", CHROM:GENPOS, sep=":")  %>%
+  unite("Allele 0/1", ALLELE0:ALLELE1, sep="/")  %>%
+  arrange(desc(LOG10P))
+
+  cat(knitr::knit_print(datatable(topHitsGroupedByGene,
+                                  container = sketch,
+                                  rownames = FALSE,
+                                  width = "100%")))
   cat("\n\n")
 }
 
