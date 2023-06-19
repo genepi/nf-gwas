@@ -5,7 +5,7 @@ process REGENIE_STEP2_GENE_TESTS {
 
   input:
     path step1_out
-    tuple val(filename), path(genotyped_plink_file_bim), path(genotyped_plink_file_bed), path(genotyped_plink_file_fam)
+    tuple val(filename), path(genotyped_plink_file_bed), path(genotyped_plink_file_bim), path(genotyped_plink_file_fam)
     val assoc_format
 	  path phenotypes_file
     path covariates_file
@@ -39,11 +39,10 @@ process REGENIE_STEP2_GENE_TESTS {
     def writeMasks = params.regenie_write_bed_masks  ? "--write-mask" : ''
     def joint = params.regenie_gene_joint ? "--joint ${params.regenie_gene_joint}":''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
-
   """
   regenie \
     --step 2 \
-    $format ${genotyped_plink_file_bed} \
+    $format ${filename}${extension} \
     --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     --bsize ${params.regenie_bsize_step2} \
