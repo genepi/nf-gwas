@@ -224,7 +224,7 @@ workflow NF_GWAS {
 
 //         Channel.fromFilePairs(genotypes_association).set {step2_gene_tests_ch}
         Channel.fromFilePairs(genotypes_association)
-        .map {tuple(it.baseName, it[0], it[1], it[2])}
+        .map {tuple(it[0].baseName, it[0], it[1], it[2])}
         .set {step2_gene_tests_ch}
 
 
