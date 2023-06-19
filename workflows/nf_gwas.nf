@@ -289,11 +289,9 @@ workflow NF_GWAS {
 
       if (genotypes_association_format == 'bed') {
 
-//         Channel.fromFilePairs(genotypes_association).set {step2_gene_tests_ch}
-        Channel.fromFilePairs(genotypes_association)
-        .map {tuple(it[0].baseName, it[0], it[1], it[2])}
+        Channel.fromFilePairs(genotypes_association, size:3)
+        .map { tuple(it[1][0].baseName, it[1][0], it[1][1], it[1][2]) }
         .set {step2_gene_tests_ch}
-
 
       }
 
