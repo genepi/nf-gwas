@@ -289,7 +289,7 @@ workflow NF_GWAS {
 
       if (genotypes_association_format == 'bed') {
 
-        Channel.fromFilePairs(genotypes_association, size: 3).set {step2_gene_tests_ch}
+        Channel.fromFilePairs(genotypes_association).set {step2_gene_tests_ch}
 
       }
 
