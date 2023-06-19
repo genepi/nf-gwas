@@ -5,7 +5,7 @@ process REGENIE_STEP2_GENE_TESTS {
 
   input:
     path step1_out
-    tuple val(filename), path(genotyped_plink_file)
+    tuple val(filename), path(genotyped_plink_file_bim), path(genotyped_plink_file_bed), path(genotyped_plink_file_fam)
     val assoc_format
 	  path phenotypes_file
     path covariates_file
@@ -43,7 +43,7 @@ process REGENIE_STEP2_GENE_TESTS {
   """
   regenie \
     --step 2 \
-    $format ${filename}${extension} \
+    $format ${genotyped_plink_file_bed} \
     --phenoFile ${phenotypes_file} \
     --phenoColList  ${params.phenotypes_columns} \
     --bsize ${params.regenie_bsize_step2} \
