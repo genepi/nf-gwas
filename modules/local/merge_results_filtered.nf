@@ -11,13 +11,8 @@ process MERGE_RESULTS_FILTERED {
 
 
   """
-  # get header from first line of first file
-  echo ${phenotype}
-  ls -1v ${regenie_chromosomes} | head -n 1 | xargs zcat | grep -hE 'CHROM' | gzip > header.gz
-  # sort by p-value
-  zcat ${regenie_chromosomes} | grep -hE '^(chr)?[0-9]' | sort -k13 --general-numeric-sort --reverse -T \$PWD | gzip > ${phenotype}.regenie.tmp.gz
-  cat header.gz ${phenotype}.regenie.tmp.gz > ${phenotype}.regenie.filtered.gz
-  rm ${phenotype}.regenie.tmp.gz
+  csvtk concat -t ${regenie_chromosomes} | gzip > ${phenotype}_merged.gz
+  csvtk sort ${phenotype}_merged.gz -t -kLOG10P:nr > ${phenotype}.regenie.filtered.gz
   """
 
 }

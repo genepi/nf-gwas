@@ -30,3 +30,4 @@ dependencies:
   - bioconductor-ramwas=1.18.0
   - bedtools=2.30.0
   - htslib=1.15.1
+  - csvtk=0.26.0
