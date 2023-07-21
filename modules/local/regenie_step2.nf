@@ -26,8 +26,8 @@ process REGENIE_STEP2 {
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
     def covariants = covariates_file ? "--covarFile $covariates_file" : ''
-    def quant_covariants = !params.covariates_columns.isEmpty() ? "--covarColList ${params.covariates_columns}" : ''
-    def cat_covariants = !params.covariates_cat_columns.isEmpty() ? "--catCovarList ${params.covariates_cat_columns}" : ''
+    def quant_covariants = params.covariates_columns ? "--covarColList ${params.covariates_columns}" : ''
+    def cat_covariants = params.covariates_cat_columns ? "--catCovarList ${params.covariates_cat_columns}" : ''
     def deleteMissingData = params.phenotypes_delete_missings  ? "--strict" : ''
     def predictions = params.regenie_skip_predictions  ? '--ignore-pred' : ""
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
