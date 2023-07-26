@@ -16,8 +16,8 @@ process REGENIE_STEP1 {
 
   script:
   def covariants = covariates_file ? "--covarFile $covariates_file" : ''
-  def quant_covariants = !params.covariates_columns.isEmpty() ? "--covarColList ${params.covariates_columns}" : ''
-  def cat_covariants = !params.covariates_cat_columns.isEmpty() ? "--catCovarList ${params.covariates_cat_columns}" : ''
+  def quant_covariants = params.covariates_columns ? "--covarColList ${params.covariates_columns}" : ''
+  def cat_covariants = params.covariates_cat_columns ? "--catCovarList ${params.covariates_cat_columns}" : ''
   def deleteMissings = params.phenotypes_delete_missings  ? "--strict" : ''
   def apply_rint = params.phenotypes_apply_rint ? "--apply-rint" : ''
   def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
@@ -41,7 +41,7 @@ process REGENIE_STEP1 {
     $forceStep1 \
     $refFirst \
     --bsize ${params.regenie_bsize_step1} \
-    ${params.phenotypes_binary_trait == true ? '--bt' : ''} \
+    ${params.phenotypes_binary_trait ? '--bt' : ''} \
     --lowmem \
     --gz \
     --lowmem-prefix tmp_rg \

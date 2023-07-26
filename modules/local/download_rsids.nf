@@ -1,10 +1,9 @@
 process DOWNLOAD_RSIDS {
 
+  input:
+  val rsbuild
   output:
   tuple  path("rsids-v154-${rsbuild}.index.gz"), path("rsids-v154-${rsbuild}.index.gz.tbi"), emit: rsids_ch
-
-  script:
-  def rsbuild = params.genotypes_build
 
   """
   wget https://resources.pheweb.org/rsids-v154-${rsbuild}.tsv.gz -O rsids-v154-${rsbuild}.tsv.gz
