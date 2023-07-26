@@ -73,8 +73,8 @@ source(params$r_functions)
 ## Results
 
 ```{r, results='asis', dpi=300}
-regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ", "TEST"), header=TRUE, tmpdir="\$PWD")
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "TEST", "GENE_NAME"), header=TRUE, tmpdir="\$PWD")
+regenieTable <- fread(params$regenie_merged, select = c("CHROM","GENPOS","LOG10P","ID", "A1FREQ", "TEST"), header=TRUE, tmpdir="temp")
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("ID", "TEST", "GENE_NAME"), header=TRUE, tmpdir="temp")
 
 #merge gene names of tophits to regenieTable
 annotatedTopHits <- annotatedTopHits %>%  
@@ -134,7 +134,7 @@ DT::datatable(matrix())
 
 ```{r, results='asis'}
 
-annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir="\$PWD")
+annotatedTopHits <- fread(params$annotated_tophits_filename, select = c("CHROM", "GENPOS", "ID", "ALLELE0", "ALLELE1", "A1FREQ", "INFO", "N", "TEST", "BETA", "SE", "LOG10P","GENE_NAME", "GENE_CHROMOSOME", "GENE_START", "GENE_END", "DISTANCE"), header=TRUE, tmpdir=temp)
 split_annotatedTopHits <- split(annotatedTopHits, annotatedTopHits$TEST)
 
 # create custom table container

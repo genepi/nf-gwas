@@ -68,7 +68,7 @@ source(params$r_functions)
 ## Gene-based settings
 
 ```{r}
-regenieTable <- fread(params$regenie_merged, header=TRUE, tmpdir="\$PWD")
+regenieTable <- fread(params$regenie_merged, header=TRUE, tmpdir="temp")
 regenieTable <- regenieTable %>% tidyr::separate(ID,
                                                  into=c("Set", "Mask", "AAF"),
                                                  sep="\\.",
