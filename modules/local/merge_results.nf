@@ -12,8 +12,8 @@ process MERGE_RESULTS {
     path "${phenotype}.regenie.gz.tbi"
 
   """
-  csvtk concat -t ${regenie_chromosomes} | gzip > ${phenotype}_merged.gz
-  csvtk sort ${phenotype}_merged.gz -t -kCHROM:n -k GENPOS:n | bgzip -c > ${phenotype}.regenie.gz
+  csvtk concat -d \$' ' -T ${regenie_chromosomes} | gzip > ${phenotype}_merged.gz
+  csvtk sort -t ${phenotype}_merged.gz -kCHROM:n -k GENPOS:n | bgzip -c > ${phenotype}.regenie.gz
   tabix -f -b 2 -e 2 -s 1 -S 1 ${phenotype}.regenie.gz
   """
 

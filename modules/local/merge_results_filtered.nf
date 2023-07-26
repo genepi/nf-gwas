@@ -12,7 +12,7 @@ process MERGE_RESULTS_FILTERED {
 
   """
   csvtk concat -t ${regenie_chromosomes} | gzip > ${phenotype}_merged.gz
-  csvtk sort ${phenotype}_merged.gz -t -kLOG10P:nr > ${phenotype}.regenie.filtered.gz
+  csvtk sort ${phenotype}_merged.gz -t -kLOG10P:nr | gzip >  ${phenotype}.regenie.filtered.gz
   """
 
 }

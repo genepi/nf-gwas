@@ -38,9 +38,9 @@ public class RegenieFilter implements Callable<Integer> {
 
 		CsvTableWriter writer = new CsvTableWriter(new File(output).getAbsolutePath(), '\t', false);
 
-		CsvTableReader reader = new CsvTableReader(input, '\t');
+		CsvTableReader reader = new CsvTableReader(input, ' ');
 		//TEST//
-		writer.setColumns(reader.getColumns());
+		writer.setColumns(reader.getColumns()); 
 		// AVC
 		while (reader.next()) {
 
