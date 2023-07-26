@@ -13,7 +13,7 @@ process MERGE_RESULTS {
 
   """
   csvtk concat -d \$' ' -T ${regenie_chromosomes} | gzip > ${phenotype}_merged.gz
-  csvtk sort -t ${phenotype}_merged.gz -kCHROM:n -k GENPOS:n | bgzip -c > ${phenotype}.regenie.gz
+  zcat ${phenotype}_merged.gz | awk 'NR<=1{print \$0;next}{print \$0| "sort -n -k1 -k2 -T \$PWD"}' | bgzip -c > ${phenotype}.regenie.gz
   tabix -f -b 2 -e 2 -s 1 -S 1 ${phenotype}.regenie.gz
   """
 
