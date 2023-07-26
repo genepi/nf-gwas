@@ -51,7 +51,7 @@ source(params$r_functions)
 ## Manhattan Plot
 
 ```{r, dpi=300}
-resultsBinned <- fread(params$binned_results, header=TRUE, tmpdir="$PWD")
+resultsBinned <- fread(params$binned_results, header=TRUE, tmpdir="\$PWD")
 
 resultsBinned$LOG10P <- case_when(!is.na(resultsBinned$LOG10P) == TRUE ~ resultsBinned$LOG10P,
                                     TRUE ~ resultsBinned$y1)
@@ -85,7 +85,7 @@ if(params$plot_ylimit == 0) {
 Loci are defined ±200 kb around lead SNPs. Significance level is set to -log<sub>10</sub>(p-value) = `r params$annotation_min_log10p`.
 
 ```{r}
-results <- fread(params$regenie_merged, header=TRUE, tmpdir="$PWD")
+results <- fread(params$regenie_merged, header=TRUE, tmpdir="\$PWD")
 
 results <- results %>%
   unite("Position", 
