@@ -49,6 +49,7 @@ process ANNOTATE_RESULTS {
     --anno ${rsids_file}\
     --anno-columns REF,ALT,RSID \
     --strategy CHROM_POS_ALLELES \
+    --output-sep ' ' \
     --output ${regenie_merged.baseName}
     rm ${regenie_merged.baseName}.gz
     gzip ${regenie_merged.baseName}

@@ -105,8 +105,13 @@ if(params.outdir == null) {
 phenotypes_array = params.phenotypes_columns.trim().split(',')
 
 r_functions_file = file("$baseDir/reports/functions.R",checkIfExists: true)
-rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics.Rmd",checkIfExists: true)
 rmd_valdiation_logs_file = file("$baseDir/reports/child_validationlogs.Rmd",checkIfExists: true)
+
+if(!params.phenotypes_apply_rint) {
+    rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics.Rmd",checkIfExists: true)
+} else {
+    rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics_rint.Rmd",checkIfExists: true)
+}
 
 //Annotation files
 genes_hg19 = file("$baseDir/genes/genes.GRCh37.sorted.bed", checkIfExists: true)

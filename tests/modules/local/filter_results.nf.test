@@ -29,7 +29,7 @@ nextflow_process {
                 def lines = path(get(0).get(1)).readLinesGzip()
 
                 //check if regenie header is as expected
-                assert lines.get(0).equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                assert lines.get(0).equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
 
                 //check amount of lines
                 assert (lines.size() == 117)
@@ -64,7 +64,7 @@ nextflow_process {
                         def lines = path(get(0).get(1)).readLinesGzip()
 
                         //check if regenie header is as expected
-                        assert lines.get(0).equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                assert lines.get(0).equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
 
                         //all lines included since filter value is 0
                         assert (lines.size() == 1001)
