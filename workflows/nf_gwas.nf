@@ -193,6 +193,8 @@ if (run_gene_tests) {
 include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
 include { VALIDATE_COVARIATES         } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
+include { CHUNK_ASSOCIATION_FILES     } from '../modules/local/chunk_association_files' addParams(outdir: "$outdir")
+include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_files' addParams(outdir: "$outdir")
 include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' addParams(outdir: "$outdir")
 include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
@@ -250,37 +252,32 @@ workflow NF_GWAS {
 
       } else {
 
-          if(!genotypes_association_manifest) {
+          if(!params.chunking) {
 
-          //no conversion needed (already BGEN), set input to imputed_plink2_ch channel
+          //no conversion and chunking needed, set input to imputed_plink2_ch channel
           // -1 denotes that no range is applied
-          channel.fromPath(genotypes_association)
+           channel.fromPath(genotypes_association)
           .map { tuple(it.baseName, it, [], [], -1) }
           .set {imputed_plink2_ch}
 
           } else {
-            
-            if(!genotypes_imputed_chunks){
-              println("SPECIFY CHUNKS!")
-            }
+              // chunking expects that a bgi file is available
+              Channel
+              .fromPath(genotypes_association)
+              .map {it -> tuple(it.baseName, it,file(it+".bgi", checkIfExists: true)) }
+              .set {bgen_filepair}
 
-            Channel
-              .fromPath(genotypes_imputed_chunks)
-              .splitCsv(header:true, sep:'\t')
-              .map(row -> tuple(row['CONTIG'], row['RANGE']))
-              .set { chunks }
+              CHUNK_ASSOCIATION_FILES(bgen_filepair, params.chunksize)
+              COMBINE_MANIFEST_FILES(CHUNK_ASSOCIATION_FILES.out.chunks.collect())
 
-            Channel
-              .fromPath(genotypes_association_manifest)
-              .splitCsv(header:false, sep:'\t')
-              .map(row -> tuple("${row[0]}",file("${row[1]}"),file("${row[1]}").baseName))
-              .set { manifest }
-
-          
-            manifest.combine(chunks, by: 0)
-              .map{ row -> tuple(row[2],file(row[1]),[],[],row[3]) }
+              COMBINE_MANIFEST_FILES.out.combined_manifest
+              .splitCsv(header:true, sep:',', quote: '\"')
+              .map(row -> tuple(file(row["FILENAME"]).baseName,file(row["FILENAME"]),[],[],row["CONTIG"]+":" + row["START"] + "-" + row["END"]))
+              .combine(bgen_filepair, by: 0)
+              .map(row -> tuple(row[0], file(row[5]),file(row[6]),[],row[4]))
               .set {imputed_plink2_ch}
-                    }
+
+      }
 
       }
 
