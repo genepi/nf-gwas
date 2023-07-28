@@ -219,7 +219,7 @@
         },
         "genotypes_association_chunk_size": {
           "type": "integer",
-          "default": 500000,
+          "default": 0,
           "description": "Define chunksize for association files",
           "fa_icon": "fas fa-project-diagram"
         },
