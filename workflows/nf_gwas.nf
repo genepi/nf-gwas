@@ -142,7 +142,7 @@ if (!params.regenie_sample_file) {
 }
 
 if (!skip_predictions){
-Channel.fromFilePairs(genotypes_prediction, size: 3).set {genotyped_plink_ch}
+Channel.fromFilePairs(genotypes_prediction, size: 3, checkIfExists: true).set {genotyped_plink_ch}
 }
 
 //Optional condition-list file
