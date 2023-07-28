@@ -9,10 +9,6 @@ println ANSI_YELLOW + "WARN: Option genotypes_imputed is deprecated. Please use 
 genotypes_association = params.genotypes_association
 }
 
-genotypes_association_manifest = params.genotypes_imputed_manifest
-//TODO Move to files and use correct one depending on genotype format (1 vs chr1)
-genotypes_imputed_chunks = params.genotypes_imputed_chunks
-
 //check deprecated option
 if(params.genotypes_imputed_format){
 genotypes_association_format = params.genotypes_imputed_format
@@ -252,6 +248,7 @@ workflow NF_GWAS {
 
       } else {
           chunk_size = params.genotypes_association_chunk_size
+          strategy = params.genotypes_association_chunk_strategy
 
               if(chunk_size == 0) {
 
@@ -268,7 +265,7 @@ workflow NF_GWAS {
                 .map {it -> tuple(it.baseName, it,file(it+".bgi", checkIfExists: true)) }
                 .set {bgen_filepair}
 
-                CHUNK_ASSOCIATION_FILES(bgen_filepair, chunk_size)
+                CHUNK_ASSOCIATION_FILES(bgen_filepair, chunk_size, strategy)
                 COMBINE_MANIFEST_FILES(CHUNK_ASSOCIATION_FILES.out.chunks.collect())
 
                 COMBINE_MANIFEST_FILES.out.combined_manifest
