@@ -92,6 +92,10 @@ if(params["genotypes_build"] == null && params["association_build"] == null ) {
   exit 1, "Parameter association_build is required."
 }
 
+if(params.genotypes_association_chunk_size > 0 && genotypes_association_format != 'bgen' ) {
+  exit 1, " Chunking is currently only available for association files in bgen format (param: genotypes_association_chunk_size)."
+}
+
 if(params.outdir == null) {
     outdir = "output/${params.project}"
 } else {
