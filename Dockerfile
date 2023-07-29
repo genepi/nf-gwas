@@ -31,7 +31,7 @@ ENV PATH="/opt/jbang/bin:${PATH}"
 
 # Install genomic-utils
 WORKDIR "/opt"
-ENV GENOMIC_UTILS_VERSION="v0.2.3"
+ENV GENOMIC_UTILS_VERSION="v0.2.4"
 RUN wget https://github.com/genepi/genomic-utils/releases/download/${GENOMIC_UTILS_VERSION}/genomic-utils.jar
 
 
