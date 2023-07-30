@@ -264,9 +264,7 @@ workflow NF_GWAS {
 
               } else {
                 // chunking expects that a bgi file is available
-                Channel
-                .fromPath(genotypes_association)
-                .map {it -> tuple(it.baseName, it,file(it+".bgi", checkIfExists: true)) }
+               Channel.fromFilePairs(genotypes_association, size:2, flat: true)
                 .set {bgen_filepair}
 
                 CHUNK_ASSOCIATION_FILES(bgen_filepair, chunk_size, strategy)
