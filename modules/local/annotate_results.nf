@@ -48,7 +48,7 @@ process ANNOTATE_RESULTS {
     gzip ${regenie_merged.baseName}.annotated.txt
   fi
   
-  java -jar /opt/genomic-utils.jar regenie-split --input ${regenie_merged.baseName}.annotated.txt.gz --dict ${regenie_dict}  --output-sep '\t' --output ${regenie_merged.baseName}.split_
+  java -jar /opt/genomic-utils.jar regenie-split --input ${regenie_merged.baseName}.annotated.txt.gz --dict ${regenie_dict}  --output ${regenie_merged.baseName}.split_
   
   
   """
