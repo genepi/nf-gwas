@@ -202,7 +202,7 @@ include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parse
 include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
 include { REGENIE_STEP2_GENE_TESTS    } from '../modules/local/regenie_step2_gene_tests' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
-include { FILTER_RESULTS              } from '../modules/local/filter_results' addParams(outdir: "$outdir")
+include { FILTER_RESULTS              } from '../modules/local/filter_results'
 include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
 include { ANNOTATE_RESULTS            } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
@@ -374,111 +374,123 @@ workflow NF_GWAS {
         regenie_step2_log_ch.collect()
     )
 
-    // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
-    regenie_step2_out_ch
-    .transpose()
-    .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-    .set { regenie_step2_by_phenotype }
-
-
-    MERGE_RESULTS (
-    regenie_step2_by_phenotype.groupTuple()
-    )
-
-
-    if(target_build != null && !association_build.equals(target_build)) {
-
-      chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
-
-      LIFTOVER_RESULTS (
-      MERGE_RESULTS.out.results_merged_regenie_only,
-      chain_file,
-      target_build
-      )
-
+    if(rsids == null) {
+      DOWNLOAD_RSIDS(association_build)
+      annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
+    } else {
+      annotation_files = tuple(rsids_file, rsids_tbi_file)
     }
-
 
     if (!run_gene_tests) {
 
-        FILTER_RESULTS (
-        MERGE_RESULTS.out.results_merged
-        )
+      ANNOTATE_RESULTS (
+      regenie_step2_out_ch.transpose(),
+      genes_hg19,
+      genes_hg38,
+      annotation_files,
+      association_build
+      )
 
-        if(rsids == null) {
-            DOWNLOAD_RSIDS(association_build)
-            annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
-        } else {
-            annotation_files = tuple(rsids_file, rsids_tbi_file)
-        }
-  
-        ANNOTATE_RESULTS (
-        MERGE_RESULTS.out.results_merged,
-        genes_hg19,
-        genes_hg38,
-        annotation_files,
-        association_build
-        )
-
-        //TODO: change with list coming from new interactive manhattan plot
-        //combined merge results and annotated filtered results by phenotype (index 0)
-
-        merged_results_and_annotated_filtered =  ANNOTATE_RESULTS.out.annotated_ch
-                                                    .combine( FILTER_RESULTS.out.results_filtered, by: 0)
-
-        REPORT (
-        merged_results_and_annotated_filtered,
-        VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-        gwas_report_template,
-        r_functions_file,
-        rmd_pheno_stats_file,
-        rmd_valdiation_logs_file,
-        VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
-        covariates_file_validated_log.collect().ifEmpty([]),
-        regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
-        REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
-        )
-
-      // create a tuple(phenotype, annotated, htmlreport) that can be used to create index.html
-      annotated_phenotypes =  MERGE_RESULTS.out.results_merged
-                                    .combine(REPORT.out.phenotype_report, by: 0)
-
-        annotated_phenotypes
-          .map{ row -> row[0] }
-          .set { annotated_phenotypes_phenotypes }
-
-        annotated_phenotypes
-          .map{ row -> row[1] }
-          .set { annotated_phenotypes_files }
-
-        annotated_phenotypes
-          .map{ row -> row[2] }
-          .set { annotated_phenotypes_reports }
-
-
-        REPORT_INDEX (
-          annotated_phenotypes_phenotypes.collect(),
-          annotated_phenotypes_files.collect(),
-          annotated_phenotypes_reports.collect(),
-        )
+     // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
+      ANNOTATE_RESULTS.out.annotated_ch
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
 
     } else {
+      regenie_step2_out_ch
+      .transpose()
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
 
-          REPORT_GENE_BASED_TESTS (
-          MERGE_RESULTS.out.results_merged,
-          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-          gwas_report_template,
-          r_functions_file,
-          regenie_masks_file,
-          rmd_pheno_stats_file,
-          rmd_valdiation_logs_file,
-          VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
-          covariates_file_validated_log.collect().ifEmpty([]),
-          regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
-          REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
-          )
-
+   
     }
+ 
+
+  MERGE_RESULTS (
+  regenie_step2_by_phenotype.groupTuple()
+  )
+
+  if(target_build != null && !association_build.equals(target_build)) {
+
+    chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
+
+    LIFTOVER_RESULTS (
+    MERGE_RESULTS.out.results_merged_regenie_only,
+    chain_file,
+    target_build
+    )
+
+  }
+
+
+  if (!run_gene_tests) {
+
+    FILTER_RESULTS (
+        regenie_step2_by_phenotype
+  )
+
+    MERGE_RESULTS_FILTERED (
+        FILTER_RESULTS.out.results_filtered.groupTuple()
+  )
+
+    //TODO: change with list coming from new interactive manhattan plot
+    //combined merge results and annotated filtered results by phenotype (index 0)
+    merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
+                                                .combine( MERGE_RESULTS_FILTERED.out.results_filtered_merged, by: 0)
+
+    REPORT (
+    merged_results_and_annotated_filtered,
+    VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+    gwas_report_template,
+    r_functions_file,
+    rmd_pheno_stats_file,
+    rmd_valdiation_logs_file,
+    VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
+    covariates_file_validated_log.collect().ifEmpty([]),
+    regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
+    REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+    )
+
+   // create a tuple(phenotype, annotated, htmlreport) that can be used to create index.html
+   annotated_phenotypes =  MERGE_RESULTS.out.results_merged
+                                 .combine(REPORT.out.phenotype_report, by: 0)
+
+    annotated_phenotypes
+      .map{ row -> row[0] }
+      .set { annotated_phenotypes_phenotypes }
+
+    annotated_phenotypes
+      .map{ row -> row[1] }
+      .set { annotated_phenotypes_files }
+
+    annotated_phenotypes
+      .map{ row -> row[2] }
+      .set { annotated_phenotypes_reports }
+
+
+    REPORT_INDEX (
+      annotated_phenotypes_phenotypes.collect(),
+      annotated_phenotypes_files.collect(),
+      annotated_phenotypes_reports.collect(),
+    )
+
+} else {
+
+      REPORT_GENE_BASED_TESTS (
+      MERGE_RESULTS.out.results_merged,
+      VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+      gwas_report_template,
+      r_functions_file,
+      regenie_masks_file,
+      rmd_pheno_stats_file,
+      rmd_valdiation_logs_file,
+      VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
+      covariates_file_validated_log.collect().ifEmpty([]),
+      regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
+      REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+      )
+
+ }
 
 }
 
