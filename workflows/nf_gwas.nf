@@ -353,9 +353,15 @@ workflow NF_GWAS {
       regenie_step2_log_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out_log
       regenie_step2_out_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out
 
+      // for gene-based testing phenotypes are split into seperate files
+      regenie_step2_out_ch
+      .transpose()
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+
     } else {
 
-      REGENIE_STEP2 (
+        REGENIE_STEP2 (
           regenie_step1_out_ch.collect(),
           imputed_plink2_ch,
           genotypes_association_format,
@@ -363,78 +369,69 @@ workflow NF_GWAS {
           sample_file,
           covariates_file_validated,
           condition_list_file
-      )
+        )
 
-      regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
-      regenie_step2_out_ch = REGENIE_STEP2.out.regenie_step2_out
+        regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
+        regenie_step2_out_ch = REGENIE_STEP2.out.regenie_step2_out
 
-    }
+        if(rsids == null) {
+          DOWNLOAD_RSIDS(association_build)
+          annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
+        } else {
+          annotation_files = tuple(rsids_file, rsids_tbi_file)
+       }
 
+        ANNOTATE_RESULTS (
+          regenie_step2_out_ch,
+          genes_hg19,
+          genes_hg38,
+          annotation_files,
+          association_build
+        )
+
+      // for default step2 annotation are splitting into seperate phenotypes files after annotation
+        ANNOTATE_RESULTS.out.annotated_ch
+        .transpose()
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+        .set { regenie_step2_by_phenotype }
+
+    } // end else
+
+    
     REGENIE_LOG_PARSER_STEP2 (
-        regenie_step2_log_ch.collect()
+       regenie_step2_log_ch.collect()
+    )
+ 
+    MERGE_RESULTS (
+    regenie_step2_by_phenotype.groupTuple()
     )
 
-    if(rsids == null) {
-      DOWNLOAD_RSIDS(association_build)
-      annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
-    } else {
-      annotation_files = tuple(rsids_file, rsids_tbi_file)
-    }
+    if(target_build != null && !association_build.equals(target_build)) {
 
-    if (!run_gene_tests) {
+      chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
 
-      ANNOTATE_RESULTS (
-      regenie_step2_out_ch.transpose(),
-      genes_hg19,
-      genes_hg38,
-      annotation_files,
-      association_build
+      LIFTOVER_RESULTS (
+      MERGE_RESULTS.out.results_merged_regenie_only,
+      chain_file,
+      target_build
       )
 
-     // regenie creates a file for each tested phenotype. Merge-steps require to group by phenotype.
-      ANNOTATE_RESULTS.out.annotated_ch
-      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-      .set { regenie_step2_by_phenotype }
-
-    } else {
-      regenie_step2_out_ch
-      .transpose()
-      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-      .set { regenie_step2_by_phenotype }
-
-   
     }
- 
-
-  MERGE_RESULTS (
-  regenie_step2_by_phenotype.groupTuple()
-  )
-
-  if(target_build != null && !association_build.equals(target_build)) {
-
-    chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
-
-    LIFTOVER_RESULTS (
-    MERGE_RESULTS.out.results_merged_regenie_only,
-    chain_file,
-    target_build
-    )
-
-  }
 
 
   if (!run_gene_tests) {
 
     FILTER_RESULTS (
         regenie_step2_by_phenotype
-  )
+    )
 
     MERGE_RESULTS_FILTERED (
         FILTER_RESULTS.out.results_filtered.groupTuple()
-  )
+    )
 
     //TODO: change with list coming from new interactive manhattan plot
     //combined merge results and annotated filtered results by phenotype (index 0)
+
     merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
                                                 .combine( MERGE_RESULTS_FILTERED.out.results_filtered_merged, by: 0)
 
@@ -501,5 +498,5 @@ workflow.onComplete {
 
 // extract phenotype name from regenie output file
 def getPhenotype(prefix, file ) {
-    return file.baseName.replaceAll(prefix, '').split('_',2)[1].replaceAll('.regenie', '')
+  return file.baseName.replaceAll(prefix, '').split('_',2)[1].replaceAll('.regenie', '')
 }

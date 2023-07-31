@@ -14,7 +14,7 @@ process REGENIE_STEP2 {
     path condition_list_file
 
   output:
-    tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
+    tuple val(filename), path("*regenie.gz"), path("*regenie.Ydict"), emit: regenie_step2_out
     path "${filename}*.log", emit: regenie_step2_out_log
 
   script:
@@ -54,6 +54,7 @@ process REGENIE_STEP2 {
     --minMAC ${params.regenie_min_mac} \
     --minINFO ${params.regenie_min_imputation_score} \
     --gz \
+    --no-split \
     $binaryTrait \
     $test \
     $bgen_sample \
