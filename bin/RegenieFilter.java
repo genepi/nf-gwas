@@ -28,7 +28,7 @@ public class RegenieFilter implements Callable<Integer> {
 	private char sep = ' ';
 
 	@Option(names = "--output-sep", description = "Separator of output file", required = false, showDefaultValue = Visibility.ALWAYS)
-	private char outputSep = ' ';
+	private char outputSep = '\t';
 
 	@Option(names = "--filter-column", description = "Column name to apply filter", required = false)
 	private String filterColumn = "LOG10P";
