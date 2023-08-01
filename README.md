@@ -15,13 +15,13 @@ Documentation can be found [here](https://genepi.github.io/nf-gwas/).
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/nf-gwas -r v0.7.3 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -r v0.7.4 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/nf-gwas -c <nextflow.config> -r v0.7.3 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -c <nextflow.config> -r v0.7.4 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 
 Please click [here](tests) for available test config files.
