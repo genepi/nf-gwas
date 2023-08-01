@@ -12,9 +12,11 @@ process REGENIE_STEP2 {
     path sample_file
     path covariates_file
     path condition_list_file
+    val(run_interaction)
 
   output:
-    tuple val(filename), path("*regenie.gz"), path("*regenie.Ydict"), emit: regenie_step2_out
+    tuple val(filename), path("*regenie.gz"), path("*regenie.Ydict"), emit: regenie_step2_out, optional: true
+    tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out_interaction, optional: true
     path "${filename}*.log", emit: regenie_step2_out_log
 
   script:
@@ -41,6 +43,7 @@ process REGENIE_STEP2 {
     def range_output = (range != -1) ? range.replaceAll(":", "-"):''
     def regenie_range = (range != -1)  ? "--range ${range}":''
     def output_name = (range != -1)  ? "${filename}-${range_output}":"$filename" 
+    def phenotype_split = run_interaction  ? "":"--no-split" 
 
   """
   regenie \
@@ -54,7 +57,7 @@ process REGENIE_STEP2 {
     --minMAC ${params.regenie_min_mac} \
     --minINFO ${params.regenie_min_imputation_score} \
     --gz \
-    --no-split \
+    $phenotype_split \
     $binaryTrait \
     $test \
     $bgen_sample \

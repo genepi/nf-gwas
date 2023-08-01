@@ -359,7 +359,7 @@ workflow NF_GWAS {
       .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
       .set { regenie_step2_by_phenotype }
 
-    } else {
+    }  else if (run_interaction_tests){
 
         REGENIE_STEP2 (
           regenie_step1_out_ch.collect(),
@@ -368,7 +368,30 @@ workflow NF_GWAS {
           VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
           sample_file,
           covariates_file_validated,
-          condition_list_file
+          condition_list_file,
+          run_interaction_tests
+        )
+
+      regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
+      regenie_step2_out_ch = REGENIE_STEP2.out.regenie_step2_out_interaction
+
+      // for gene-based testing phenotypes are split into seperate files
+      regenie_step2_out_ch
+      .transpose()
+      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+      .set { regenie_step2_by_phenotype }
+
+    }  else {
+        
+        REGENIE_STEP2 (
+          regenie_step1_out_ch.collect(),
+          imputed_plink2_ch,
+          genotypes_association_format,
+          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          sample_file,
+          covariates_file_validated,
+          condition_list_file,
+          run_interaction_tests
         )
 
         regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
