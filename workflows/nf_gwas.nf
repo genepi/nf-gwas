@@ -422,18 +422,14 @@ workflow NF_GWAS {
   if (!run_gene_tests) {
 
     FILTER_RESULTS (
-        regenie_step2_by_phenotype
-    )
-
-    MERGE_RESULTS_FILTERED (
-        FILTER_RESULTS.out.results_filtered.groupTuple()
+        MERGE_RESULTS.out.results_merged
     )
 
     //TODO: change with list coming from new interactive manhattan plot
     //combined merge results and annotated filtered results by phenotype (index 0)
 
     merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
-                                                .combine( MERGE_RESULTS_FILTERED.out.results_filtered_merged, by: 0)
+                                                .combine( FILTER_RESULTS.out.results_filtered, by: 0)
 
     REPORT (
     merged_results_and_annotated_filtered,
