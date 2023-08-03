@@ -202,8 +202,7 @@ include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parse
 include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
 include { REGENIE_STEP2_GENE_TESTS    } from '../modules/local/regenie_step2_gene_tests' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
-include { FILTER_RESULTS              } from '../modules/local/filter_results'
-include { MERGE_RESULTS_FILTERED      } from '../modules/local/merge_results_filtered'  addParams(outdir: "$outdir")
+include { FILTER_RESULTS              } from '../modules/local/filter_results' addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
 include { ANNOTATE_RESULTS            } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
