@@ -7,7 +7,7 @@ process FILTER_RESULTS {
     tuple val(phenotype), path(regenie_chromosomes)
 
   output:
-    tuple val(phenotype), path("${regenie_chromosomes.baseName}.filtered*"), emit: results_filtered
+    tuple val(phenotype), path("${phenotype}.regenie.filtered.gz"), emit: results_filtered
 
   """
   java -jar /opt/RegenieFilter.jar --sep '\t' --input ${regenie_chromosomes} --limit ${params.annotation_min_log10p} --output ${regenie_chromosomes.baseName}.tmp
