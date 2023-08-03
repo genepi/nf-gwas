@@ -14,42 +14,47 @@ process ANNOTATE_RESULTS {
   """
   #!/bin/bash
   set -e
-  # sort lexicographically (required by bedtools)
-  zcat ${regenie_merged} | awk 'NR == 1; NR > 1 {print \$0 | "sort -k1,1 -k2,2n"}' | awk 'BEGIN{} {\$2 = \$2 OFS \$2} 1' OFS='\t'  > ${regenie_merged.baseName}.sorted.bed
-  # run bedtools
-  bedtools closest -a ${regenie_merged.baseName}.sorted.bed -b ${genes} -d -header -t first > ${regenie_merged.baseName}.annotated.bed
-  rm ${regenie_merged.baseName}.sorted.bed
-  # remove duplication of 2nd column
-  cut -f1,3- ${regenie_merged.baseName}.annotated.bed > ${regenie_merged.baseName}.annotated.fixed.bed
-  rm ${regenie_merged.baseName}.annotated.bed
-  # write extended header
-  cat ${regenie_merged.baseName}.annotated.fixed.bed | head -n 1 | sed ' 1 s/.*/&\tGENE_CHROMOSOME\tGENE_START\tGENE_END\tGENE_NAME\tDISTANCE/' > ${regenie_merged.baseName}.annotated.header.bed
-  sed 1,1d ${regenie_merged.baseName}.annotated.fixed.bed  > ${regenie_merged.baseName}.annotated.noheader.txt
-  rm ${regenie_merged.baseName}.annotated.fixed.bed
-  # combine files
-  cat ${regenie_merged.baseName}.annotated.header.bed ${regenie_merged.baseName}.annotated.noheader.txt > ${regenie_merged.baseName}.annotated.merged.bed
-  rm ${regenie_merged.baseName}.annotated.header.bed
+
+  # annotate with genes
+  java -jar /opt/genomic-utils.jar annotate-genes \
+    --input ${regenie_merged} \
+    --sep ' ' \
+    --chr CHROM \
+    --pos GENPOS \
+    --anno ${genes} \
+    --anno-columns GENE_CHROMOSOME,GENE_START,GENE_END,GENE_NAME,GENE_DISTANCE \
+    --anno-chr GENE_CHROMOSOME \
+    --anno-start GENE_START \
+    --anno-end GENE_END \
+    --output-sep ' ' \
+    --output-gzip \
+    --output ${regenie_merged.baseName}.genes.txt.gz
+
+
    # annotate rsids with tabix-merge if file is provided
   if [ -z ${rsids_file} ]
     then
-    mv ${regenie_merged.baseName}.annotated.merged.bed ${regenie_merged.baseName}.annotated.txt.gz
+    mv ${regenie_merged.baseName}.genes.txt.gz ${regenie_merged.baseName}.annotated.txt.gz
   else
     java -jar /opt/genomic-utils.jar annotate \
-    --input ${regenie_merged.baseName}.annotated.merged.bed \
-    --chr CHROM \
-    --pos GENPOS \
-    --ref ALLELE0 \
-    --alt ALLELE1 \
-    --anno ${rsids_file}\
-    --anno-columns REF,ALT,RSID \
-    --strategy CHROM_POS_ALLELES \
-    --output-sep ' ' \
-    --output ${regenie_merged.baseName}.annotated.txt
-    gzip ${regenie_merged.baseName}.annotated.txt
+      --input ${regenie_merged.baseName}.genes.txt.gz \
+      --sep ' ' \
+      --chr CHROM \
+      --pos GENPOS \
+      --ref ALLELE0 \
+      --alt ALLELE1 \
+      --anno ${rsids_file} \
+      --anno-columns REF,ALT,RSID \
+      --strategy CHROM_POS_ALLELES \
+      --output-sep ' ' \
+      --output-gzip \
+      --output ${regenie_merged.baseName}.annotated.txt.gz
   fi
   
-  java -jar /opt/genomic-utils.jar regenie-split --input ${regenie_merged.baseName}.annotated.txt.gz --dict ${regenie_dict}  --output ${regenie_merged.baseName}.split_
-  
+  java -jar /opt/genomic-utils.jar regenie-split \
+    --input ${regenie_merged.baseName}.annotated.txt.gz \
+    --dict ${regenie_dict} \
+    --output ${regenie_merged.baseName}.split_
   
   """
 

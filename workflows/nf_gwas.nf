@@ -114,8 +114,8 @@ if(!params.phenotypes_apply_rint) {
 }
 
 //Annotation files
-genes_hg19 = file("$baseDir/genes/genes.GRCh37.sorted.bed", checkIfExists: true)
-genes_hg38 = file("$baseDir/genes/genes.GRCh38.sorted.bed", checkIfExists: true)
+genes_hg19 = file("$baseDir/genes/genes.hg19.v32.csv", checkIfExists: true)
+genes_hg38 = file("$baseDir/genes/genes.hg38.v32.csv", checkIfExists: true)
 
 //Optional rsids annotation file and _tbi file
 rsids = params.rsids_filename
