@@ -198,6 +198,9 @@ include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_
 include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' addParams(outdir: "$outdir")
 include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
+include { REGENIE_STEP1_SPLIT         } from '../modules/local/regenie_step1_split' addParams(outdir: "$outdir")
+include { REGENIE_STEP1_MERGE_CHUNKS  } from '../modules/local/regenie_step1_merge_chunks' addParams(outdir: "$outdir")
+include { REGENIE_STEP1_RUN_CHUNK     } from '../modules/local/regenie_step1_run_chunk' addParams(outdir: "$outdir")
 include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
 include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
 include { REGENIE_STEP2_GENE_TESTS    } from '../modules/local/regenie_step2_gene_tests' addParams(outdir: "$outdir")
@@ -312,22 +315,59 @@ workflow NF_GWAS {
             genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
         }
 
+        if (params.genotypes_prediction_chunks > 0){
 
-      REGENIE_STEP1 (
-          genotyped_final_ch,
-          QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
-          QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-          covariates_file_validated,
-          condition_list_file
-        )
+          REGENIE_STEP1_SPLIT (
+              genotyped_final_ch,
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+              VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+              covariates_file_validated,
+              condition_list_file
+          )
 
-        REGENIE_LOG_PARSER_STEP1 (
-            REGENIE_STEP1.out.regenie_step1_out_log
-        )
+          chunkNumber = 0;
+          Channel.of(1..params.genotypes_prediction_chunks)
+            .combine(REGENIE_STEP1_SPLIT.out.chunks)
+            .set { chunks_ch }
 
-        regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out
-        regenie_step1_parsed_logs_ch = REGENIE_LOG_PARSER_STEP1.out.regenie_step1_parsed_logs
+          chunks_ch.view()
+
+          REGENIE_STEP1_RUN_CHUNK (
+              chunks_ch
+          )
+
+          REGENIE_STEP1_MERGE_CHUNKS (
+              REGENIE_STEP1_SPLIT.out.master,
+              genotyped_final_ch,
+              REGENIE_STEP1_RUN_CHUNK.out.regenie_step1_out.collect(),
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+              VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+              covariates_file_validated,
+              condition_list_file
+          )
+
+          regenie_step1_out_ch = REGENIE_STEP1_MERGE_CHUNKS.out.regenie_step1_out
+          regenie_step1_parsed_logs_ch = Channel.empty()
+
+        } else {
+          REGENIE_STEP1 (
+              genotyped_final_ch,
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+              VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+              covariates_file_validated,
+              condition_list_file
+          )
+
+          REGENIE_LOG_PARSER_STEP1 (
+              REGENIE_STEP1.out.regenie_step1_out_log
+          )
+
+          regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out
+          regenie_step1_parsed_logs_ch = REGENIE_LOG_PARSER_STEP1.out.regenie_step1_parsed_logs
+        }
 
     } else {
 
