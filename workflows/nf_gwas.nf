@@ -331,8 +331,6 @@ workflow NF_GWAS {
             .combine(REGENIE_STEP1_SPLIT.out.chunks)
             .set { chunks_ch }
 
-          chunks_ch.view()
-
           REGENIE_STEP1_RUN_CHUNK (
               chunks_ch
           )
