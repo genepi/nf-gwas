@@ -6,16 +6,18 @@ process REGENIE_STEP2 {
 
   input:
 	  path step1_out
-    tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file)
+    tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file), val(range)
     val assoc_format
     path phenotypes_file
     path sample_file
     path covariates_file
     path condition_list_file
+    val(run_interaction)
 
   output:
-    tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
-    path "${filename}.log", emit: regenie_step2_out_log
+    tuple val(filename), path("*regenie.gz"), path("*regenie.Ydict"), emit: regenie_step2_out, optional: true
+    tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out_interaction, optional: true
+    path "${filename}*.log", emit: regenie_step2_out_log
 
   script:
     def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
@@ -25,7 +27,6 @@ process REGENIE_STEP2 {
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
-    def range = params.regenie_range ? "--range $params.regenie_range" : ''
     def covariants = covariates_file ? "--covarFile $covariates_file" : ''
     def quant_covariants = params.covariates_columns ? "--covarColList ${params.covariates_columns}" : ''
     def cat_covariants = params.covariates_cat_columns ? "--catCovarList ${params.covariates_cat_columns}" : ''
@@ -39,6 +40,10 @@ process REGENIE_STEP2 {
     def no_condtl = params.regenie_no_condtl ? "--no-condtl" : ''
     def force_condtl = params.regenie_force_condtl ? "--force-condtl" : ''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
+    def range_output = (range != -1) ? range.replaceAll(":", "-"):''
+    def regenie_range = (range != -1)  ? "--range ${range}":''
+    def output_name = (range != -1)  ? "${filename}-${range_output}":"$filename" 
+    def phenotype_split = run_interaction  ? "":"--no-split" 
 
   """
   regenie \
@@ -52,10 +57,11 @@ process REGENIE_STEP2 {
     --minMAC ${params.regenie_min_mac} \
     --minINFO ${params.regenie_min_imputation_score} \
     --gz \
+    $phenotype_split \
     $binaryTrait \
     $test \
     $bgen_sample \
-    $range \
+    $regenie_range \
     $covariants \
     $quant_covariants \
     $cat_covariants \
@@ -69,6 +75,6 @@ process REGENIE_STEP2 {
     $rare_mac \
     $no_condtl \
     $force_condtl \
-    --out ${filename}
+    --out $output_name
   """
 }

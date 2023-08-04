@@ -34,7 +34,6 @@ WORKDIR "/opt"
 ENV GENOMIC_UTILS_VERSION="v0.3.0"
 RUN wget https://github.com/genepi/genomic-utils/releases/download/${GENOMIC_UTILS_VERSION}/genomic-utils.jar
 
-
 ENV JAVA_TOOL_OPTIONS="-Djdk.lang.Process.launchMechanism=vfork"
 
 COPY ./bin/RegenieFilter.java ./

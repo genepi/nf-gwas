@@ -216,6 +216,24 @@
           "type": "boolean",
           "description": "Apply Rank Inverse Normal Transformation (RINT) to quantitative phenotypes in both steps",
           "fa_icon": "fas fa-project-diagram"
+        },
+        "genotypes_prediction_chunks": {
+          "type": "integer",
+          "default": 0,
+          "description": "Number of chunks for prediction files",
+          "fa_icon": "fas fa-project-diagram"
+        },        
+        "genotypes_association_chunk_size": {
+          "type": "integer",
+          "default": 0,
+          "description": "Chunksize for association files",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "genotypes_association_chunk_strategy": {
+          "type": "string",
+          "default": "RANGE",
+          "description": "Chunk strategy ('RANGE' or 'VARIANTS') for association files.",
+          "fa_icon": "fas fa-project-diagram"
         }
       },
       "fa_icon": "fas fa-project-diagram"
