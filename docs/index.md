@@ -13,7 +13,7 @@ A Nextflow pipeline to perform genome-wide association studies (GWAS).
 [View it on GitHub](https://github.com/genepi/nf-gwas){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
-This cloud-ready GWAS pipeline allows you to run **single variant tests** and **gene-based tests** using [regenie](https://github.com/rgcgithub/regenie) in an automated and reproducible way.
+This cloud-ready GWAS pipeline allows you to run **single variant tests**, **gene-based tests**  and **interaction testing** using [REGENIE](https://github.com/rgcgithub/regenie) in an automated and reproducible way.
 
 For single variant tests, the pipeline works with BGEN (e.g. from UK Biobank) or VCF files (e.g. from [Michigan Imputation Server](https://imputationserver.sph.umich.edu/)). For gene-based tests, we currently support BED files as an input.
 The pipeline outputs association results (tabixed, works with e.g. LocusZoom out of the box), annotated loci tophits and an interactive HTML report provding statistics and plots.
@@ -35,6 +35,6 @@ The single-variant pipeline currently includes the following steps:
 
 7. Filter regenie results by pvalue.
 
-8. Annotate filtered results using [bedtools closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html).
+8. Annotate filtered results using [genomic-utils](https://github.com/genepi/genomic-utils) and genes from [GENCODE](https://www.gencodegenes.org).
 
 9. Create a HTML report per phenotype including the annotated manhattan plot, qq plot, top loci, phenotype statistics and parsed log files.
