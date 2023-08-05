@@ -18,7 +18,8 @@ process MERGE_RESULTS {
   --gz \
   --output ${phenotype}.regenie.tmp.gz \
   ${regenie_chromosomes}
-  gunzip -c ${phenotype}.regenie.tmp.gz | bgzip -c > ${phenotype}.regenie.gz
+
+  zcat ${phenotype}.regenie.tmp.gz | awk 'NR<=1{print \$0;next}{print \$0| "sort -n -k1 -k2 -T \$PWD"}' | bgzip -c > ${phenotype}.regenie.gz  
   tabix -f -b 2 -e 2 -s 1 -S 1 ${phenotype}.regenie.gz
 
   """
