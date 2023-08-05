@@ -335,11 +335,17 @@ workflow NF_GWAS {
               chunks_ch
           )
 
+          // build map from Y_n to phenotype name
+          def phenotypesIndex = [:]
+          for (int i = 1; i <= phenotypes_array.length; i++){
+            phenotypesIndex["Y" + i] = phenotypes_array[i-1]
+          }
+
           // Group chunk files per phenotype to parallelize merging
           REGENIE_STEP1_RUN_CHUNK.out.regenie_step1_out
             .flatMap()
             .map(
-              it -> tuple(getPhenotypeByChunk("chunks_job", it), it)
+              it -> tuple(phenotypesIndex[getPhenotypeByChunk("chunks_job", it)], it)
             )
             .groupTuple()
             .set {groupedChunks }
