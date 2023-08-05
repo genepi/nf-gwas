@@ -10,8 +10,14 @@ process FILTER_RESULTS {
     tuple val(phenotype), path("${phenotype}.regenie.filtered.gz"), emit: results_filtered
 
   """
-  java -jar /opt/RegenieFilter.jar --sep '\t' --input ${regenie_chromosomes} --limit ${params.annotation_min_log10p} --output ${regenie_chromosomes.baseName}.tmp
-  #todo: CSVWriter for gzip
+    java -jar /opt/genomic-utils.jar csv-filter \
+    --separator '\t' \
+    --output-sep '\t' \
+    --input ${regenie_chromosomes} \
+    --limit ${params.annotation_min_log10p} \
+    --filter-column "LOG10P" \
+    --gz \
+    --output ${regenie_chromosomes.baseName}.tmp
   csvtk sort ${regenie_chromosomes.baseName}.tmp -t -kLOG10P:nr | gzip >  ${phenotype}.regenie.filtered.gz
   rm ${regenie_chromosomes.baseName}.tmp
   """
