@@ -25,6 +25,7 @@ process REGENIE_STEP1_MERGE_CHUNKS {
   def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
   def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
   def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
+  def lowMemory = params.regenie_low_mem ? "--lowmem --lowmem-prefix tmp_rg" : ""
   """
   # qcfiles path required for keep and extract (but not actually set below)
   regenie \
@@ -44,9 +45,8 @@ process REGENIE_STEP1_MERGE_CHUNKS {
     $refFirst \
     --bsize ${params.regenie_bsize_step1} \
     ${params.phenotypes_binary_trait ? '--bt' : ''} \
-    --lowmem \
+    $lowMemory \
     --gz \
-    --lowmem-prefix tmp_rg \
     --threads ${task.cpus} \
     --out regenie_step1_out \
     --use-relative-path \
