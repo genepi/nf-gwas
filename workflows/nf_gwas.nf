@@ -335,18 +335,30 @@ workflow NF_GWAS {
               chunks_ch
           )
 
+          // Group chunk files per phenotype to parallelize merging
+          REGENIE_STEP1_RUN_CHUNK.out.regenie_step1_out
+            .flatMap()
+            .map(
+              it -> tuple(getPhenotypeByChunk("chunks_job", it), it)
+            )
+            .groupTuple()
+            .set {groupedChunks }
+
           REGENIE_STEP1_MERGE_CHUNKS (
-              REGENIE_STEP1_SPLIT.out.master,
-              genotyped_final_ch,
-              REGENIE_STEP1_RUN_CHUNK.out.regenie_step1_out.collect(),
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-              VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
-              covariates_file_validated,
-              condition_list_file
+              REGENIE_STEP1_SPLIT.out.master.collect(),
+              genotyped_final_ch.collect(),
+              groupedChunks,
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch.collect(),
+              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch.collect(),
+              VALIDATE_PHENOTYPES.out.phenotypes_file_validated.collect(),
+              covariates_file_validated.collect(),
+              condition_list_file.collect()
           )
 
-          regenie_step1_out_ch = REGENIE_STEP1_MERGE_CHUNKS.out.regenie_step1_out
+          // merge pred.list files from chunks and add it to output channel
+          mergedPredList = REGENIE_STEP1_MERGE_CHUNKS.out.regenie_step1_out_pred.collectFile()
+
+          regenie_step1_out_ch = REGENIE_STEP1_MERGE_CHUNKS.out.regenie_step1_out.concat(mergedPredList)
           regenie_step1_parsed_logs_ch = Channel.empty()
 
         } else {
@@ -555,4 +567,9 @@ workflow.onComplete {
 // extract phenotype name from regenie output file
 def getPhenotype(prefix, file ) {
   return file.baseName.replaceAll(prefix, '').split('_',2)[1].replaceAll('.regenie', '')
+}
+
+// extract phenotype name from regenie step1 chunk file
+def getPhenotypeByChunk(prefix, file ) {
+  return file.baseName.replaceAll(prefix, '').split('_',3)[2].replaceAll('.regenie', '')
 }
