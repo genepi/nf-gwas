@@ -352,10 +352,10 @@
           "description": "Size of the genotype blocks",
           "fa_icon": "fas fa-project-diagram"
         },
-        "regenie_low_memory": {
+        "regenie_low_mem": {
           "type": "boolean",
           "default": true,
-          "description": "Run regenie step 1 with lowmem option",
+          "description": "Run regenie step 1 with low_mem option",
           "fa_icon": "fas fa-project-diagram"
         }        
       },
