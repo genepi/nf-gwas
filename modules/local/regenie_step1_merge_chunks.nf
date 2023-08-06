@@ -1,11 +1,12 @@
 process REGENIE_STEP1_MERGE_CHUNKS {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
+  tag "${phenotype}"
 
   input:
     path master
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
-    path chunks
+    tuple val(phenotype), path(chunks)
     path snplist
     path id
     path phenotypes_file
@@ -13,8 +14,9 @@ process REGENIE_STEP1_MERGE_CHUNKS {
     path condition_list_file
 
   output:
-    path "regenie_step1_out*", emit: regenie_step1_out
-    path "regenie_step1_out.log", emit: regenie_step1_out_log
+    path "regenie_step1_out*.loco.gz", emit: regenie_step1_out
+    path "regenie_step1_out_pred.list", emit: regenie_step1_out_pred
+    //path "regenie_step1_out.log", emit: regenie_step1_out_log
 
   script:
   def covariants = covariates_file ? "--covarFile $covariates_file" : ''
@@ -47,6 +49,7 @@ process REGENIE_STEP1_MERGE_CHUNKS {
     ${params.phenotypes_binary_trait ? '--bt' : ''} \
     $lowMemory \
     --gz \
+    --l1-phenoList ${phenotype} \
     --threads ${task.cpus} \
     --out regenie_step1_out \
     --use-relative-path \
