@@ -11,6 +11,7 @@ import genepi.io.table.reader.CsvTableReader;
 import genepi.io.table.writer.CsvTableWriter;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Help.Visibility;
 
 public class RegenieFilter implements Callable<Integer> {
 
@@ -22,6 +23,15 @@ public class RegenieFilter implements Callable<Integer> {
 
 	@Option(names = "--output", description = "Filtered Regenie file ", required = true)
 	private String output;
+
+	@Option(names = "--sep", description = "Separator of input file", required = false, showDefaultValue = Visibility.ALWAYS)
+	private char sep = ' ';
+
+	@Option(names = "--output-sep", description = "Separator of output file", required = false, showDefaultValue = Visibility.ALWAYS)
+	private char outputSep = '\t';
+
+	@Option(names = "--filter-column", description = "Column name to apply filter", required = false)
+	private String filterColumn = "LOG10P";
 
 	public void setInput(String input) {
 		this.input = input;
@@ -36,15 +46,15 @@ public class RegenieFilter implements Callable<Integer> {
 		assert (input != null);
 		assert (output != null);
 
-		CsvTableWriter writer = new CsvTableWriter(new File(output).getAbsolutePath(), ' ', false);
+		CsvTableWriter writer = new CsvTableWriter(new File(output).getAbsolutePath(), outputSep, false);
 
-		CsvTableReader reader = new CsvTableReader(input, '\t');
+		CsvTableReader reader = new CsvTableReader(input, sep);
 
 		writer.setColumns(reader.getColumns());
 
 		while (reader.next()) {
 
-			String value = reader.getString("LOG10P");
+			String value = reader.getString(filterColumn);
 			if (value.equals("NA") || Double.valueOf(value) < limit) {
 				continue;
 			}

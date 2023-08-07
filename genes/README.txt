@@ -1,11 +1,29 @@
-################################################################
- Gene Annotation used from https://github.com/statgen/encore
- ###############################################################
+# Gene Annotation used from GENCODE
 
-#download files
-wget https://raw.githubusercontent.com/statgen/encore/master/anno/nearest_gene.GRCh37.bed
-wget https://raw.githubusercontent.com/statgen/encore/master/anno/nearest_gene.GRCh38.bed
+Source: https://www.gencodegenes.org/
 
-# required by bedtools
-sort -k1,1 -k2,2n nearest_gene.GRCh37.bed > nearest_gene.GRCh37.sorted.bed
-sort -k1,1 -k2,2n nearest_gene.GRCh38.bed > nearest_gene.GRCh38.sorted.bed
+## Prepare data
+
+use genomic-utils and command `prepare-annotate`
+
+### hg19
+
+We use [v32](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/) to be compatible with most other tools:
+
+```
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh37_mapping/gencode.v32lift37.annotation.gff3.gz
+java -jar genomic-utils.jat preapre-annotate \
+  --input gencode.v32lift37.annotation.gff3.gz \
+  --output genes.hg19.csv
+```
+
+### hg38
+
+We use [v32](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/) to be compatible with most other tools:
+
+```
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gff3.gz
+java -jar genomic-utils.jat preapre-annotate \
+  --input gencode.v32.annotation.gff3.gz \
+  --output genes.hg38.csv
+```
