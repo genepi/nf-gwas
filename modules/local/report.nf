@@ -15,9 +15,8 @@ process REPORT {
     path step2_log
 
   output:
-    tuple val(phenotype), path("${params.project}.${regenie_merged.baseName}.html"), emit: phenotype_report
+    tuple val(phenotype), path("${params.project}.${regenie_merged.baseName}.html"), path("${params.project}.${regenie_merged.baseName}.manhattan.html"), emit: phenotype_report
     tuple val(phenotype), path("loci_${regenie_merged.baseName}.txt"), emit: phenotype_loci_n, optional: true
-    path "${phenotype}.binned.txt"
 
   script:
       def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()
@@ -34,6 +33,15 @@ process REPORT {
     --binning BIN_TO_POINTS \
     --output ${phenotype}.binned.txt
 
+ java -jar /opt/genomic-utils.jar gwas-report \
+    ${regenie_merged} \
+    --rsid RSID \
+    --gene GENE_NAME \
+    --annotation GENE \
+    --peak-variant-Counting-pval-threshold ${params.annotation_min_log10p} \
+    --peak-pval-threshold 1.5 \
+    --format HTML \
+    --output ${params.project}.${regenie_merged.baseName}.manhattan.html
 
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
