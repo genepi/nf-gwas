@@ -10,5 +10,5 @@ do
   echo "---------------------------------------------------------"
   echo "Execute Test $config_file..."
   echo "---------------------------------------------------------"
-  nextflow run main.nf -c $config_file -profile development -resume
+  nextflow run main.nf -c $config_file -profile development,test 
 done
