@@ -42,6 +42,7 @@ process REPORT {
     --peak-variant-Counting-pval-threshold ${params.annotation_min_log10p} \
     --peak-pval-threshold ${params.annotation_peak_pval} \
     --max-annotations ${params.annotation_max_genes} \
+    --title ${phenotype} \
     --format HTML \
     --output ${params.project}.${regenie_merged.baseName}.manhattan.html
 
