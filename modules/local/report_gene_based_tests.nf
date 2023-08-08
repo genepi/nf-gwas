@@ -2,8 +2,6 @@ process REPORT_GENE_BASED_TESTS {
 
   publishDir "${params.outdir}", mode: 'copy'
 
-  label 'required_memory_report'
-
   input:
     tuple val(phenotype), path(regenie_merged)
     path phenotype_file_validated

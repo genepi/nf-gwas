@@ -1,7 +1,6 @@
 process PRUNE_GENOTYPED {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.pruned.log'
-  label 'process_plink2'
 
   input:
     tuple val(genotyped_qc_filename), path(genotyped_qc_bim_file), path(genotyped_qc_bed_file), path(genotyped_qc_fam_file)

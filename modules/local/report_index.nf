@@ -5,8 +5,6 @@ process REPORT_INDEX {
 
   publishDir "${params.outdir}", mode: 'copy'
 
-  label 'required_memory_report'
-
   input:
     val phenotypes
     path reports

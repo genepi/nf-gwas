@@ -1,7 +1,5 @@
 process IMPUTED_TO_PLINK2 {
 
-  label 'process_plink2'
-
   input:
     path imputed_vcf_file
 // TODO: Replace -1 with range 
