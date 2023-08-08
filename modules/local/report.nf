@@ -1,7 +1,5 @@
 process REPORT {
 
-  label 'required_memory_report'
-
   input:
     tuple val(phenotype), path(regenie_merged), path(annotated_tophits)
     path phenotype_file_validated
