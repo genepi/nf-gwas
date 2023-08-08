@@ -499,9 +499,21 @@
       "default": "",
       "properties": {
         "annotation_min_log10p": {
+          "type": "number",
+          "default": 7.3,
+          "description": "Filter and annotate results with logp10 >= 7.35",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "annotation_peak_pval": {
+          "type": "number",
+          "default": 1.5,
+          "description": "Detect peaks with log10 >= 1.5",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "annotation_max_genes": {
           "type": "integer",
-          "default": 5,
-          "description": "Filter and annotate results with logp10 >= 5",
+          "default": 20,
+          "description": "Maximal number of annotated genes in Manhattan plot",
           "fa_icon": "fas fa-project-diagram"
         },
         "plot_ylimit": {
