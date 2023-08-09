@@ -3,10 +3,24 @@
 [![nf-gwas](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml)
 [![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
 
-This cloud-ready GWAS pipeline allows you to run single variant tests and gene-based tests using [regenie](https://github.com/rgcgithub/regenie) in an automated and reproducible way. The pipeline outputs tabixed association results (e.g. for LocusZoom), gene-annotated tophits and an interactive HTML report including numerous statistics and plots (e.g. Manhattan Plat, QQ-Plot by MAF).
+This cloud-ready GWAS pipeline allows you to run single variant tests and gene-based tests using [REGENIE](https://github.com/rgcgithub/regenie) in an automated and reproducible way. The pipeline outputs tabixed association results (e.g. for LocusZoom), gene-annotated tophits and an interactive HTML report including numerous statistics and plots (e.g. Manhattan Plat, QQ-Plot by MAF).
+
+![image](docs/images/Figure2_example_report.png)
+
 
 ## Documentation
+
 Documentation can be found [here](https://genepi.github.io/nf-gwas/).
+
+![image](docs/images/Figure1_MetroMap_v02.jpg)
+
+## Citation
+
+Please cite this preprint if you use nf-gwas:
+
+> [Performing highly parallelized and reproducible GWAS analysis on biobank-scale data](https://www.biorxiv.org/content/10.1101/2023.08.08.552417v1).
+> Sebastian Schoenherr, Johanna Schachtl-Riess, Silvia Di Maio, Michele Filosi, Marvin Mark, Claudia Lamina, Christian Fuchsberger, Florian Kronenberg, Lukas Forer
+> bioRxiv 2023.08.08.552417; doi: [https://doi.org/10.1101/2023.08.08.552417](https://doi.org/10.1101/2023.08.08.552417)
 
 ## Quick Start
 
@@ -43,8 +57,10 @@ curl -fsSL https://code.askimed.com/install/nf-test | bash
 ```
 
 ## License
-nf-gwas is MIT Licensed.
+nf-gwas is MIT Licensed and was developed at the [Institute of Genetic Epidemiology](https://genepi.i-med.ac.at/), Medical University of Innsbruck, Austria.
 
 ## Contact
 * [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at)
 * [Lukas Forer](mailto:lukas.forer@i-med.ac.at)
+* [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at)
+* [Silvia Di Maio](mailto:silvia.di-maio@i-med.ac.at)

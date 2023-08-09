@@ -16,7 +16,7 @@ A Nextflow pipeline to perform genome-wide association studies (GWAS).
 
 ---
 
-![image](images/Figure2_example_report.jpg)
+![image](images/Figure2_example_report.png)
 
 ---
 This cloud-ready GWAS pipeline allows you to run **single variant tests**, **gene-based tests**  and **interaction testing** using [REGENIE](https://github.com/rgcgithub/regenie) in an automated and reproducible way.
