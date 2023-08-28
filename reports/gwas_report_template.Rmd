@@ -48,6 +48,26 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = TRUE, ca
 source(params$r_functions)
 ```
 
+## Project Summary
+
+| Parameter        | Value                       |
+|------------------|-----------------------------|
+| Project          | `r params$project`          |
+| Pipeline Version | `r params$version`          |
+| Date             | `r params$date`             |
+| Phenotype File   | `r params$phenotype_file`   |
+| Phenotype        | `r params$phenotype`        |
+| Covariates       | `r params$covariates`       |
+| Condition list   | `r params$condition_list`   |
+| Regenie Output   | `r params$regenie_filename` |
+
+## Phenotype Statistics
+
+```{r child=params$rmd_pheno_stats}
+
+```
+
+
 ## Manhattan Plot
 
 ```{r, dpi=300}
@@ -140,7 +160,7 @@ topHitsLead <- results_peakgroup %>%
 lociByPeak <- right_join(topHitsN, topHitsLead,
                          by = c("peak_group" = "Position")) %>%
   ungroup() %>%
-  select(GENE_NAME, VARIANTS, CHROM, GENPOS, RSID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, DISTANCE, INFO, N, TEST) %>%
+  select(GENE_NAME, VARIANTS, CHROM, GENPOS, RSID, ALLELE0, ALLELE1, A1FREQ, BETA, SE, LOG10P, GENE_DISTANCE, N, TEST) %>%
   unite("Position", CHROM:GENPOS, sep=":")  %>%
   unite("Allele 0/1", ALLELE0:ALLELE1, sep="/")  %>%
   arrange(desc(LOG10P))
@@ -164,7 +184,6 @@ sketch = htmltools::withTags(table(
       th('Standard error (SE)'),
       th('-log10(p)'),
       th('Distance to gene'),
-      th('Imputation info'),
       th('N'),
       th('Test')
     )
@@ -197,26 +216,6 @@ qqPlotFast(qqPrepare)
 
 ```
 
-## Phenotype Statistics
-
-```{r child=params$rmd_pheno_stats}
-
-```
-
-## Project Summary
-
-| Parameter        | Value                       |
-|------------------|-----------------------------|
-| Project          | `r params$project`          |
-| Pipeline Version | `r params$version`          |
-| Date             | `r params$date`             |
-| Phenotype File   | `r params$phenotype_file`   |
-| Phenotype        | `r params$phenotype`        |
-| Covariates       | `r params$covariates`       |
-| Condition list   | `r params$condition_list`   |
-| Regenie Output   | `r params$regenie_filename` |
-
-
 ## Validation and Logs
 
 ```{r child=params$rmd_valdiation_logs}
@@ -227,5 +226,5 @@ qqPlotFast(qqPrepare)
 ---
 
 <small>
-This report has been created with **[nf-gwas `r params$version`](https://github.com/genepi/nf-gwas)**, a nextflow pipeline developed by [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at), [Lukas Forer](mailto:lukas.forer@i-med.ac.at) and [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
+This report has been created with **[nf-gwas `r params$version`](https://github.com/genepi/nf-gwas)**, a nextflow pipeline developed by [Sebastian Schönherr](mailto:sebastian.schoenherr@i-med.ac.at), [Lukas Forer](mailto:lukas.forer@i-med.ac.at), [Johanna Schachtl-Riess](mailto:johanna.schachtl-riess@i-med.ac.at) and [Silvia Di Maio](mailto:silvia.di-maio@i-med.ac.at), Institute of Genetic Epidemiology, Medical University of Innsbruck.
 </small>
