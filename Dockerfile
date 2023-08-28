@@ -29,8 +29,12 @@ RUN wget https://github.com/jbangdev/jbang/releases/download/v0.91.0/jbang-0.91.
 
 ENV PATH="/opt/jbang/bin:${PATH}"
 
-COPY ./bin/RegenieFilter.java ./
-RUN jbang export portable -O=RegenieFilter.jar RegenieFilter.java
+# Install genomic-utils
+WORKDIR "/opt"
+ENV GENOMIC_UTILS_VERSION="v0.3.6"
+RUN wget https://github.com/genepi/genomic-utils/releases/download/${GENOMIC_UTILS_VERSION}/genomic-utils.jar
+
+ENV JAVA_TOOL_OPTIONS="-Djdk.lang.Process.launchMechanism=vfork"
 
 COPY ./bin/RegenieLogParser.java ./
 RUN jbang export portable --verbose -O=RegenieLogParser.jar RegenieLogParser.java
@@ -41,8 +45,9 @@ RUN jbang export portable -O=RegenieValidateInput.jar RegenieValidateInput.java
 
 # Install regenie (not as conda package available)
 WORKDIR "/opt"
+ENV REGENIE_VERSION="v3.2.9"
 RUN mkdir regenie && cd regenie && \
-    wget https://github.com/rgcgithub/regenie/releases/download/v3.2.5/regenie_v3.2.5.gz_x86_64_Linux.zip && \
+    wget https://github.com/rgcgithub/regenie/releases/download/${REGENIE_VERSION}/regenie_${REGENIE_VERSION}.gz_x86_64_Linux.zip && \
     unzip -q regenie_v3.*.gz_x86_64_Linux.zip && \
     rm regenie_v3.*.gz_x86_64_Linux.zip && \
     mv regenie_v3.*.gz_x86_64_Linux regenie && \

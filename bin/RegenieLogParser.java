@@ -1,5 +1,5 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
-//REPOS jcenter,jfrog-genepi-maven=https://genepi.jfrog.io/artifactory/maven/
+//REPOS jcenter,genepi-maven=https://genepi.i-med.ac.at/maven/
 //DEPS info.picocli:picocli:4.6.1
 //DEPS genepi:genepi-io:1.1.1
 

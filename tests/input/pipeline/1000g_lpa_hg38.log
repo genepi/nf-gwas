@@ -1,0 +1,14 @@
+PLINK v1.90b6.10 64-bit (17 Jun 2019)
+Options in effect:
+  --out 1000g_lpa_hg38
+  --vcf 1000g_lpa_hg38.vcf.gz
+
+Hostname: seb-laptop
+Working directory: /home/seb/git/gwas-regenie/tests/input/pipeline
+Start time: Fri Mar 17 17:06:38 2023
+
+Random number seed: 1679069198
+7720 MB RAM detected; reserving 3860 MB for main workspace.
+--vcf: 1000g_lpa_hg38.bed + 1000g_lpa_hg38.bim + 1000g_lpa_hg38.fam written.
+
+End time: Fri Mar 17 17:06:38 2023

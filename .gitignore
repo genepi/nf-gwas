@@ -7,3 +7,4 @@ tests/output
 .nf-test/
 nf-test
 .project
+.DS_Store

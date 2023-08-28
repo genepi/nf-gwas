@@ -1,9 +1,5 @@
 process REPORT {
 
-  publishDir "${params.outdir}", mode: 'copy'
-
-  label 'required_memory_report'
-
   input:
     tuple val(phenotype), path(regenie_merged), path(annotated_tophits)
     path phenotype_file_validated
@@ -17,12 +13,37 @@ process REPORT {
     path step2_log
 
   output:
-    path "*.html"
+    tuple val(phenotype), path("${params.project}.${regenie_merged.baseName}.html"), path("${params.project}.${regenie_merged.baseName}.manhattan.html"), emit: phenotype_report
+    tuple val(phenotype), path("loci_${regenie_merged.baseName}.txt"), emit: phenotype_loci_n, optional: true
 
   script:
       def annotation_as_string = params.manhattan_annotation_enabled.toString().toUpperCase()
 
   """
+ java -jar /opt/genomic-utils.jar gwas-report \
+    ${regenie_merged} \
+    --rsid RSID \
+    --gene GENE_NAME \
+    --annotation GENE \
+    --peak-variant-Counting-pval-threshold ${params.annotation_min_log10p} \
+    --peak-pval-threshold ${params.annotation_peak_pval} \
+    --max-annotations ${params.annotation_max_genes} \
+    --format CSV \
+    --binning BIN_TO_POINTS \
+    --output ${phenotype}.binned.txt
+
+ java -jar /opt/genomic-utils.jar gwas-report \
+    ${regenie_merged} \
+    --rsid RSID \
+    --gene GENE_NAME \
+    --annotation GENE \
+    --peak-variant-Counting-pval-threshold ${params.annotation_min_log10p} \
+    --peak-pval-threshold ${params.annotation_peak_pval} \
+    --max-annotations ${params.annotation_max_genes} \
+    --title ${phenotype} \
+    --format HTML \
+    --output ${params.project}.${regenie_merged.baseName}.manhattan.html
+
   Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
     params = list(
       project = '${params.project}',
@@ -42,6 +63,7 @@ process REPORT {
       regenie_step2_log='${step2_log}',
       plot_ylimit=${params.plot_ylimit},
       annotated_tophits_filename='${annotated_tophits}',
+      binned_results='${phenotype}.binned.txt',
       manhattan_annotation_enabled = $annotation_as_string,
       annotation_min_log10p = ${params.annotation_min_log10p},
       r_functions='${r_functions_file}',

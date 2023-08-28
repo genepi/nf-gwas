@@ -18,12 +18,14 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 17
+            assert workflow.trace.tasks().size() == 15
             assert new File("$outputDir/results/Y1.regenie.gz").exists()
         }
 
@@ -44,6 +46,8 @@ nextflow_pipeline {
                 regenie_test                  = 'additive'
                 prune_enabled                 = true
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
         }
         }
 
@@ -69,6 +73,8 @@ nextflow_pipeline {
                 regenie_test                  = 'additive'
                 regenie_firth_approx          = false
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
         }
         }
 
@@ -94,6 +100,8 @@ nextflow_pipeline {
                 regenie_test                  = 'additive'
                 regenie_firth                 = false
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -118,6 +126,8 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -142,6 +152,8 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -168,6 +180,8 @@ nextflow_pipeline {
                 covariates_columns            = 'V1,V2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -193,6 +207,8 @@ nextflow_pipeline {
                 phenotypes_delete_missings    = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -217,6 +233,8 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'dominant'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -242,6 +260,8 @@ nextflow_pipeline {
                 regenie_test                  = 'additive'
                 regenie_force_step1           = 'true'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -266,6 +286,8 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -290,6 +312,8 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -315,6 +339,8 @@ nextflow_pipeline {
                 regenie_test                  = 'additive'
                 plot_ylimit                   = 2
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -339,6 +365,8 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -362,6 +390,8 @@ nextflow_pipeline {
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -387,6 +417,8 @@ nextflow_pipeline {
                 regenie_range                 = '1:100-200'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -411,6 +443,8 @@ nextflow_pipeline {
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'recessive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
             }
         }
 
@@ -436,6 +470,34 @@ nextflow_pipeline {
                 regenie_skip_predictions      = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+    
+    test("Should execute pipeline applying RINTing of the phenotype") {
+
+        when {
+
+            params {
+                project                       = 'gwas-additive'
+                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
+                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'vcf'
+                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_binary_trait       = false
+                phenotypes_columns            = 'Y1,Y2'
+                regenie_test                  = 'additive'
+                outdir                        = "$outputDir"
+                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                phenotypes_apply_rint         = true
             }
         }
 

@@ -12,17 +12,19 @@ nextflow_process {
                 phenotypes_columns = 'Y1,Y2'
                 regenie_test = 'additive'
                 regenie_skip_predictions = true
+                outdir = "$outputDir"
             }
             process {
                 """
                 input[0] = Channel.fromPath("tests/input/regenie_step2/regenie_step1_out*")
                 input[1] = Channel.fromPath("tests/input/pipeline/example.bgen")
-                .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b')) }
+                .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b'), -1) }
                 input[2] = 'bgen'
                 input[3] = file("tests/input/pipeline/phenotype.txt")
                 input[4] = []
                 input[5] = []
                 input[6] = []
+                input[7] = false
                 """
             }
         }
@@ -33,30 +35,30 @@ nextflow_process {
             //check amount of processes
             assert process.trace.tasks().size() == 1
 
-                with(process.out) {
-                    with(regenie_step2_out.get(0)){
-                    assert size,2
-                    assert path(get(1).get(0)).md5 == 'c4f6883d15cf0963176923e8f3538ea7'
-                    assert path(get(1).get(1)).md5 == '7c15d34188ee5cfb86a9bf4aac448321'
-                    //assert path(get(1)).md5 == "7c15d34188ee5cfb86a9bf4aac448321"
+            with(process.out) {
+                with(regenie_step2_out.get(0)){
+                    assert size() == 3
+                    assert get(0) == "example"
+                    assert path(get(1)).md5 == 'd02411453e1236fb378020bb95246cc5'
+                    assert path(get(2)).md5 == '89086862ab0ea9b2a1a92f3bee0b55d3'
 
                     // access second element of first tuple
-                    def lines = path(get(1).get(0)).readLinesGzip()
+                    def lines = path(get(1)).readLinesGzip()
 
                     //check if regenie header is as expected
-                    assert lines.get(0).equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA SE CHISQ LOG10P EXTRA")
+                    assert lines.get(0).equals("CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N TEST BETA.Y1 SE.Y1 CHISQ.Y1 LOG10P.Y1 BETA.Y2 SE.Y2 CHISQ.Y2 LOG10P.Y2 EXTRA")
 
                     //check amount of lines
                     assert lines.size() == 1001
-                    }
+                }
 
-                    with(regenie_step2_out_log){
+                with(regenie_step2_out_log){
                     assert path(get(0)).text.contains("--step 2")
                     assert path(get(0)).text.contains("--phenoColList Y1,Y2")
                     assert path(get(0)).text.contains("--bgen example.bgen")
                     assert path(get(0)).text.contains("--ignore-pred")
                     assert path(get(0)).text.contains("--test additive ")
-                    }
+                }
 
             }
         }

@@ -2,8 +2,13 @@
 
 ```{r}
 phenotypeTable <- read.table(params$phenotype_file, header=TRUE, sep="\t", dec = ".")
-kable(skim_without_charts(phenotypeTable) %>%
-  dplyr::filter(skim_variable == params$phenotype))
+phenotypeTable  %>% 
+    select(params$phenotype) %>%
+    summary() %>%
+    as.data.frame() %>%
+    select(Freq) %>% 
+    separate(Freq, c("Measure", params$phenotype), ":") %>%
+    kable(col.names = c("", params$phenotype))
 ```
 
 ### Histogram
