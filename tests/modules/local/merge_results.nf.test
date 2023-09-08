@@ -10,10 +10,10 @@ nextflow_process {
 
             process {
                 """
-                f1 = file('$baseDir/tests/input/merge_results/chr1_Y1.regenie.gz')
-                f2 = file('$baseDir/tests/input/merge_results/chr2_Y1.regenie.gz')
-                f3 = file('$baseDir/tests/input/merge_results/chr1_Y2.regenie.gz')
-                f4 = file('$baseDir/tests/input/merge_results/chr2_Y2.regenie.gz')
+                f1 = file('$projectDir/tests/input/merge_results/chr1_Y1.regenie.gz')
+                f2 = file('$projectDir/tests/input/merge_results/chr2_Y1.regenie.gz')
+                f3 = file('$projectDir/tests/input/merge_results/chr1_Y2.regenie.gz')
+                f4 = file('$projectDir/tests/input/merge_results/chr2_Y2.regenie.gz')
 
                 regenie_step2_out = Channel.of( ['chr1', f1], ['chr2', f2], ['chr1', f3], ['chr2', f4])
                 input[0] = regenie_step2_out

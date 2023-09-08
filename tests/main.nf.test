@@ -9,21 +9,22 @@ nextflow_pipeline {
 
             params {
                 project                       = 'gwas-additive'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "/$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
 
         then {
+            assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), workflow.trace).match()
             assert workflow.success
             assert workflow.trace.tasks().size() == 15
             assert new File("$outputDir/results/Y1.regenie.gz").exists()
@@ -36,17 +37,17 @@ nextflow_pipeline {
 
             params {
                 project                       = "test-gwas-add-pruning"
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
                 prune_enabled                 = true
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
         }
         }
@@ -63,17 +64,17 @@ nextflow_pipeline {
 
             params {
                 project                       = "test-gwas-binary-no-approx"
-                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/pipeline/example.bgen"
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 regenie_firth_approx          = false
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
         }
         }
@@ -90,17 +91,17 @@ nextflow_pipeline {
 
             params {
                 project                       = "test-gwas-binary-no-firth"
-                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/pipeline/example.bgen"
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 regenie_firth                 = false
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -117,16 +118,16 @@ nextflow_pipeline {
 
             params {
                 project                       = "test-gwas-binary-with-NA"
-                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/pipeline/example.bgen"
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/pipeline/phenotype_bin_wNA.txt"
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin_wNA.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -143,16 +144,16 @@ nextflow_pipeline {
 
             params {
                 project                       = "test-gwas-binary"
-                genotypes_array               = "tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "tests/input/pipeline/example.bgen"
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -169,18 +170,18 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-covariates-file'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
-                covariates_filename           = "tests/input/pipeline/covariates.txt"
+                covariates_filename           = "/$projectDir/tests/input/pipeline/covariates.txt"
                 covariates_columns            = 'V1,V2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -197,17 +198,17 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-delete-missing-phenotype-data'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 phenotypes_delete_missings    = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -224,16 +225,16 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-dominant'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'dominant'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -250,17 +251,17 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-force-step1'
-                genotypes_array                = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array                = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 regenie_force_step1           = 'true'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -277,16 +278,16 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-header'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.bgen'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype_header.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_header.txt"
                 phenotypes_columns            = 'PHENO1,PHENO2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -303,16 +304,16 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-hg38-annotate'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example_hg38.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example_hg38.vcf.gz"
                 genotypes_build               = 'hg38'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -329,17 +330,17 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-manhattan-limit'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 plot_ylimit                   = 2
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -356,16 +357,16 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-phenotype-tabs'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.tabs.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.tabs.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -381,16 +382,16 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-phenotype-three-empty-values'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype_with_three_empty_values.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_with_three_empty_values.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -407,17 +408,17 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-range'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_range                 = '1:100-200'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -434,16 +435,16 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-recessive'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_test                  = 'recessive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -460,17 +461,17 @@ nextflow_pipeline {
 
             params {
                 project                       = 'test-gwas-skip-predictions'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_columns            = 'Y1,Y2'
                 phenotypes_binary_trait       = false
                 regenie_skip_predictions      = true
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
             }
         }
@@ -487,16 +488,16 @@ nextflow_pipeline {
 
             params {
                 project                       = 'gwas-additive'
-                genotypes_array               = 'tests/input/pipeline/example.{bim,bed,fam}'
-                genotypes_imputed             = 'tests/input/pipeline/example.vcf.gz'
+                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
-                phenotypes_filename           = 'tests/input/pipeline/phenotype.txt'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
                 phenotypes_binary_trait       = false
                 phenotypes_columns            = 'Y1,Y2'
                 regenie_test                  = 'additive'
                 outdir                        = "$outputDir"
-                rsids_filename                = "tests/input/pipeline/rsids.tsv.gz"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 phenotypes_apply_rint         = true
             }
         }

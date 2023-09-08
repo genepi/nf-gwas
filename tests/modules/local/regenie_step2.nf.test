@@ -16,11 +16,11 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = Channel.fromPath("tests/input/regenie_step2/regenie_step1_out*")
-                input[1] = Channel.fromPath("tests/input/pipeline/example.bgen")
+                input[0] = Channel.fromPath("$projectDir/tests/input/regenie_step2/regenie_step1_out*")
+                input[1] = Channel.fromPath("$projectDir/tests/input/pipeline/example.bgen")
                 .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b'), -1) }
                 input[2] = 'bgen'
-                input[3] = file("tests/input/pipeline/phenotype.txt")
+                input[3] = file("$projectDir/tests/input/pipeline/phenotype.txt")
                 input[4] = []
                 input[5] = []
                 input[6] = []

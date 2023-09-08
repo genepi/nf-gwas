@@ -9,7 +9,7 @@ nextflow_process {
         when {
             process {
                 """
-                input[0] = file("tests/input/pipeline/example.vcf.gz")
+                input[0] = file("$projectDir/tests/input/pipeline/example.vcf.gz")
                 """
             }
         }
