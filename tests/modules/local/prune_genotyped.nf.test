@@ -13,7 +13,7 @@ nextflow_process {
             }
             process {
                 """
-                input[0] =  Channel.fromFilePairs("tests/input/prune_genotyped/example.qc.{bim,bed,fam}", size: 3, flat:true)
+                input[0] =  Channel.fromFilePairs("$projectDir/tests/input/prune_genotyped/example.qc.{bim,bed,fam}", size: 3, flat:true)
                 """
             }
         }

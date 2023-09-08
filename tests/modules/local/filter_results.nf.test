@@ -23,7 +23,7 @@ nextflow_process {
             with(process.out) {
                 with(results_filtered){
 
-                assert (size == 2)
+                assert (size() == 2)
 
                 // access second element of first tuple
                 def lines = path(get(0).get(1)).readLinesGzip()
@@ -47,7 +47,7 @@ nextflow_process {
                     }
                     process {
                         """
-                        input[0] = Channel.of( ['Y1', '$baseDir/tests/input/filter_results/regenie_step2_example_Y1.regenie.gz'], ['Y2', '$baseDir/tests/input/filter_results/regenie_step2_example_Y2.regenie.gz'])
+                        input[0] = Channel.of( ['Y1', "$baseDir/tests/input/filter_results/regenie_step2_example_Y1.regenie.gz"], ['Y2', "$baseDir/tests/input/filter_results/regenie_step2_example_Y2.regenie.gz"])
                         """
                     }
                 }
@@ -59,7 +59,7 @@ nextflow_process {
 
                         with(results_filtered){
 
-                        assert (size == 2)
+                        assert (size() == 2)
 
                         def lines = path(get(0).get(1)).readLinesGzip()
 

@@ -13,10 +13,10 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = Channel.fromFilePairs("tests/input/regenie_step1/example.qc.{bim,bed,fam}", size: 3, flat:true)
-                input[1] = file("tests/input/regenie_step1/example.qc.snplist")
-                input[2] = file("tests/input/regenie_step1/example.qc.id")
-                input[3] = file("tests/input/pipeline/phenotype.txt")
+                input[0] = Channel.fromFilePairs("$projectDir/tests/input/regenie_step1/example.qc.{bim,bed,fam}", size: 3, flat:true)
+                input[1] = file("$projectDir/tests/input/regenie_step1/example.qc.snplist")
+                input[2] = file("$projectDir/tests/input/regenie_step1/example.qc.id")
+                input[3] = file("$projectDir/tests/input/pipeline/phenotype.txt")
                 input[4] = []
                 input[5] = []
                 """
@@ -25,14 +25,13 @@ nextflow_process {
 
         then {
             assert process.success
+           
             with(process.out) {
                 with(regenie_step1_out.get(0)){
+                    assert snapshot(get(1),get(2)).match()
                     assert size() == 4
                     // pred list includes 2 loco files
                     assert path(get(3)).readLines(), 2
-                    //check loco.gz md5 sums
-                    assert path(get(1)).md5 == "7acd8ecadafb0eb9bbab2eb8b529e54f"
-                    assert path(get(2)).md5 == "41ab9671090c2f7af3834242e691d18a"
                     // parse log file
                     assert path(get(0)).text.contains("--step 1")
                     assert path(get(0)).text.contains("--keep example.qc.id")
