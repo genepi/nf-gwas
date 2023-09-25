@@ -111,20 +111,6 @@ if(!params.phenotypes_apply_rint) {
     rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics_rint.Rmd",checkIfExists: true)
 }
 
-//Annotation files
-genes_hg19 = file("$baseDir/genes/genes.hg19.v32.csv", checkIfExists: true)
-genes_hg38 = file("$baseDir/genes/genes.hg38.v32.csv", checkIfExists: true)
-
-//Optional rsids annotation file and _tbi file
-rsids = params.rsids_filename
-if (rsids != null) {
-  rsids_file = file(rsids, checkIfExists: true)
-  rsids_tbi_file = file(rsids+".tbi", checkIfExists: true)
-} else {
-  println ANSI_YELLOW+  "WARN: A large rsID file will be downloaded for annotation. Please specify in config to avoid download." + ANSI_RESET
-
-}
-
 //Optional sample file
 if (!params.regenie_sample_file) {
     sample_file = []
@@ -173,23 +159,20 @@ if (run_gene_tests) {
     }
 }
 
-include { REGENIE_STEP2               } from '../modules/local/regenie_step2' addParams(outdir: "$outdir")
-include { REGENIE_STEP2_GENE_TESTS    } from '../modules/local/regenie_step2_gene_tests' addParams(outdir: "$outdir")
-include { REGENIE_LOG_PARSER_STEP2    } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
 include { FILTER_RESULTS              } from '../modules/local/filter_results' addParams(outdir: "$outdir")
 include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { ANNOTATE_RESULTS            } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
 include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
 include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
 include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
-include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
 include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
 include { INPUT_VALIDATION } from './input_validation'
 include { CONVERSION_CHUNKING } from './conversion_chunking'
 include { QUALITY_CONTROL } from './quality_control'
 include { PRUNING } from './pruning'
 include { REGENIE_STEP1 } from './regenie_step1'
-
+include { REGENIE_STEP2_GENE_TESTS } from './regenie_step2_gene_tests'
+include { REGENIE_STEP2 } from './regenie_step2'
+include { ANNOTATION } from './annotation'
 workflow NF_GWAS {
 
     INPUT_VALIDATION()
@@ -226,6 +209,7 @@ workflow NF_GWAS {
         QUALITY_CONTROL(genotypes_prediction)
 
         if(params.prune_enabled) {
+          
             PRUNING(QUALITY_CONTROL.out.genotyped_filtered_files_ch)
             genotyped_final_ch = PRUNING.out.genotyped_final_ch;
 
@@ -250,93 +234,49 @@ workflow NF_GWAS {
 
     if (run_gene_tests){
 
-      REGENIE_STEP2_GENE_TESTS (
-          regenie_step1_out_ch.collect(),
-          step2_gene_tests_ch,
-          genotypes_association_format,
-          phenotypes_file_validated,
-          covariates_file_validated,
-          regenie_anno_file,
-          regenie_setlist_file,
-          regenie_masks_file,
-          condition_list_file
-      )
-
-      regenie_step2_log_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out_log
-      regenie_step2_out_ch = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_out
-
-      // for gene-based testing phenotypes are split into seperate files
-      regenie_step2_out_ch
-      .transpose()
-      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-      .set { regenie_step2_by_phenotype }
-
-    }  else if (run_interaction_tests){
-
-        REGENIE_STEP2 (
-          regenie_step1_out_ch.collect(),
-          imputed_plink2_ch,
-          genotypes_association_format,
-          phenotypes_file_validated,
-          sample_file,
-          covariates_file_validated,
-          condition_list_file,
-          run_interaction_tests
+        REGENIE_STEP2_GENE_TESTS (
+            regenie_step1_out_ch,
+            step2_gene_tests_ch,
+            genotypes_association_format,
+            phenotypes_file_validated,
+            covariates_file_validated,
+            regenie_anno_file,
+            regenie_setlist_file,
+            regenie_masks_file,
+            condition_list_file
         )
 
-      regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
-      regenie_step2_out_ch = REGENIE_STEP2.out.regenie_step2_out_interaction
-
-      // for gene-based testing phenotypes are split into seperate files
-      regenie_step2_out_ch
-      .transpose()
-      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-      .set { regenie_step2_by_phenotype }
+        regenie_step2_by_phenotype = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_by_phenotype
 
     }  else {
         
         REGENIE_STEP2 (
-          regenie_step1_out_ch.collect(),
-          imputed_plink2_ch,
-          genotypes_association_format,
-          phenotypes_file_validated,
-          sample_file,
-          covariates_file_validated,
-          condition_list_file,
-          run_interaction_tests
+            regenie_step1_out_ch,
+            imputed_plink2_ch,
+            genotypes_association_format,
+            phenotypes_file_validated,
+            sample_file,
+            covariates_file_validated,
+            condition_list_file,
+            run_interaction_tests
         )
 
-        regenie_step2_log_ch = REGENIE_STEP2.out.regenie_step2_out_log
-        regenie_step2_out_ch = REGENIE_STEP2.out.regenie_step2_out
+        regenie_step2_out = REGENIE_STEP2.out.regenie_step2_out
 
-        if(rsids == null) {
-          DOWNLOAD_RSIDS(association_build)
-          annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
+        if (!run_interaction_tests) {
+        
+            ANNOTATION (
+                regenie_step2_out,
+                association_build  
+            )
+            regenie_step2_by_phenotype = ANNOTATION.out.regenie_step2_by_phenotype
+
         } else {
-          annotation_files = tuple(rsids_file, rsids_tbi_file)
-       }
+            regenie_step2_by_phenotype = regenie_step2_out
+        }
 
-        ANNOTATE_RESULTS (
-          regenie_step2_out_ch,
-          genes_hg19,
-          genes_hg38,
-          annotation_files,
-          association_build
-        )
+    }
 
-      // for default step2 annotation are splitting into seperate phenotypes files after annotation
-        ANNOTATE_RESULTS.out.annotated_ch
-        .transpose()
-      .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
-        .set { regenie_step2_by_phenotype }
-
-    } // end else
-
-    
-    REGENIE_LOG_PARSER_STEP2 (
-       regenie_step2_log_ch.collect()
-    )
- 
     MERGE_RESULTS (
     regenie_step2_by_phenotype.groupTuple()
     )
@@ -376,7 +316,7 @@ workflow NF_GWAS {
     phenotypes_file_validated_log,
     covariates_file_validated_log.collect().ifEmpty([]),
     regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
-    REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+    REGENIE_STEP2.out.regenie_step2_parsed_logs
     )
 
     //TODO: find better solution to avoid splitting in separate channels
@@ -411,7 +351,7 @@ workflow NF_GWAS {
       phenotypes_file_validated_log,
       covariates_file_validated_log.collect().ifEmpty([]),
       regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
-      REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
+      REGENIE_STEP2_GENE_TESTS.out.regenie_step2_parsed_logs
       )
 
  }
@@ -423,7 +363,3 @@ workflow.onComplete {
     println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
 }
 
-// extract phenotype name from regenie output file
-def getPhenotype(prefix, file ) {
-  return file.baseName.replaceAll(prefix, '').split('_',2)[1].replaceAll('.regenie', '')
-}

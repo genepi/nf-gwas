@@ -1,4 +1,4 @@
-process REGENIE_STEP2_GENE_TESTS {
+process REGENIE_STEP2_RUN_GENE_TESTS {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
   publishDir "${params.outdir}/masks", mode: 'copy', pattern: '*masks*.{txt,snplist,bed,bim,fam}'

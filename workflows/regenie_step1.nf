@@ -53,7 +53,7 @@ workflow REGENIE_STEP1 {
         REGENIE_STEP1_RUN_CHUNK.out.regenie_step1_out
             .flatMap()
             .map(
-                it -> tuple(phenotypesIndex[getPhenotypeByChunk("chunks_job", it)], it)
+                it -> tuple(phenotypesIndex[RegenieUtil.getPhenotypeByChunk("chunks_job", it)], it)
                 )
             .groupTuple()
             .set {groupedChunks }
@@ -97,10 +97,4 @@ workflow REGENIE_STEP1 {
     regenie_step1_parsed_logs_ch
 
 }
-
-// extract phenotype name from regenie step1 chunk file
-def getPhenotypeByChunk(prefix, file) {
-    return file.baseName.replaceAll(prefix, '').split('_',3)[2].replaceAll('.regenie', '')
-}
-
 

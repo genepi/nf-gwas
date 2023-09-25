@@ -1,4 +1,4 @@
-process REGENIE_STEP2 {
+process REGENIE_STEP2_RUN {
 
   publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
 
