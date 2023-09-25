@@ -139,10 +139,6 @@ if (!params.regenie_sample_file) {
     sample_file = file(params.regenie_sample_file, checkIfExists: true)
 }
 
-if (!skip_predictions){
-Channel.fromFilePairs(genotypes_prediction, size: 3, checkIfExists: true).set {genotyped_plink_ch}
-}
-
 //Optional condition-list file
 if (!params.regenie_condition_list ) {
     condition_list_file = []
@@ -186,8 +182,6 @@ if (run_gene_tests) {
 
 include { CHUNK_ASSOCIATION_FILES     } from '../modules/local/chunk_association_files' addParams(outdir: "$outdir")
 include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_files' addParams(outdir: "$outdir")
-include { PRUNE_GENOTYPED             } from '../modules/local/prune_genotyped' addParams(outdir: "$outdir")
-include { QC_FILTER_GENOTYPED         } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
 include { REGENIE_STEP1_SPLIT         } from '../modules/local/regenie_step1_split' addParams(outdir: "$outdir")
 include { REGENIE_STEP1_MERGE_CHUNKS  } from '../modules/local/regenie_step1_merge_chunks' addParams(outdir: "$outdir")
@@ -206,7 +200,8 @@ include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf
 include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
 include { INPUT_VALIDATION } from './input_validation'
 include { CONVERSION_CHUNKING } from './conversion_chunking'
-
+include { QUALITY_CONTROL } from './quality_control'
+include { PRUNING } from './pruning'
 
 workflow NF_GWAS {
 
@@ -237,33 +232,27 @@ workflow NF_GWAS {
 
     if (!skip_predictions){
 
-      QC_FILTER_GENOTYPED (
-          genotyped_plink_ch
-      )
+        QUALITY_CONTROL(genotypes_prediction)
 
-      if(params.prune_enabled) {
-
-          PRUNE_GENOTYPED (
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
-          )
-
-          genotyped_final_ch = PRUNE_GENOTYPED.out.genotypes_pruned_ch
+        if(params.prune_enabled) {
+            PRUNING(QUALITY_CONTROL.out.genotyped_filtered_files_ch)
+            genotyped_final_ch = PRUNING.out.genotyped_final_ch;
 
         } else {
             //no pruning applied, set QCed directly to genotyped_final_ch
-            genotyped_final_ch = QC_FILTER_GENOTYPED.out.genotyped_filtered_files_ch
+            genotyped_final_ch = QUALITY_CONTROL.out.genotyped_filtered_files_ch
         }
 
         if (params.genotypes_prediction_chunks > 0){
 
-          REGENIE_STEP1_SPLIT (
-              genotyped_final_ch,
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-              phenotypes_file_validated,
-              covariates_file_validated,
-              condition_list_file
-          )
+            REGENIE_STEP1_SPLIT (
+                genotyped_final_ch,
+                QUALITY_CONTROL.out.genotyped_filtered_snplist_ch,
+                QUALITY_CONTROL.out.genotyped_filtered_id_ch,
+                phenotypes_file_validated,
+                covariates_file_validated,
+                condition_list_file
+            )
 
           chunkNumber = 0;
           Channel.of(1..params.genotypes_prediction_chunks)
@@ -293,8 +282,8 @@ workflow NF_GWAS {
               REGENIE_STEP1_SPLIT.out.master.collect(),
               genotyped_final_ch.collect(),
               groupedChunks,
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch.collect(),
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch.collect(),
+              QUALITY_CONTROL.out.genotyped_filtered_snplist_ch.collect(),
+              QUALITY_CONTROL.out.genotyped_filtered_id_ch.collect(),
               VALIDATE_PHENOTYPES.out.phenotypes_file_validated.collect(),
               covariates_file_validated.collect(),
               condition_list_file.collect()
@@ -309,8 +298,8 @@ workflow NF_GWAS {
         } else {
           REGENIE_STEP1 (
               genotyped_final_ch,
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
-              QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
+              QUALITY_CONTROL.out.genotyped_filtered_snplist_ch,
+              QUALITY_CONTROL.out.genotyped_filtered_id_ch,
               phenotypes_file_validated,
               covariates_file_validated,
               condition_list_file
