@@ -31,8 +31,6 @@ println ANSI_YELLOW+  "WARN: Option genotypes_build is deprecated. Please use as
 association_build = params.association_build
 }
 
-target_build = params.target_build
-
 // nf-gwas supports three different modi. Single-variant (default), gene-based and interaction-testing
 run_gene_tests = params.regenie_run_gene_based_tests
 run_interaction_tests = params.regenie_run_interaction_tests
@@ -111,13 +109,6 @@ if(!params.phenotypes_apply_rint) {
     rmd_pheno_stats_file = file("$baseDir/reports/child_phenostatistics_rint.Rmd",checkIfExists: true)
 }
 
-//Optional sample file
-if (!params.regenie_sample_file) {
-    sample_file = []
-} else {
-    sample_file = file(params.regenie_sample_file, checkIfExists: true)
-}
-
 //Optional condition-list file
 if (!params.regenie_condition_list ) {
     condition_list_file = []
@@ -159,12 +150,6 @@ if (run_gene_tests) {
     }
 }
 
-include { FILTER_RESULTS              } from '../modules/local/filter_results' addParams(outdir: "$outdir")
-include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
-include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
-include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
-include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
-include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
 include { INPUT_VALIDATION } from './input_validation'
 include { CONVERSION_CHUNKING } from './conversion_chunking'
 include { QUALITY_CONTROL } from './quality_control'
@@ -173,6 +158,13 @@ include { REGENIE_STEP1 } from './regenie_step1'
 include { REGENIE_STEP2_GENE_TESTS } from './regenie_step2_gene_tests'
 include { REGENIE_STEP2 } from './regenie_step2'
 include { ANNOTATION } from './annotation'
+include { LIFT_OVER } from './lift_over'
+include { FILTER_RESULTS              } from '../modules/local/filter_results' addParams(outdir: "$outdir")
+include { MERGE_RESULTS               } from '../modules/local/merge_results'  addParams(outdir: "$outdir")
+include { REPORT                      } from '../modules/local/report'  addParams(outdir: "$outdir")
+include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based_tests'  addParams(outdir: "$outdir")
+include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
+
 workflow NF_GWAS {
 
     INPUT_VALIDATION()
@@ -195,11 +187,13 @@ workflow NF_GWAS {
 
         if (genotypes_association_format == 'bed') {
 
-            Channel.fromFilePairs(genotypes_association, size: 3).set {step2_gene_tests_ch}
+            step2_gene_tests_ch = Channel.fromFilePairs(genotypes_association, size: 3)
 
-        }
-
+        } else {
+            exit 1, " For gene-based testing only BED input files are currently accepted."
+        }  
     }
+
 
     regenie_step1_parsed_logs_ch = Channel.empty()
     regenie_step1_out_ch = Channel.of('/')
@@ -281,17 +275,10 @@ workflow NF_GWAS {
     regenie_step2_by_phenotype.groupTuple()
     )
 
-    if(target_build != null && !association_build.equals(target_build)) {
-
-      chain_file = file("$baseDir/files/chains/${association_build}To${target_build}.over.chain.gz", checkIfExists: true)
-
-      LIFTOVER_RESULTS (
-      MERGE_RESULTS.out.results_merged_regenie_only,
-      chain_file,
-      target_build
-      )
-
-    }
+    LIFT_OVER (
+        MERGE_RESULTS.out.results_merged_regenie_only,
+        association_build
+    )
 
 
   if (!run_gene_tests) {
@@ -304,7 +291,7 @@ workflow NF_GWAS {
     //combined merge results and annotated filtered results by phenotype (index 0)
 
     merged_results_and_annotated_filtered =  MERGE_RESULTS.out.results_merged
-                                                .combine( FILTER_RESULTS.out.results_filtered, by: 0)
+       .combine( FILTER_RESULTS.out.results_filtered, by: 0)
 
     REPORT (
     merged_results_and_annotated_filtered,
