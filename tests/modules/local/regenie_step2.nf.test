@@ -1,7 +1,7 @@
 nextflow_process {
 
     name "Test Process REGENIE_STEP2"
-    script "modules/local/regenie_step2.nf"
+    script "modules/local/regenie_step2_run.nf"
     process "REGENIE_STEP2"
 
     test("Should execute regenie step2 without predictions") {
