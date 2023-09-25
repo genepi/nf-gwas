@@ -180,8 +180,6 @@ if (run_gene_tests) {
     }
 }
 
-include { CHUNK_ASSOCIATION_FILES     } from '../modules/local/chunk_association_files' addParams(outdir: "$outdir")
-include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_files' addParams(outdir: "$outdir")
 include { REGENIE_STEP1               } from '../modules/local/regenie_step1' addParams(outdir: "$outdir")
 include { REGENIE_STEP1_SPLIT         } from '../modules/local/regenie_step1_split' addParams(outdir: "$outdir")
 include { REGENIE_STEP1_MERGE_CHUNKS  } from '../modules/local/regenie_step1_merge_chunks' addParams(outdir: "$outdir")
@@ -284,7 +282,7 @@ workflow NF_GWAS {
               groupedChunks,
               QUALITY_CONTROL.out.genotyped_filtered_snplist_ch.collect(),
               QUALITY_CONTROL.out.genotyped_filtered_id_ch.collect(),
-              VALIDATE_PHENOTYPES.out.phenotypes_file_validated.collect(),
+              phenotypes_file_validated.collect(),
               covariates_file_validated.collect(),
               condition_list_file.collect()
           )
