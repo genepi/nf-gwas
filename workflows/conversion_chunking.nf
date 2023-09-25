@@ -59,7 +59,7 @@ workflow CONVERSION_CHUNKING {
     }
     
     emit: 
-    imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
+    imputed_plink2_ch 
 }
 
 
