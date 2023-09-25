@@ -131,12 +131,6 @@ if (rsids != null) {
 phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
 phenotypes = Channel.from(phenotypes_array)
 
-//Optional covariates file
-if (!params.covariates_filename) {
-    covariates_file = []
-} else {
-    covariates_file = file(params.covariates_filename, checkIfExists: true)
-}
 
 //Optional sample file
 if (!params.regenie_sample_file) {
@@ -190,8 +184,6 @@ if (run_gene_tests) {
     }
 }
 
-include { VALIDATE_PHENOTYPES         } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
-include { VALIDATE_COVARIATES         } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
 include { CHUNK_ASSOCIATION_FILES     } from '../modules/local/chunk_association_files' addParams(outdir: "$outdir")
 include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_files' addParams(outdir: "$outdir")
@@ -213,30 +205,17 @@ include { REPORT_GENE_BASED_TESTS     } from '../modules/local/report_gene_based
 include { REPORT_INDEX                } from '../modules/local/report_index'  addParams(outdir: "$outdir")
 include { DOWNLOAD_RSIDS              } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
 include { LIFTOVER_RESULTS            } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
-
+include { INPUT_VALIDATION } from './input_validation'
 
 
 workflow NF_GWAS {
 
-    VALIDATE_PHENOTYPES (
-        phenotypes_file
-    )
+    INPUT_VALIDATION(outdir)
 
-    covariates_file_validated_log = Channel.empty()
-    if(params.covariates_filename) {
-        VALIDATE_COVARIATES (
-          covariates_file
-        )
-
-        covariates_file_validated = VALIDATE_COVARIATES.out.covariates_file_validated
-        covariates_file_validated_log = VALIDATE_COVARIATES.out.covariates_file_validated_log
-
-   } else {
-
-        // set covariates_file to default value
-        covariates_file_validated = covariates_file
-
-   }
+    covariates_file_validated_log = INPUT_VALIDATION.out.covariates_file_validated_log
+    covariates_file_validated  = INPUT_VALIDATION.out.covariates_file_validated
+    phenotypes_file_validated = INPUT_VALIDATION.out.phenotypes_file_validated
+    phenotypes_file_validated_log = INPUT_VALIDATION.out.phenotypes_file_validated_log
 
     //single-variant tests: convert vcf files to plink2 format (not bgen!)
     if (!run_gene_tests) {
@@ -322,7 +301,7 @@ workflow NF_GWAS {
               genotyped_final_ch,
               QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
               QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-              VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+              phenotypes_file_validated,
               covariates_file_validated,
               condition_list_file
           )
@@ -373,7 +352,7 @@ workflow NF_GWAS {
               genotyped_final_ch,
               QC_FILTER_GENOTYPED.out.genotyped_filtered_snplist_ch,
               QC_FILTER_GENOTYPED.out.genotyped_filtered_id_ch,
-              VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+              phenotypes_file_validated,
               covariates_file_validated,
               condition_list_file
           )
@@ -398,7 +377,7 @@ workflow NF_GWAS {
           regenie_step1_out_ch.collect(),
           step2_gene_tests_ch,
           genotypes_association_format,
-          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          phenotypes_file_validated,
           covariates_file_validated,
           regenie_anno_file,
           regenie_setlist_file,
@@ -421,7 +400,7 @@ workflow NF_GWAS {
           regenie_step1_out_ch.collect(),
           imputed_plink2_ch,
           genotypes_association_format,
-          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          phenotypes_file_validated,
           sample_file,
           covariates_file_validated,
           condition_list_file,
@@ -443,7 +422,7 @@ workflow NF_GWAS {
           regenie_step1_out_ch.collect(),
           imputed_plink2_ch,
           genotypes_association_format,
-          VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+          phenotypes_file_validated,
           sample_file,
           covariates_file_validated,
           condition_list_file,
@@ -512,12 +491,12 @@ workflow NF_GWAS {
 
     REPORT (
     merged_results_and_annotated_filtered,
-    VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+    phenotypes_file_validated,
     gwas_report_template,
     r_functions_file,
     rmd_pheno_stats_file,
     rmd_valdiation_logs_file,
-    VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
+    phenotypes_file_validated_log,
     covariates_file_validated_log.collect().ifEmpty([]),
     regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
     REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
@@ -546,13 +525,13 @@ workflow NF_GWAS {
 
       REPORT_GENE_BASED_TESTS (
       MERGE_RESULTS.out.results_merged,
-      VALIDATE_PHENOTYPES.out.phenotypes_file_validated,
+      phenotypes_file_validated,
       gwas_report_template,
       r_functions_file,
       regenie_masks_file,
       rmd_pheno_stats_file,
       rmd_valdiation_logs_file,
-      VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log,
+      phenotypes_file_validated_log,
       covariates_file_validated_log.collect().ifEmpty([]),
       regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
       REGENIE_LOG_PARSER_STEP2.out.regenie_step2_parsed_logs
