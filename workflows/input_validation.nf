@@ -10,9 +10,6 @@ include { VALIDATE_COVARIATES } from '../modules/local/validate_covariates' addP
 
 workflow INPUT_VALIDATION {
 
-    take: 
-    outdir
-    
     main:
     phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
     if (!params.covariates_filename) {
