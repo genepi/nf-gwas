@@ -1,10 +1,3 @@
-//TODO duplicate code
-if(params.outdir == null) {
-    outdir = "output/${params.project}"
-} else {
-    outdir = params.outdir
-}
-
 include { CHUNK_ASSOCIATION_FILES     } from '../modules/local/chunk_association_files' 
 include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_files' 
 include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' 
@@ -14,6 +7,7 @@ workflow CONVERSION_CHUNKING {
     take:
     genotypes_association
     genotypes_association_format
+
     main:
     imputed_files =  channel.fromPath(genotypes_association, checkIfExists: true)
 
@@ -21,7 +15,7 @@ workflow CONVERSION_CHUNKING {
 
         //TODO: add VCF chunking
         IMPUTED_TO_PLINK2 (
-             imputed_files
+            imputed_files
         )
 
         imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
@@ -46,6 +40,7 @@ workflow CONVERSION_CHUNKING {
                     .set {bgen_filepair}
 
                 CHUNK_ASSOCIATION_FILES(bgen_filepair, chunk_size, strategy)
+
                 COMBINE_MANIFEST_FILES(CHUNK_ASSOCIATION_FILES.out.chunks.collect())
 
                 COMBINE_MANIFEST_FILES.out.combined_manifest
@@ -56,8 +51,6 @@ workflow CONVERSION_CHUNKING {
                     .set {imputed_plink2_ch}
 
            }
-
-  
     }
     
     emit: 

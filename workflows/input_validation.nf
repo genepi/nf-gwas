@@ -1,10 +1,3 @@
-//TODO duplicate code
-if(params.outdir == null) {
-    outdir = "output/${params.project}"
-} else {
-    outdir = params.outdir
-}
-
 include { VALIDATE_PHENOTYPES } from '../modules/local/validate_phenotypes'
 include { VALIDATE_COVARIATES } from '../modules/local/validate_covariates'
 
@@ -14,7 +7,7 @@ workflow INPUT_VALIDATION {
     phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
     if (!params.covariates_filename) {
         covariates_file = []
-        } else {
+    } else {
         covariates_file = file(params.covariates_filename, checkIfExists: true)
     }
 
@@ -43,7 +36,6 @@ workflow INPUT_VALIDATION {
     phenotypes_file_validated_log = VALIDATE_PHENOTYPES.out.phenotypes_file_validated_log
     covariates_file_validated
     covariates_file_validated_log 
-
 }
 
 

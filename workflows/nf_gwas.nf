@@ -227,7 +227,7 @@ workflow NF_GWAS {
 
     /* executed for all modes */ 
     MERGE_RESULTS (
-    regenie_step2_by_phenotype.groupTuple()
+        regenie_step2_by_phenotype.groupTuple()
     )
 
    /* executed for all modes */ 

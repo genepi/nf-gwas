@@ -1,10 +1,3 @@
-//TODO duplicate code
-if(params.outdir == null) {
-    outdir = "output/${params.project}"
-} else {
-    outdir = params.outdir
-}
-
 include { REGENIE_STEP2_RUN_GENE_TESTS } from '../modules/local/regenie_step2_run_gene_tests' 
 include { REGENIE_LOG_PARSER_STEP2 } from '../modules/local/regenie_log_parser_step2'  
 
@@ -52,7 +45,6 @@ workflow REGENIE_STEP2_GENE_TESTS {
     emit: 
     regenie_step2_parsed_logs
     regenie_step2_by_phenotype
-
 }
 
 

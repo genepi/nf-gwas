@@ -1,10 +1,3 @@
-//TODO duplicate code
-if(params.outdir == null) {
-    outdir = "output/${params.project}"
-} else {
-    outdir = params.outdir
-}
-
 include { REPORT_GENE_BASED_TESTS } from '../modules/local/report_gene_based_tests' 
 
 workflow REPORTING_GENE_TESTS {
@@ -41,7 +34,7 @@ workflow REPORTING_GENE_TESTS {
         covariates_file_validated_log.collect().ifEmpty([]),
         regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
         regenie_step2_parsed_logs
-      )
+    )
 }
 
 

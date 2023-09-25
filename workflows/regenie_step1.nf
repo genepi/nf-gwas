@@ -13,8 +13,8 @@ workflow REGENIE_STEP1 {
     phenotypes_file_validated
     covariates_file_validated
     condition_list_file
+
     main:
-   
     if (params.genotypes_prediction_chunks > 0){
 
         REGENIE_STEP1_SPLIT (
@@ -33,7 +33,7 @@ workflow REGENIE_STEP1 {
 
         REGENIE_STEP1_RUN_CHUNK (
             chunks_ch
-         )
+        )
 
         // build map from Y_n to phenotype name
         def phenotypesIndex = [:]
@@ -88,6 +88,5 @@ workflow REGENIE_STEP1 {
     emit: 
     regenie_step1_out_ch
     regenie_step1_parsed_logs_ch
-
 }
 

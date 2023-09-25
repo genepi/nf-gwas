@@ -1,10 +1,3 @@
-//TODO duplicate code
-if(params.outdir == null) {
-    outdir = "output/${params.project}"
-} else {
-    outdir = params.outdir
-}
-
 include { REPORT_INDEX } from '../modules/local/report_index' 
 include { REPORT       } from '../modules/local/report'  
 
@@ -56,24 +49,22 @@ workflow REPORTING {
 
     //TODO: find better solution to avoid splitting in separate channels
     REPORT.out.phenotype_report
-      .map{ row -> row[0] }
-      .set { annotated_phenotypes_phenotypes }
+        .map{ row -> row[0] }
+        .set { annotated_phenotypes_phenotypes }
 
     REPORT.out.phenotype_report
-      .map{ row -> row[1] }
-      .set { annotated_phenotypes_reports }
+        .map{ row -> row[1] }
+        .set { annotated_phenotypes_reports }
 
     REPORT.out.phenotype_report
-      .map{ row -> row[2] }
-      .set { annotated_phenotypes_manhattan }
+        .map{ row -> row[2] }
+        .set { annotated_phenotypes_manhattan }
 
     REPORT_INDEX (
-      annotated_phenotypes_phenotypes.collect(),
-      annotated_phenotypes_reports.collect(),
-      annotated_phenotypes_manhattan.collect()
+        annotated_phenotypes_phenotypes.collect(),
+        annotated_phenotypes_reports.collect(),
+        annotated_phenotypes_manhattan.collect()
     )
- 
-
 }
 
 
