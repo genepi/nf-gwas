@@ -1,8 +1,8 @@
 process REGENIE_LOG_PARSER_STEP2 {
 
-  publishDir "${params.pubDir}/logs", mode: 'copy'
+    publishDir "${params.pubDir}/logs", mode: 'copy'
 
-  input:
+    input:
     path regenie_step2_logs
 
   output:

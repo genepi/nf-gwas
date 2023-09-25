@@ -4,7 +4,7 @@ process REGENIE_STEP2_RUN {
 
   tag "${plink2_pgen_file.simpleName}"
 
-  input:
+    input:
 	  path step1_out
     tuple val(filename), path(plink2_pgen_file), path(plink2_psam_file), path(plink2_pvar_file), val(range)
     val assoc_format
@@ -14,12 +14,12 @@ process REGENIE_STEP2_RUN {
     path condition_list_file
     val(run_interaction)
 
-  output:
+    output:
     tuple val(filename), path("*regenie.gz"), path("*regenie.Ydict"), emit: regenie_step2_out, optional: true
     tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out_interaction, optional: true
     path "${filename}*.log", emit: regenie_step2_out_log
 
-  script:
+    script:
     def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = assoc_format == 'bgen' ? ".bgen" : ''
     def bgen_sample = sample_file ? "--sample $sample_file" : ''
@@ -45,36 +45,36 @@ process REGENIE_STEP2_RUN {
     def output_name = (range != -1)  ? "${filename}-${range_output}":"$filename" 
     def phenotype_split = run_interaction  ? "":"--no-split" 
 
-  """
-  regenie \
-    --step 2 \
-    $format ${filename}${extension} \
-    --phenoFile ${phenotypes_file} \
-    --phenoColList  ${params.phenotypes_columns} \
-    --bsize ${params.regenie_bsize_step2} \
-    --pred regenie_step1_out_pred.list \
-    --threads ${task.cpus} \
-    --minMAC ${params.regenie_min_mac} \
-    --minINFO ${params.regenie_min_imputation_score} \
-    --gz \
-    $phenotype_split \
-    $binaryTrait \
-    $test \
-    $bgen_sample \
-    $regenie_range \
-    $covariants \
-    $quant_covariants \
-    $cat_covariants \
-    $condition_list \
-    $deleteMissingData \
-    $predictions \
-    $refFirst \
-    $apply_rint \
-    $interaction \
-    $interaction_snp \
-    $rare_mac \
-    $no_condtl \
-    $force_condtl \
-    --out $output_name
-  """
+    """
+    regenie \
+        --step 2 \
+        $format ${filename}${extension} \
+        --phenoFile ${phenotypes_file} \
+        --phenoColList  ${params.phenotypes_columns} \
+        --bsize ${params.regenie_bsize_step2} \
+        --pred regenie_step1_out_pred.list \
+        --threads ${task.cpus} \
+        --minMAC ${params.regenie_min_mac} \
+        --minINFO ${params.regenie_min_imputation_score} \
+        --gz \
+        $phenotype_split \
+        $binaryTrait \
+        $test \
+        $bgen_sample \
+        $regenie_range \
+        $covariants \
+        $quant_covariants \
+        $cat_covariants \
+        $condition_list \
+        $deleteMissingData \
+        $predictions \
+        $refFirst \
+        $apply_rint \
+        $interaction \
+        $interaction_snp \
+        $rare_mac \
+        $no_condtl \
+        $force_condtl \
+        --out $output_name
+    """
 }

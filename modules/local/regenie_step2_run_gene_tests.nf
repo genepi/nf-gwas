@@ -1,9 +1,9 @@
 process REGENIE_STEP2_RUN_GENE_TESTS {
 
-  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.log'
-  publishDir "${params.pubDir}/masks", mode: 'copy', pattern: '*masks*.{txt,snplist,bed,bim,fam}'
+    publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.log'
+    publishDir "${params.pubDir}/masks", mode: 'copy', pattern: '*masks*.{txt,snplist,bed,bim,fam}'
 
-  input:
+    input:
     path step1_out
     tuple val(filename), path(genotyped_plink_file)
     val assoc_format
@@ -14,12 +14,12 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     path regenie_gene_masks_file
     path condition_list_file
 
-  output:
+    output:
     tuple val(filename), path("*regenie.gz"), emit: regenie_step2_out
     path "${filename}.log", emit: regenie_step2_out_log
     path "${filename}_masks*"
 
-  script:
+    script:
     def format = assoc_format == 'bed' ? "--bed" : '--bgen'
     def extension = assoc_format == 'bgen' ? ".bgen" : ''
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
@@ -40,35 +40,35 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     def joint = params.regenie_gene_joint ? "--joint ${params.regenie_gene_joint}":''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
 
-  """
-  regenie \
-    --step 2 \
-    $format ${filename}${extension} \
-    --phenoFile ${phenotypes_file} \
-    --phenoColList  ${params.phenotypes_columns} \
-    --bsize ${params.regenie_bsize_step2} \
-    --pred regenie_step1_out_pred.list \
-    --anno-file ${regenie_gene_anno_file} \
-    --set-list ${regenie_gene_setlist_file} \
-    --mask-def ${regenie_gene_masks_file} \
-    --threads ${task.cpus} \
-    --gz \
-    --check-burden-files \
-    --write-mask-snplist \
-    $writeMasks \
-    $binaryTrait \
-    $covariants \
-    $quant_covariants \
-    $cat_covariants \
-    $condition_list \
-    $predictions \
-    $apply_rint \
-    $geneTest \
-    $aaf \
-    $maxAaf \
-    $vcMACThr \
-    $buildMask \
-    $joint \
-    --out ${filename}
-  """
+    """
+    regenie \
+        --step 2 \
+        $format ${filename}${extension} \
+        --phenoFile ${phenotypes_file} \
+        --phenoColList  ${params.phenotypes_columns} \
+        --bsize ${params.regenie_bsize_step2} \
+        --pred regenie_step1_out_pred.list \
+        --anno-file ${regenie_gene_anno_file} \
+        --set-list ${regenie_gene_setlist_file} \
+        --mask-def ${regenie_gene_masks_file} \
+        --threads ${task.cpus} \
+        --gz \
+        --check-burden-files \
+        --write-mask-snplist \
+        $writeMasks \
+        $binaryTrait \
+        $covariants \
+        $quant_covariants \
+        $cat_covariants \
+        $condition_list \
+        $predictions \
+        $apply_rint \
+        $geneTest \
+        $aaf \
+        $maxAaf \
+        $vcMACThr \
+        $buildMask \
+        $joint \
+        --out ${filename}
+    """
 }

@@ -1,12 +1,12 @@
 process COMBINE_MANIFEST_FILES {
 
-  input:
+    input:
     path input
 
-  output:
+    output:
     path "combined_manifest.txt", emit: combined_manifest
 
-  """
-  csvtk concat ${input} > combined_manifest.txt
-  """
-  }
+    """
+    csvtk concat ${input} > combined_manifest.txt
+    """
+}
