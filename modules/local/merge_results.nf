@@ -1,6 +1,6 @@
 process MERGE_RESULTS {
 
-  publishDir "${params.outdir}/results", mode: 'copy'
+  publishDir "${params.pubDir}/results", mode: 'copy'
   tag "${phenotype}"
 
   input:

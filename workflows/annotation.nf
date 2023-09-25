@@ -4,8 +4,8 @@ if(params.outdir == null) {
 } else {
     outdir = params.outdir
 }
-include { DOWNLOAD_RSIDS   } from '../modules/local/download_rsids.nf'  addParams(outdir: "$outdir")
-include { ANNOTATE_RESULTS } from '../modules/local/annotate_results'  addParams(outdir: "$outdir")
+include { DOWNLOAD_RSIDS   } from '../modules/local/download_rsids.nf' 
+include { ANNOTATE_RESULTS } from '../modules/local/annotate_results' 
 workflow ANNOTATION {
 
     take: 

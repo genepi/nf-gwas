@@ -1,6 +1,6 @@
 process QC_FILTER_GENOTYPED {
 
-  publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.qc.log'
+  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.qc.log'
 
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_file)

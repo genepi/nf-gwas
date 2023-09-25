@@ -5,7 +5,7 @@ if(params.outdir == null) {
     outdir = params.outdir
 }
 
-include { QC_FILTER_GENOTYPED } from '../modules/local/qc_filter_genotyped' addParams(outdir: "$outdir")
+include { QC_FILTER_GENOTYPED } from '../modules/local/qc_filter_genotyped' 
 
 workflow QUALITY_CONTROL {
 

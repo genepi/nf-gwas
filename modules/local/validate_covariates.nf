@@ -1,7 +1,7 @@
 process VALIDATE_COVARIATES {
 
-  publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*log'
-  publishDir "${params.outdir}/validated_input/", mode: 'copy', pattern: '*validated.txt'
+  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*log'
+  publishDir "${params.pubDir}/validated_input/", mode: 'copy', pattern: '*validated.txt'
 
   input:
     path covariates_file

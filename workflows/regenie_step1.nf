@@ -1,15 +1,8 @@
-//TODO duplicate code
-if(params.outdir == null) {
-    outdir = "output/${params.project}"
-} else {
-    outdir = params.outdir
-}
-
-include { REGENIE_STEP1_RUN           } from '../modules/local/regenie_step1_run' addParams(outdir: "$outdir")
-include { REGENIE_STEP1_SPLIT         } from '../modules/local/regenie_step1_split' addParams(outdir: "$outdir")
-include { REGENIE_STEP1_MERGE_CHUNKS  } from '../modules/local/regenie_step1_merge_chunks' addParams(outdir: "$outdir")
-include { REGENIE_STEP1_RUN_CHUNK     } from '../modules/local/regenie_step1_run_chunk' addParams(outdir: "$outdir")
-include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1'  addParams(outdir: "$outdir")
+include { REGENIE_STEP1_RUN           } from '../modules/local/regenie_step1_run' 
+include { REGENIE_STEP1_SPLIT         } from '../modules/local/regenie_step1_split'
+include { REGENIE_STEP1_MERGE_CHUNKS  } from '../modules/local/regenie_step1_merge_chunks'
+include { REGENIE_STEP1_RUN_CHUNK     } from '../modules/local/regenie_step1_run_chunk' 
+include { REGENIE_LOG_PARSER_STEP1    } from '../modules/local/regenie_log_parser_step1' 
 
 workflow REGENIE_STEP1 {
 

@@ -1,6 +1,6 @@
 process REPORT_GENE_BASED_TESTS {
 
-  publishDir "${params.outdir}", mode: 'copy'
+  publishDir "${params.pubDir}", mode: 'copy'
 
   input:
     tuple val(phenotype), path(regenie_merged)

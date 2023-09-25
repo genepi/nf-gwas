@@ -5,9 +5,9 @@ if(params.outdir == null) {
     outdir = params.outdir
 }
 
-include { CHUNK_ASSOCIATION_FILES     } from '../modules/local/chunk_association_files' addParams(outdir: "$outdir")
-include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_files' addParams(outdir: "$outdir")
-include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' addParams(outdir: "$outdir")
+include { CHUNK_ASSOCIATION_FILES     } from '../modules/local/chunk_association_files' 
+include { COMBINE_MANIFEST_FILES      } from '../modules/local/combine_manifest_files' 
+include { IMPUTED_TO_PLINK2           } from '../modules/local/imputed_to_plink2' 
 
 workflow CONVERSION_CHUNKING {
 

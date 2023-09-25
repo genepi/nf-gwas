@@ -1,7 +1,7 @@
 process REGENIE_STEP2_RUN_GENE_TESTS {
 
-  publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.log'
-  publishDir "${params.outdir}/masks", mode: 'copy', pattern: '*masks*.{txt,snplist,bed,bim,fam}'
+  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.log'
+  publishDir "${params.pubDir}/masks", mode: 'copy', pattern: '*masks*.{txt,snplist,bed,bim,fam}'
 
   input:
     path step1_out

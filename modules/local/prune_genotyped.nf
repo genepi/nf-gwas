@@ -1,6 +1,6 @@
 process PRUNE_GENOTYPED {
 
-  publishDir "${params.outdir}/logs", mode: 'copy', pattern: '*.pruned.log'
+  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.pruned.log'
 
   input:
     tuple val(genotyped_qc_filename), path(genotyped_qc_bim_file), path(genotyped_qc_bed_file), path(genotyped_qc_fam_file)

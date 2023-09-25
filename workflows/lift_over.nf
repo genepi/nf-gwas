@@ -4,7 +4,7 @@ if(params.outdir == null) {
 } else {
     outdir = params.outdir
 }
-include { LIFTOVER_RESULTS } from '../modules/local/liftover_results.nf'  addParams(outdir: "$outdir")
+include { LIFTOVER_RESULTS } from '../modules/local/liftover_results.nf' 
 
 workflow LIFT_OVER {
 

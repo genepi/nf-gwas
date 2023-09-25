@@ -3,7 +3,7 @@ import groovy.json.JsonGenerator.Converter
 
 process REPORT_INDEX {
 
-  publishDir "${params.outdir}", mode: 'copy'
+  publishDir "${params.pubDir}", mode: 'copy'
 
   input:
     val phenotypes

@@ -1,6 +1,6 @@
 process REGENIE_STEP1_MERGE_CHUNKS {
 
-  publishDir "${params.outdir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
+  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
   tag "${phenotype}"
 
   input:

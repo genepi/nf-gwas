@@ -1,7 +1,7 @@
 process FILTER_RESULTS {
 
   tag "${regenie_chromosomes.simpleName}"
-  publishDir "${params.outdir}/results/tophits", mode: 'copy'
+  publishDir "${params.pubDir}/results/tophits", mode: 'copy'
 
   input:
     tuple val(phenotype), path(regenie_chromosomes)

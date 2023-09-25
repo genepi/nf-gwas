@@ -5,8 +5,8 @@ if(params.outdir == null) {
     outdir = params.outdir
 }
 
-include { VALIDATE_PHENOTYPES } from '../modules/local/validate_phenotypes' addParams(outdir: "$outdir")
-include { VALIDATE_COVARIATES } from '../modules/local/validate_covariates' addParams(outdir: "$outdir")
+include { VALIDATE_PHENOTYPES } from '../modules/local/validate_phenotypes'
+include { VALIDATE_COVARIATES } from '../modules/local/validate_covariates'
 
 workflow INPUT_VALIDATION {
 

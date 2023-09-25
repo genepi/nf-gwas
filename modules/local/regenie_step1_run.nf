@@ -1,6 +1,6 @@
 process REGENIE_STEP1_RUN {
 
-  publishDir "${params.outdir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
+  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
 
   input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)

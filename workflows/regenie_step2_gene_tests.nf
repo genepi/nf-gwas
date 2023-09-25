@@ -5,8 +5,8 @@ if(params.outdir == null) {
     outdir = params.outdir
 }
 
-include { REGENIE_STEP2_RUN_GENE_TESTS } from '../modules/local/regenie_step2_run_gene_tests' addParams(outdir: "$outdir")
-include { REGENIE_LOG_PARSER_STEP2 } from '../modules/local/regenie_log_parser_step2'  addParams(outdir: "$outdir")
+include { REGENIE_STEP2_RUN_GENE_TESTS } from '../modules/local/regenie_step2_run_gene_tests' 
+include { REGENIE_LOG_PARSER_STEP2 } from '../modules/local/regenie_log_parser_step2'  
 
 workflow REGENIE_STEP2_GENE_TESTS {
 
@@ -16,13 +16,13 @@ workflow REGENIE_STEP2_GENE_TESTS {
     genotypes_association_format
     phenotypes_file_validated
     covariates_file_validated
-    regenie_anno_file
-    regenie_setlist_file
-    regenie_masks_file
     condition_list_file
 
     main:
-   
+    regenie_anno_file    = file(params.regenie_gene_anno, checkIfExists: true)
+    regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
+    regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
+
     REGENIE_STEP2_RUN_GENE_TESTS (
         regenie_step1_out_ch.collect(),
         step2_gene_tests_ch,
@@ -38,7 +38,7 @@ workflow REGENIE_STEP2_GENE_TESTS {
     // for gene-based testing phenotypes needs to be split into seperate files
     REGENIE_STEP2_RUN_GENE_TESTS.out.regenie_step2_out
         .transpose()
-        .map { prefix, fl -> tuple(getPhenotype(prefix, fl), fl) }
+        .map { prefix, fl -> tuple(RegenieUtil.getPhenotype(prefix, fl), fl) }
         .set { regenie_step2_by_phenotype }
 
     regenie_step2_out_log = REGENIE_STEP2_RUN_GENE_TESTS.out.regenie_step2_out_log
@@ -53,11 +53,6 @@ workflow REGENIE_STEP2_GENE_TESTS {
     regenie_step2_parsed_logs
     regenie_step2_by_phenotype
 
-}
-
-// extract phenotype name from regenie output file
-def getPhenotype(prefix, file ) {
-  return file.baseName.replaceAll(prefix, '').split('_',2)[1].replaceAll('.regenie', '')
 }
 
 

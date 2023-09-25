@@ -1,6 +1,6 @@
 process LIFTOVER_RESULTS {
 
-  publishDir "${params.outdir}/results", mode: 'copy'
+  publishDir "${params.pubDir}/results", mode: 'copy'
 
   input:
     path regenie_file

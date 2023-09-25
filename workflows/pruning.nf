@@ -5,7 +5,7 @@ if(params.outdir == null) {
     outdir = params.outdir
 }
 
-include { PRUNE_GENOTYPED } from '../modules/local/prune_genotyped' addParams(outdir: "$outdir")
+include { PRUNE_GENOTYPED } from '../modules/local/prune_genotyped'
 
 workflow PRUNING {
 
