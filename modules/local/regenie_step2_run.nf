@@ -1,8 +1,8 @@
 process REGENIE_STEP2_RUN {
 
-  publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.log'
+    publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.log'
 
-  tag "${plink2_pgen_file.simpleName}"
+    tag "${plink2_pgen_file.simpleName}"
 
     input:
 	  path step1_out

@@ -7,7 +7,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     path step1_out
     tuple val(filename), path(genotyped_plink_file)
     val assoc_format
-	  path phenotypes_file
+	path phenotypes_file
     path covariates_file
     path regenie_gene_anno_file
     path regenie_gene_setlist_file
