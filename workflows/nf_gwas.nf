@@ -114,7 +114,7 @@ if (run_gene_tests) {
 
 //Optional condition-list file
 if (!params.regenie_condition_list ) {
-    condition_list_file = []
+    condition_list_file = Channel.empty()
 } else {
     condition_list_file = file(params.regenie_condition_list, checkIfExists: true)
 }
@@ -180,8 +180,8 @@ workflow NF_GWAS {
             QUALITY_CONTROL.out.genotyped_filtered_snplist_ch,
             QUALITY_CONTROL.out.genotyped_filtered_id_ch,
             phenotypes_file_validated,
-            covariates_file_validated,
-            condition_list_file
+            covariates_file_validated.collect().ifEmpty([]),
+            condition_list_file.collect().ifEmpty([])
         )
 
         regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out_ch
@@ -195,8 +195,8 @@ workflow NF_GWAS {
             imputed_plink2_ch,
             genotypes_association_format,
             phenotypes_file_validated,
-            covariates_file_validated,
-            condition_list_file,
+            covariates_file_validated.collect().ifEmpty([]),
+            condition_list_file.collect().ifEmpty([]),
             run_interaction_tests
         )
 
@@ -218,8 +218,8 @@ workflow NF_GWAS {
             step2_gene_tests_ch,
             genotypes_association_format,
             phenotypes_file_validated,
-            covariates_file_validated,
-            condition_list_file
+            covariates_file_validated.collect().ifEmpty([]),
+            condition_list_file.collect().ifEmpty([])
         )
         regenie_step2_by_phenotype = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_by_phenotype
 

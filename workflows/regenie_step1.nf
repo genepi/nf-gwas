@@ -57,9 +57,9 @@ workflow REGENIE_STEP1 {
             groupedChunks,
             genotyped_filtered_snplist_ch.collect(),
             genotyped_filtered_id_ch.collect(),
-            phenotypes_file_validated.collect(),
-            covariates_file_validated.collect(),
-            condition_list_file.collect()
+            phenotypes_file_validated,
+            covariates_file_validated,
+            condition_list_file
         )
 
         // merge pred.list files from chunks and add it to output channel
