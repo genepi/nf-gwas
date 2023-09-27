@@ -129,9 +129,7 @@ include { INPUT_VALIDATION         } from './input_validation'
 include { CONVERSION_CHUNKING      } from './conversion_chunking'
 include { QUALITY_CONTROL          } from './quality_control'
 include { PRUNING                  } from './pruning'
-include { REGENIE_STEP1            } from './regenie_step1'
-include { REGENIE_STEP2_GENE_TESTS } from './regenie_step2_gene_tests'
-include { REGENIE_STEP2            } from './regenie_step2'
+include { REGENIE                  } from './regenie/regenie'
 include { ANNOTATION               } from './annotation'
 include { LIFT_OVER                } from './lift_over'
 include { REPORTING                } from './reporting'
@@ -142,9 +140,6 @@ include { MERGE_RESULTS            } from '../modules/local/merge_results'
 
 workflow NF_GWAS {
 
-    // TODO: Create sub-workflows for gene_based and classic gwas?
-
-    /* executed for all modes */ 
     INPUT_VALIDATION()
 
     covariates_file_validated_log = INPUT_VALIDATION.out.covariates_file_validated_log
@@ -152,92 +147,86 @@ workflow NF_GWAS {
     phenotypes_file_validated = INPUT_VALIDATION.out.phenotypes_file_validated
     phenotypes_file_validated_log = INPUT_VALIDATION.out.phenotypes_file_validated_log
 
+
     if (!run_gene_tests) {
+
         CONVERSION_CHUNKING (
             genotypes_association,
             genotypes_association_format
         )
         imputed_plink2_ch = CONVERSION_CHUNKING.out.imputed_plink2_ch
+
     } else {
-        step2_gene_tests_ch = Channel.fromFilePairs(genotypes_association, size: 3)
+
+        imputed_plink2_ch = Channel.fromFilePairs(genotypes_association, size: 3)
+        
     }
 
-    regenie_step1_parsed_logs_ch = Channel.empty()
-    regenie_step1_out_ch = Channel.of('/')
-
-    /* executed for all modes */ 
+    genotyped_final_ch = Channel.empty()
+    genotyped_filtered_snplist_ch = Channel.empty()
+    genotyped_filtered_id_ch = Channel.empty()
+   
     if (!skip_predictions) {
+
         QUALITY_CONTROL(genotypes_prediction)
         genotyped_final_ch = QUALITY_CONTROL.out.genotyped_filtered_files_ch
-
+        genotyped_filtered_snplist_ch = QUALITY_CONTROL.out.genotyped_filtered_snplist_ch
+        genotyped_filtered_id_ch = QUALITY_CONTROL.out.genotyped_filtered_id_ch
+        
         if(params.prune_enabled) {
+
             PRUNING(QUALITY_CONTROL.out.genotyped_filtered_files_ch)
             genotyped_final_ch = PRUNING.out.genotyped_final_ch
+
         } 
+            
+    }
+       
+    REGENIE (
+        genotyped_final_ch,
+        QUALITY_CONTROL.out.genotyped_filtered_snplist_ch,
+        QUALITY_CONTROL.out.genotyped_filtered_id_ch,
+        phenotypes_file_validated,
+        covariates_file_validated.collect().ifEmpty([]),
+        condition_list_file.collect().ifEmpty([]),
+        imputed_plink2_ch,
+        genotypes_association_format,
+        run_interaction_tests,
+        skip_predictions,
+        run_gene_tests
+    )
 
-        REGENIE_STEP1(
-            genotyped_final_ch,
-            QUALITY_CONTROL.out.genotyped_filtered_snplist_ch,
-            QUALITY_CONTROL.out.genotyped_filtered_id_ch,
-            phenotypes_file_validated,
-            covariates_file_validated.collect().ifEmpty([]),
-            condition_list_file.collect().ifEmpty([])
+    regenie_step2_out = REGENIE.out.regenie_step2_out
+    regenie_step2_parsed_logs = REGENIE.out.regenie_step2_parsed_logs
+    //TODO return logs from step1
+    regenie_step1_parsed_logs_ch = Channel.empty()
+
+    //TODO improve 
+    if (!run_interaction_tests && !run_gene_tests) {
+
+        ANNOTATION (
+            regenie_step2_out,
+            association_build  
         )
-
-        regenie_step1_out_ch = REGENIE_STEP1.out.regenie_step1_out_ch
-        regenie_step1_parsed_logs_ch = REGENIE_STEP1.out.regenie_step1_parsed_logs_ch
-  
-    } 
-
-    if (!run_gene_tests) {
-        REGENIE_STEP2 (
-            regenie_step1_out_ch,
-            imputed_plink2_ch,
-            genotypes_association_format,
-            phenotypes_file_validated,
-            covariates_file_validated.collect().ifEmpty([]),
-            condition_list_file.collect().ifEmpty([]),
-            run_interaction_tests
-        )
-
-        regenie_step2_out = REGENIE_STEP2.out.regenie_step2_out
-
-        if (!run_interaction_tests) {
-            ANNOTATION (
-                regenie_step2_out,
-                association_build  
-            )
-            regenie_step2_by_phenotype = ANNOTATION.out.regenie_step2_by_phenotype
-        } else {
-            regenie_step2_by_phenotype = regenie_step2_out
-        }
+        regenie_step2_by_phenotype = ANNOTATION.out.regenie_step2_by_phenotype
 
     } else {
-        REGENIE_STEP2_GENE_TESTS (
-            regenie_step1_out_ch,
-            step2_gene_tests_ch,
-            genotypes_association_format,
-            phenotypes_file_validated,
-            covariates_file_validated.collect().ifEmpty([]),
-            condition_list_file.collect().ifEmpty([])
-        )
-        regenie_step2_by_phenotype = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_by_phenotype
+
+        regenie_step2_by_phenotype = regenie_step2_out
 
     }
-
-    /* executed for all modes */ 
+        
     MERGE_RESULTS (
         regenie_step2_by_phenotype.groupTuple()
     )
 
-   /* executed for all modes */ 
     LIFT_OVER (
         MERGE_RESULTS.out.results_merged_regenie_only,
         association_build
     )
 
     if (!run_gene_tests) {
-
+        
         FILTER_RESULTS (
             MERGE_RESULTS.out.results_merged
         )
@@ -249,19 +238,21 @@ workflow NF_GWAS {
             phenotypes_file_validated_log,
             covariates_file_validated_log.collect().ifEmpty([]),
             regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
-            REGENIE_STEP2.out.regenie_step2_parsed_logs,
+            regenie_step2_parsed_logs,
             run_interaction_tests
         )
 
     } else {
+
         REPORTING_GENE_TESTS (
             MERGE_RESULTS.out.results_merged,
             phenotypes_file_validated,
             phenotypes_file_validated_log,
             covariates_file_validated_log.collect().ifEmpty([]),
             regenie_step1_parsed_logs_ch.collect().ifEmpty([]),
-            REGENIE_STEP2_GENE_TESTS.out.regenie_step2_parsed_logs
+            regenie_step2_parsed_logs
         )
+
     }
 
 }
