@@ -1,5 +1,5 @@
-include { REPORT_INDEX } from '../modules/local/report_index' 
-include { REPORT       } from '../modules/local/report'  
+include { REPORT_INDEX } from '../modules/local/reporting/report_index' 
+include { REPORT       } from '../modules/local/reporting/report'  
 
 workflow REPORTING {
 

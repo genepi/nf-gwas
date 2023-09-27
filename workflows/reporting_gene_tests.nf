@@ -1,4 +1,4 @@
-include { REPORT_GENE_BASED_TESTS } from '../modules/local/report_gene_based_tests' 
+include { REPORT_GENE_BASED_TESTS } from '../modules/local/reporting/report_gene_based_tests' 
 
 workflow REPORTING_GENE_TESTS {
 

@@ -1,5 +1,5 @@
-include { REGENIE_STEP2_RUN_GENE_TESTS } from '../../modules/local/regenie_step2_run_gene_tests' 
-include { REGENIE_LOG_PARSER_STEP2 } from '../../modules/local/regenie_log_parser_step2'  
+include { REGENIE_STEP2_RUN_GENE_TESTS } from '../../modules/local/regenie/regenie_step2_run_gene_tests' 
+include { REGENIE_LOG_PARSER_STEP2 } from '../../modules/local/regenie/regenie_log_parser_step2'  
 
 workflow REGENIE_STEP2_GENE_TESTS {
 

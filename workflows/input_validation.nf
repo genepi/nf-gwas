@@ -1,5 +1,5 @@
-include { VALIDATE_PHENOTYPES } from '../modules/local/validate_phenotypes'
-include { VALIDATE_COVARIATES } from '../modules/local/validate_covariates'
+include { VALIDATE_PHENOTYPES } from '../modules/local/input_validation/validate_phenotypes'
+include { VALIDATE_COVARIATES } from '../modules/local/input_validation/validate_covariates'
 
 workflow INPUT_VALIDATION {
 

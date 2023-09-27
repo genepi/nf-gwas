@@ -1,5 +1,5 @@
-include { REGENIE_STEP2_RUN        } from '../../modules/local/regenie_step2_run' 
-include { REGENIE_LOG_PARSER_STEP2 } from '../../modules/local/regenie_log_parser_step2'  
+include { REGENIE_STEP2_RUN        } from '../../modules/local/regenie/regenie_step2_run' 
+include { REGENIE_LOG_PARSER_STEP2 } from '../../modules/local/regenie/regenie_log_parser_step2'  
 
 workflow REGENIE_STEP2 {
 

@@ -1,5 +1,5 @@
-include { DOWNLOAD_RSIDS   } from '../modules/local/download_rsids.nf' 
-include { ANNOTATE_RESULTS } from '../modules/local/annotate_results' 
+include { DOWNLOAD_RSIDS   } from '../modules/local/annotation/download_rsids.nf' 
+include { ANNOTATE_RESULTS } from '../modules/local/annotation/annotate_results' 
 
 workflow ANNOTATION {
     
