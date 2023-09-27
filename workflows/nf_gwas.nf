@@ -184,8 +184,8 @@ workflow NF_GWAS {
        
     REGENIE (
         genotyped_final_ch,
-        QUALITY_CONTROL.out.genotyped_filtered_snplist_ch,
-        QUALITY_CONTROL.out.genotyped_filtered_id_ch,
+        genotyped_filtered_snplist_ch,
+        genotyped_filtered_id_ch,
         phenotypes_file_validated,
         covariates_file_validated.collect().ifEmpty([]),
         condition_list_file.collect().ifEmpty([]),
