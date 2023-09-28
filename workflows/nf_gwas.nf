@@ -113,11 +113,10 @@ if (run_gene_tests) {
 }
 
 //Optional condition-list file
-if (!params.regenie_condition_list ) {
-    condition_list_file = Channel.empty()
-} else {
+ condition_list_file = Channel.empty()
+if (params.regenie_condition_list) {
     condition_list_file = Channel.fromPath(params.regenie_condition_list)
-}
+} 
 
 if(params.outdir == null) {
     params.pubDir = "output/${params.project}"
@@ -131,13 +130,30 @@ include { GENE_BASED_TESTS     } from './gene_based_tests'
 
 workflow NF_GWAS {
 
-    imputed_files = channel.fromPath(genotypes_association, checkIfExists: true)
+    imputed_files_ch = channel.fromPath(genotypes_association, checkIfExists: true)
+    phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
+
+    covariates_file = []
+    if(params.covariates_filename) {
+        
+        covariates_file = file(params.covariates_filename, checkIfExists: true)
+
+    }
+
+    genotyped_plink_ch = Channel.empty()
+    if(!skip_predictions) {
+        
+        genotyped_plink_ch = Channel.fromFilePairs(genotypes_prediction, size: 3, checkIfExists: true)
+
+    }
 
     if (!run_gene_tests) {
    
         SINGLE_VARIANT_TESTS(
-            imputed_files,
-            genotypes_prediction,
+            imputed_files_ch,
+            phenotypes_file,
+            covariates_file,
+            genotyped_plink_ch,
             association_build,
             genotypes_association_format,
             condition_list_file,
@@ -148,8 +164,10 @@ workflow NF_GWAS {
     } else {
         
         GENE_BASED_TESTS(
-            imputed_files,
-            genotypes_prediction,
+            imputed_files_ch,
+            phenotypes_file,
+            covariates_file,
+            genotyped_plink_ch,
             genotypes_association,
             association_build,
             genotypes_association_format,

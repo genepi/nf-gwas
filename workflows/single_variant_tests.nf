@@ -14,8 +14,10 @@ include { IMPUTED_TO_PLINK2    } from '../modules/local/imputed_to_plink2'
 workflow SINGLE_VARIANT_TESTS {
     
     take:
-    imputed_files
-    genotypes_prediction
+    imputed_files_ch
+    phenotypes_file
+    covariates_file
+    genotyped_plink_ch
     association_build
     genotypes_association_format
     condition_list_file
@@ -24,7 +26,10 @@ workflow SINGLE_VARIANT_TESTS {
     
     main:
     
-    INPUT_VALIDATION()
+    INPUT_VALIDATION(
+        phenotypes_file,
+        covariates_file
+    )
 
     covariates_file_validated_log = INPUT_VALIDATION.out.covariates_file_validated_log
     covariates_file_validated  = INPUT_VALIDATION.out.covariates_file_validated
@@ -34,7 +39,7 @@ workflow SINGLE_VARIANT_TESTS {
     if (genotypes_association_format == "vcf"){
 
         IMPUTED_TO_PLINK2 (
-            imputed_files
+            imputed_files_ch
         )
 
         imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
@@ -42,7 +47,7 @@ workflow SINGLE_VARIANT_TESTS {
     } else {
 
         CHUNKING (
-            imputed_files
+            imputed_files_ch
         )
         imputed_plink2_ch = CHUNKING.out.imputed_plink2_ch
     }
@@ -53,7 +58,7 @@ workflow SINGLE_VARIANT_TESTS {
    
     if (!skip_predictions) {
 
-        QUALITY_CONTROL(genotypes_prediction)
+        QUALITY_CONTROL(genotyped_plink_ch)
         genotyped_final_ch = QUALITY_CONTROL.out.genotyped_filtered_files_ch
         genotyped_filtered_snplist_ch = QUALITY_CONTROL.out.genotyped_filtered_snplist_ch
         genotyped_filtered_id_ch = QUALITY_CONTROL.out.genotyped_filtered_id_ch

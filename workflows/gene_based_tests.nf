@@ -12,8 +12,10 @@ include { IMPUTED_TO_PLINK2    } from '../modules/local/imputed_to_plink2'
 workflow GENE_BASED_TESTS {
     
     take:
-    imputed_files
-    genotypes_prediction
+    imputed_files_ch
+    phenotypes_file
+    covariates_file
+    genotyped_plink_ch
     genotypes_association
     association_build
     genotypes_association_format
@@ -22,7 +24,10 @@ workflow GENE_BASED_TESTS {
     run_interaction_tests
     
     main:
-    INPUT_VALIDATION()
+    INPUT_VALIDATION(
+        phenotypes_file,
+        covariates_file
+    )
 
     covariates_file_validated_log = INPUT_VALIDATION.out.covariates_file_validated_log
     covariates_file_validated  = INPUT_VALIDATION.out.covariates_file_validated
@@ -32,7 +37,7 @@ workflow GENE_BASED_TESTS {
     if (genotypes_association_format == "vcf"){
 
         IMPUTED_TO_PLINK2 (
-            imputed_files
+            imputed_files_ch
         )
 
         imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
@@ -48,7 +53,7 @@ workflow GENE_BASED_TESTS {
    
     if (!skip_predictions) {
 
-        QUALITY_CONTROL(genotypes_prediction)
+        QUALITY_CONTROL(genotyped_plink_ch)
         genotyped_final_ch = QUALITY_CONTROL.out.genotyped_filtered_files_ch
         genotyped_filtered_snplist_ch = QUALITY_CONTROL.out.genotyped_filtered_snplist_ch
         genotyped_filtered_id_ch = QUALITY_CONTROL.out.genotyped_filtered_id_ch

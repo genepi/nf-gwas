@@ -3,9 +3,12 @@ include { VALIDATE_COVARIATES } from '../modules/local/input_validation/validate
 
 workflow INPUT_VALIDATION {
 
+    take:
+    phenotypes_file
+    covariates_file
+    
     main:
-    phenotypes_file = file(params.phenotypes_filename, checkIfExists: true)
-  
+      
     VALIDATE_PHENOTYPES (
     phenotypes_file
     )
@@ -14,8 +17,7 @@ workflow INPUT_VALIDATION {
     covariates_file_validated = Channel.empty()
 
     if(params.covariates_filename) {
-        covariates_file = file(params.covariates_filename, checkIfExists: true)
-
+        
         VALIDATE_COVARIATES (
             covariates_file
         )
