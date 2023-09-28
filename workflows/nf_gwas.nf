@@ -112,18 +112,6 @@ if (run_gene_tests) {
     }
 }
 
-//Optional condition-list file
- condition_list_file = Channel.empty()
-if (params.regenie_condition_list) {
-    condition_list_file = Channel.fromPath(params.regenie_condition_list)
-} 
-
-if(params.outdir == null) {
-    params.pubDir = "output/${params.project}"
-} else {
-    params.pubDir = params.outdir
-}
-
 include { SINGLE_VARIANT_TESTS } from './single_variant_tests'
 include { GENE_BASED_TESTS     } from './gene_based_tests'
 
@@ -146,6 +134,17 @@ workflow NF_GWAS {
         genotyped_plink_ch = Channel.fromFilePairs(genotypes_prediction, size: 3, checkIfExists: true)
 
     }
+
+    //Optional condition-list file
+    condition_list_file = Channel.empty()
+    if (params.regenie_condition_list) {
+            condition_list_file = Channel.fromPath(params.regenie_condition_list)
+    } 
+
+    params.pubDir = params.outdir
+    if(params.outdir == null) {
+        params.pubDir = "output/${params.project}"
+    } 
 
     if (!run_gene_tests) {
    

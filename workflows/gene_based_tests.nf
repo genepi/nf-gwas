@@ -1,12 +1,12 @@
 include { INPUT_VALIDATION     } from './input_validation'
-include { QUALITY_CONTROL      } from './quality_control'
+include { IMPUTED_TO_PLINK2    } from '../modules/local/imputed_to_plink2' 
 include { PRUNING              } from './pruning'
+include { QUALITY_CONTROL      } from './quality_control'
 include { REGENIE              } from './regenie/regenie'
+include { MERGE_RESULTS        } from '../modules/local/merge_results' 
 include { LIFT_OVER            } from './lift_over'
 include { REPORTING_GENE_TESTS } from './reporting_gene_tests'
-include { FILTER_RESULTS       } from '../modules/local/filter_results' 
-include { MERGE_RESULTS        } from '../modules/local/merge_results' 
-include { IMPUTED_TO_PLINK2    } from '../modules/local/imputed_to_plink2' 
+
 
 
 workflow GENE_BASED_TESTS {

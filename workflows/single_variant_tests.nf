@@ -1,14 +1,14 @@
 include { INPUT_VALIDATION     } from './input_validation'
+include { IMPUTED_TO_PLINK2    } from '../modules/local/imputed_to_plink2' 
 include { CHUNKING             } from './chunking'
 include { QUALITY_CONTROL      } from './quality_control'
 include { PRUNING              } from './pruning'
 include { REGENIE              } from './regenie/regenie'
 include { ANNOTATION           } from './annotation'
-include { LIFT_OVER            } from './lift_over'
-include { REPORTING            } from './reporting'
-include { FILTER_RESULTS       } from '../modules/local/filter_results' 
 include { MERGE_RESULTS        } from '../modules/local/merge_results' 
-include { IMPUTED_TO_PLINK2    } from '../modules/local/imputed_to_plink2' 
+include { LIFT_OVER            } from './lift_over'
+include { FILTER_RESULTS       } from '../modules/local/filter_results' 
+include { REPORTING            } from './reporting'
 
 
 workflow SINGLE_VARIANT_TESTS {

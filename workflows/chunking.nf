@@ -5,7 +5,7 @@ include { COMBINE_MANIFEST_FILES      } from '../modules/local/chunking/combine_
 workflow CHUNKING {
 
     take:
-    imputed_files
+    imputed_files_ch
  
     main:
     chunk_size = params.genotypes_association_chunk_size
@@ -15,13 +15,13 @@ workflow CHUNKING {
 
         //no conversion and chunking needed, set input to imputed_plink2_ch channel
         // -1 denotes that no range is applied
-        imputed_files
+        imputed_files_ch
             .map { tuple(it.baseName, it, [], [], -1) }
             .set {imputed_plink2_ch}
 
     } else {
         // chunking expects that a bgi file is available
-        imputed_files
+        imputed_files_ch
             .map {it -> tuple(it.baseName, it,file(it+".bgi", checkIfExists: true)) }
             .set {bgen_filepair}
 
