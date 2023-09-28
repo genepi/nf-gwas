@@ -112,10 +112,11 @@ if (run_gene_tests) {
     }
 }
 
-params.pubDir = params.outdir
 if(params.outdir == null) {
     params.pubDir = "output/${params.project}"
-} 
+} else {
+    params.pubDir = params.outdir
+}
 
 include { SINGLE_VARIANT_TESTS } from './single_variant_tests'
 include { GENE_BASED_TESTS     } from './gene_based_tests'
