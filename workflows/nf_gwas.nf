@@ -112,6 +112,11 @@ if (run_gene_tests) {
     }
 }
 
+params.pubDir = params.outdir
+if(params.outdir == null) {
+    params.pubDir = "output/${params.project}"
+} 
+
 include { SINGLE_VARIANT_TESTS } from './single_variant_tests'
 include { GENE_BASED_TESTS     } from './gene_based_tests'
 
@@ -139,11 +144,6 @@ workflow NF_GWAS {
     condition_list_file = Channel.empty()
     if (params.regenie_condition_list) {
             condition_list_file = Channel.fromPath(params.regenie_condition_list)
-    } 
-
-    params.pubDir = params.outdir
-    if(params.outdir == null) {
-        params.pubDir = "output/${params.project}"
     } 
 
     if (!run_gene_tests) {
