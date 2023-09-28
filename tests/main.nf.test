@@ -11,24 +11,24 @@ nextflow_pipeline {
         params {
             project                       = 'test-gene-based-test'
             genotypes_build               = 'hg19'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
             genotypes_association_format  = 'bed'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_bin.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
             phenotypes_binary_trait       = true
             phenotypes_columns            = 'Y1,Y2'
-            covariates_filename           = "$baseDir/tests/input/pipeline/covariates.txt"
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
             covariates_columns            = 'V1,V2,V3'
             regenie_run_gene_based_tests  = true
-            regenie_gene_anno             = "$baseDir/tests/input/gene_based_tests/example.annotation"
-            regenie_gene_setlist          = "$baseDir/tests/input/gene_based_tests/example.setlist"
-            regenie_gene_masks            = "$baseDir/tests/input/gene_based_tests/example.masks"
+            regenie_gene_anno             = "$projectDir/tests/input/gene_based_tests/example.annotation"
+            regenie_gene_setlist          = "$projectDir/tests/input/gene_based_tests/example.setlist"
+            regenie_gene_masks            = "$projectDir/tests/input/gene_based_tests/example.masks"
             regenie_gene_test             = 'skat'
             regenie_gene_aaf              = 0.01
             regenie_gene_vc_max_aaf       = 100
             regenie_gene_vc_mac_thr       = 10
             regenie_gene_build_mask       = 'sum'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
 
@@ -45,25 +45,25 @@ test("Should execute gene-based test pipeline") {
         params {
             project                       = 'test-gene-based-test'
             genotypes_build               = 'hg19'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
             genotypes_association_format  = 'bed'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_bin.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
             phenotypes_binary_trait       = true
             phenotypes_columns            = 'Y1,Y2'
-            covariates_filename           = "$baseDir/tests/input/pipeline/covariates.txt"
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
             covariates_columns            = 'V1,V2,V3'
             regenie_run_gene_based_tests  = true
-            regenie_gene_anno             = "$baseDir/tests/input/gene_based_tests/example.annotation"
-            regenie_gene_setlist          = "$baseDir/tests/input/gene_based_tests/example.setlist"
-            regenie_gene_masks            = "$baseDir/tests/input/gene_based_tests/example.masks"
+            regenie_gene_anno             = "$projectDir/tests/input/gene_based_tests/example.annotation"
+            regenie_gene_setlist          = "$projectDir/tests/input/gene_based_tests/example.setlist"
+            regenie_gene_masks            = "$projectDir/tests/input/gene_based_tests/example.masks"
             regenie_gene_test             = 'skat'
             regenie_gene_aaf              = 0.01
             regenie_gene_vc_max_aaf       = 100
             regenie_gene_vc_mac_thr       = 10
             regenie_gene_build_mask       = 'max'
             regenie_write_bed_masks       = true
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
 
@@ -79,16 +79,16 @@ test("Should execute GWAS with pruning pipeline") {
 
         params {
             project                       = "test-gwas-add-pruning"
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
             prune_enabled                 = true
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
 
@@ -104,15 +104,15 @@ test("Should execute GWAS with additive test and multiple chromosomes") {
 
         params {
             project                       = 'test-gwas-additive-2chromosomes'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/chr*.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/chr*.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 2
         }
     }
@@ -129,16 +129,16 @@ test("Should execute liftover and GWAS pipeline with array results") {
 
         params {
             project                       = 'test-gwas-liftover-array-results'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/1000g_lpa_hg38.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/1000g_lpa_hg38.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/1000g_lpa_hg38.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/1000g_lpa_hg38.vcf.gz"
             association_build             = 'hg38'
             target_build                  = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_1000g_lpa.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_1000g_lpa.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 1
         }
     }
@@ -155,16 +155,16 @@ test("Should execute liftover and GWAS pipeline") {
 
         params {
             project                       = 'test-gwas-liftover'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/1000g_lpa_hg38.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/1000g_lpa_hg38.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/1000g_lpa_hg38.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/1000g_lpa_hg38.vcf.gz"
             association_build             = 'hg38'
             target_build                  = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_1000g_lpa.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_1000g_lpa.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 1
         }
     }
@@ -181,15 +181,15 @@ test("Should execute GWAS with additive test and RSIDs") {
 
         params {
             project                       = 'test-gwas-additive-rsids'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 2
         }
     }
@@ -259,16 +259,16 @@ test("Should execute GWAS with binary trait (no Firth approximation)") {
     when {
         params {
             project                       = "test-gwas-binary-no-approx"
-            genotypes_prediction          = "tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "tests/input/pipeline/example.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = true
             regenie_test                  = 'additive'
             regenie_firth_approx          = false
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -280,16 +280,16 @@ test("Should execute GWAS with binary trait (no Firth)") {
     when {
         params {
             project                       = "test-gwas-binary-no-firth"
-            genotypes_prediction          = "tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "tests/input/pipeline/example.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "tests/input/pipeline/phenotype_bin.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = true
             regenie_test                  = 'additive'
             regenie_firth                 = false
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -301,15 +301,15 @@ test("Should execute GWAS with binary trait (with missing data)") {
     when {
         params {
             project                       = "test-gwas-binary-with-NA"
-            genotypes_prediction          = "tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "tests/input/pipeline/example.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "tests/input/pipeline/phenotype_bin_wNA.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin_wNA.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = true
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -321,16 +321,16 @@ test("Should execute GWAS with additive test on 2 chromosomes") {
     when {
         params {
             project                       = 'test-gwas-additive-2chromosomes'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example*.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example*.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             genotypes_association_chunk_size = 500000
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 2
         }
     }
@@ -346,17 +346,17 @@ test("Should execute GWAS with header in phenotype file") {
     when {
         params {
             project                       = 'test-gwas-header'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_chunk_size = 100
             genotypes_association_chunk_strategy = 'VARIANTS'
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_header.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_header.txt"
             phenotypes_columns            = 'PHENO1,PHENO2'
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -368,18 +368,18 @@ test("Should execute GWAS with header in phenotype file (custom batch size)") {
     when {
         params {
             project                       = 'test-gwas-header'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_chunk_size = 100
             genotypes_prediction_chunks   = 5
             regenie_bsize_step1           = 100
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_header.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_header.txt"
             phenotypes_columns            = 'PHENO1,PHENO2'
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -391,16 +391,16 @@ test("Should execute GWAS with header in phenotype file (default batch size)") {
     when {
         params {
             project                       = 'test-gwas-header'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_chunk_size = 100
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_header.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_header.txt"
             phenotypes_columns            = 'PHENO1,PHENO2'
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -412,18 +412,18 @@ test("Should execute GWAS with condition file") {
     when {
         params {
             project                       = 'test-gwas-condition-file'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
-            covariates_filename           = "$baseDir/tests/input/pipeline/covariates.txt"
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
             covariates_columns            = 'V1,V2'
             regenie_test                  = 'additive'
-            regenie_condition_list        = "$baseDir/tests/input/pipeline/condition_snps.txt"
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            regenie_condition_list        = "$projectDir/tests/input/pipeline/condition_snps.txt"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -435,17 +435,17 @@ test("Should execute GWAS with covariates file") {
     when {
         params {
             project                       = 'test-gwas-covariates-file'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
-            covariates_filename           = "tests/input/pipeline/covariates.txt"
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
             covariates_columns            = 'V1,V2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -457,16 +457,16 @@ test("Should execute GWAS with deletion of missing phenotype data") {
     when {
         params {
             project                       = 'test-gwas-delete-missing-phenotype-data'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
             phenotypes_delete_missings    = true
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -478,15 +478,15 @@ test("Should execute GWAS with dominant test") {
     when {
         params {
             project                       = 'test-gwas-dominant'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'dominant'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -498,16 +498,16 @@ test("Should execute GWAS with force step 1") {
     when {
         params {
             project                       = 'test-gwas-force-step1'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
             regenie_force_step1           = 'true'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -519,15 +519,15 @@ test("Should execute GWAS with header in phenotype file") {
     when {
         params {
             project                       = 'test-gwas-header'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.bgen"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'bgen'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_header.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_header.txt"
             phenotypes_columns            = 'PHENO1,PHENO2'
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -539,15 +539,15 @@ test("Should execute GWAS with liftover to hg38 and annotation") {
     when {
         params {
             project                       = 'test-gwas-hg38-annotate'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example_hg38.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example_hg38.vcf.gz"
             genotypes_build               = 'hg38'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -560,18 +560,18 @@ test("Should execute GWAS with interaction tests") {
         params {
             project                       = 'test-gwas-interaction'
             regenie_run_interaction_tests = true
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
-            covariates_filename           = "tests/input/pipeline/covariates.txt"
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
             covariates_columns            = 'V1,V2,V3'
             regenie_test                  = 'additive'
             regenie_interaction_snp       = '100'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -584,18 +584,18 @@ test("Should execute GWAS with interaction tests (interaction term)") {
         params {
             project                       = 'test-gwas-interaction'
             regenie_run_interaction_tests = true
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
-            covariates_filename           = "tests/input/pipeline/covariates.txt"
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
             covariates_columns            = 'V1,V2'
             regenie_test                  = 'additive'
             regenie_interaction           = 'V3'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -607,16 +607,16 @@ test("Should execute GWAS with custom Manhattan plot y-limit") {
     when {
         params {
             project                       = 'test-gwas-manhattan-limit'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
             plot_ylimit                   = 2
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -628,15 +628,15 @@ test("Should execute GWAS with phenotype file in tabs format") {
     when {
         params {
             project                       = 'test-gwas-phenotype-tabs'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.tabs.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.tabs.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -648,15 +648,15 @@ test("Should execute GWAS with phenotype file containing three empty values") {
     when {
         params {
             project                       = 'test-gwas-phenotype-three-empty-values'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype_with_three_empty_values.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_with_three_empty_values.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -668,16 +668,16 @@ test("Should execute GWAS with range filter") {
     when {
         params {
             project                       = 'test-gwas-range'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_range                 = '1:100-200'
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -689,16 +689,16 @@ test("Should execute GWAS with recessive test") {
     when {
         params {
             project                       = 'test-gwas-recessive'
-            genotypes_prediction          = "$baseDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
             regenie_test                  = 'recessive'
             regenie_ref_first             = true
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
@@ -710,15 +710,15 @@ test("Should execute GWAS with skipped predictions") {
     when {
         params {
             project                       = 'test-gwas-skip-predictions'
-            genotypes_association         = "$baseDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
             genotypes_build               = 'hg19'
             genotypes_association_format  = 'vcf'
-            phenotypes_filename           = "$baseDir/tests/input/pipeline/phenotype.txt"
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
             phenotypes_columns            = 'Y1,Y2'
             phenotypes_binary_trait       = false
             regenie_skip_predictions      = true
             regenie_test                  = 'additive'
-            rsids_filename                = "$baseDir/tests/input/pipeline/rsids.tsv.gz"
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
     then {
