@@ -14,8 +14,9 @@ include { validateParameters; paramsHelp; paramsSummaryLog } from 'plugin/nf-val
 
 
 if (params.help) {
+   def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
    def String command = "nextflow run ${workflow.manifest.name} --config test.conf"
-   log.info paramsHelp(command)
+   log.info paramsHelp(command) + citation
    exit 0
 }
 
@@ -25,7 +26,8 @@ if (params.validate_params) {
 }
 
 // Print summary of supplied parameters
-//log.info paramsSummaryLog(workflow)
+log.info paramsSummaryLog(workflow)
+
 
 include { NF_GWAS } from './workflows/nf_gwas'
 
