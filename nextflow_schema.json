@@ -87,7 +87,6 @@
       },
       "required": [
         "project",
-        "genotypes_prediction",
         "genotypes_association",
         "phenotypes_filename",
         "phenotypes_columns"

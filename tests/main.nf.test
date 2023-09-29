@@ -206,8 +206,8 @@ test("Should execute GWAS with additive test and RSIDs") {
 
             params {
                 project                       = 'gwas-additive'
-                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
                 phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
@@ -235,8 +235,8 @@ test("Should execute GWAS with additive test and RSIDs") {
 
             params {
                 project                       = "test-gwas-binary"
-                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.bgen"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
                 phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
