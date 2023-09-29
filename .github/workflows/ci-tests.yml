@@ -16,7 +16,7 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - name: Install nextflow
-      run: sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v21.04.3/nextflow; chmod +x nextflow;
+      run: sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v23.04.4/nextflow; chmod +x nextflow;
     - name: Add nextflow to path
       run: echo "/opt/nextflow" >> $GITHUB_PATH;
     - name: Install nf-test
