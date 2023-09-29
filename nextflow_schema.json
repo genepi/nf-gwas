@@ -89,8 +89,7 @@
         "genotypes_prediction",
         "genotypes_association",
         "phenotypes_filename",
-        "phenotypes_columns",
-        "phenotypes_binary_trait"
+        "phenotypes_columns"
       ],
       "fa_icon": "fas fa-project-diagram"
     },
@@ -428,7 +427,7 @@
       "default": "",
       "properties": {
         "regenie_gene_aaf": {
-          "type": "string",
+          "type": "number",
           "description": "Comma-separated list of AAF upper bounds to use when building masks",
           "fa_icon": "fas fa-project-diagram"
         },
@@ -455,12 +454,12 @@
           "fa_icon": "fas fa-project-diagram"
         },
         "regenie_gene_vc_mac_thr": {
-          "type": "string",
+          "type": "integer",
           "description": "MAC threshold below which to collapse variants in SKAT/ACAT-type tests",
           "fa_icon": "fas fa-project-diagram"
         },
         "regenie_gene_vc_max_aaf": {
-          "type": "string",
+          "type": "integer",
           "description": "AAF upper bound to use for SKAT/ACAT-type tests",
           "fa_icon": "fas fa-project-diagram"
         }
