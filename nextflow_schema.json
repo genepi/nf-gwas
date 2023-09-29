@@ -65,6 +65,7 @@
         },
         "phenotypes_binary_trait": {
           "type": "boolean",
+          "default": false,
           "description": "Binary trait",
           "fa_icon": "fas fa-project-diagram"
         },
