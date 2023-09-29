@@ -342,7 +342,7 @@ test("Should execute GWAS with additive test on 2 chromosomes") {
 // Continue adding more test configurations for the remaining parameter sets...
 
 
-test("Should execute GWAS with header in phenotype file") {
+test("Should execute GWAS with header in phenotype file with chunking") {
     when {
         params {
             project                       = 'test-gwas-header'
@@ -506,7 +506,7 @@ test("Should execute GWAS with force step 1") {
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            regenie_force_step1           = 'true'
+            regenie_force_step1           = true
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }
