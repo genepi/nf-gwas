@@ -206,8 +206,8 @@ test("Should execute GWAS with additive test and RSIDs") {
 
             params {
                 project                       = 'gwas-additive'
-                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.vcf.gz"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'vcf'
                 phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
@@ -235,8 +235,8 @@ test("Should execute GWAS with additive test and RSIDs") {
 
             params {
                 project                       = "test-gwas-binary"
-                genotypes_array               = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-                genotypes_imputed             = "$projectDir/tests/input/pipeline/example.bgen"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
                 genotypes_build               = 'hg19'
                 genotypes_imputed_format      = 'bgen'
                 phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
@@ -342,7 +342,7 @@ test("Should execute GWAS with additive test on 2 chromosomes") {
 // Continue adding more test configurations for the remaining parameter sets...
 
 
-test("Should execute GWAS with header in phenotype file") {
+test("Should execute GWAS with header in phenotype file with chunking") {
     when {
         params {
             project                       = 'test-gwas-header'
@@ -506,7 +506,7 @@ test("Should execute GWAS with force step 1") {
             phenotypes_binary_trait       = false
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
-            regenie_force_step1           = 'true'
+            regenie_force_step1           = true
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
         }
     }

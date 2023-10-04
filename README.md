@@ -24,7 +24,7 @@ Please cite this preprint if you use nf-gwas:
 
 ## Quick Start
 
-1) Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0)
+1) Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=22.10.4)
 
 2) Run the pipeline on a test dataset
 
