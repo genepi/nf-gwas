@@ -45,7 +45,7 @@ RUN jbang export portable -O=RegenieValidateInput.jar RegenieValidateInput.java
 
 # Install regenie (not as conda package available)
 WORKDIR "/opt"
-ENV REGENIE_VERSION="v3.2.9"
+ENV REGENIE_VERSION="v3.3"
 RUN mkdir regenie && cd regenie && \
     wget https://github.com/rgcgithub/regenie/releases/download/${REGENIE_VERSION}/regenie_${REGENIE_VERSION}.gz_x86_64_Linux.zip && \
     unzip -q regenie_v3.*.gz_x86_64_Linux.zip && \
