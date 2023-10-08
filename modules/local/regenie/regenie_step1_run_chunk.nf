@@ -19,6 +19,7 @@ process REGENIE_STEP1_RUN_CHUNK {
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
     def lowMemory = params.regenie_low_mem ? "--lowmem --lowmem-prefix tmp_rg" : ""
+    def step1_optional = params.regenie_step1_optional  ? "$params.regenie_step1_optional":'' 
 
     """
     # qcfiles path required for keep and extract (but not actually set below)
@@ -44,7 +45,8 @@ process REGENIE_STEP1_RUN_CHUNK {
         --threads ${task.cpus} \
         --run-l0 ${master},${chunk} \
         --out chunks_job_${chunk} \
-        --use-relative-path
+        --use-relative-path \
+        $step1_optional
     """
 
 }

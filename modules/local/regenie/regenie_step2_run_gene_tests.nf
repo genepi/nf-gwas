@@ -39,6 +39,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     def writeMasks = params.regenie_write_bed_masks  ? "--write-mask" : ''
     def joint = params.regenie_gene_joint ? "--joint ${params.regenie_gene_joint}":''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
+    def step2_optional = params.regenie_step2_optional  ? "$params.regenie_step2_optional":'' 
 
     """
     regenie \
@@ -69,6 +70,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
         $vcMACThr \
         $buildMask \
         $joint \
-        --out ${filename}
+        --out ${filename} \
+        $step2_optional
     """
 }

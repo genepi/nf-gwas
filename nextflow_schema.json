@@ -218,6 +218,21 @@
           "default": "RANGE",
           "description": "Chunk strategy ('RANGE' or 'VARIANTS') for association files.",
           "fa_icon": "fas fa-project-diagram"
+        },
+        "regenie_step1_optional": {
+          "type": "string",
+          "description": "Optional REGENIE Step1 parameters.",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "regenie_step2_optional": {
+          "type": "string",
+          "description": "Optional REGENIE Step2 parameters.",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "validate_params": {
+          "type": "boolean",
+          "description": "Validate input parameters.",
+          "fa_icon": "fas fa-project-diagram"
         }
       },
       "fa_icon": "fas fa-project-diagram"

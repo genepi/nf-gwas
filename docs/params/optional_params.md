@@ -85,9 +85,10 @@ The following parameters are all regenie specific. Please click [here](https://r
 
 | Option        |Default          | Description |
 | ------------- |-----------------| -------------|
-| `regenie_skip_predictions`     | false | Skip Regenie Step 1 predictions |  
+| `regenie_skip_predictions`     | false | Skip regenie Step 1 predictions |  
 | `regenie_force_step1`     |  false | Run regenie step 1 when >1M genotyped variants are used (not recommended) |
 | `regenie_bsize_step1`     | 1000 | Size of the genotype blocks |  
+| `regenie_step1_optional`     | null | Add optional regenie step 1 params not directly supported |  
 
 ### Single-variant and Gene-based Tests (Regenie Step 2)
 The following parameters are all regenie specific. Please click [here](https://rgcgithub.github.io/regenie/options/#basic-options) to learn more about them.
@@ -97,6 +98,7 @@ The following parameters are all regenie specific. Please click [here](https://r
 | `regenie_bsize_step2`     | 400 | Size of the genotype blocks |  
 | `regenie_firth`     |   true  | Use Firth likelihood ratio test (LRT) as fallback for p-values less than threshold |
 | `regenie_firth_approx`     |  true | Use approximate Firth LRT for computational speedup |
+| `regenie_step2_optional`     | null | Add optional regenie step 2 params not directly supported |  
 
 ### Single-variant Tests Only
 

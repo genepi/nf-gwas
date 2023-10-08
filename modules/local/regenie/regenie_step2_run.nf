@@ -44,6 +44,7 @@ process REGENIE_STEP2_RUN {
     def regenie_range = (range != -1)  ? "--range ${range}":''
     def output_name = (range != -1)  ? "${filename}-${range_output}":"$filename" 
     def phenotype_split = run_interaction  ? "":"--no-split" 
+    def step2_optional = params.regenie_step2_optional  ? "$params.regenie_step2_optional":'' 
 
     """
     regenie \
@@ -75,6 +76,7 @@ process REGENIE_STEP2_RUN {
         $rare_mac \
         $no_condtl \
         $force_condtl \
-        --out $output_name
+        --out $output_name \
+        $step2_optional
     """
 }
