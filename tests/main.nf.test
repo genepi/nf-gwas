@@ -726,5 +726,82 @@ test("Should execute GWAS with skipped predictions") {
     }
 }
 
+test("Should execute pipeline for binary trait with optional regenie params") {
+
+        when {
+
+            params {
+                project                       = "test-gwas-binary"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = true
+                regenie_test                  = 'additive'
+                outdir                        = "$outputDir"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
+                regenie_step2_optional        = "--maxCatLevels 3"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+}
+
+test("Should execute pipeline for binary trait with optional regenie step1 param") {
+
+        when {
+
+            params {
+                project                       = "test-gwas-binary"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = true
+                regenie_test                  = 'additive'
+                outdir                        = "$outputDir"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 2
+                regenie_step1_optional        = "--pThresh 0.01"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+}
+
+test("Should GWAS with chunking and optional step 1 param") {
+    when {
+        params {
+            project                       = 'test-gwas-header'
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
+            genotypes_build               = 'hg19'
+            genotypes_association_chunk_size = 100
+            genotypes_prediction_chunks   = 5
+            regenie_bsize_step1           = 100
+            genotypes_association_format  = 'bgen'
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_header.txt"
+            phenotypes_columns            = 'PHENO1,PHENO2'
+            phenotypes_binary_trait       = false
+            regenie_test                  = 'additive'
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            regenie_step1_optional        = "--pThresh 0.01"
+        }
+    }
+    then {
+        assert workflow.success
+    }
+}
+
 
 }

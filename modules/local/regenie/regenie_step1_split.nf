@@ -21,6 +21,7 @@ process REGENIE_STEP1_SPLIT {
     def forceStep1 = params.regenie_force_step1  ? "--force-step1" : ''
     def refFirst = params.regenie_ref_first  ? "--ref-first" : ''
     def condition_list = params.regenie_condition_list ? "--condition-list $condition_list_file" : ''
+    def step1_optional = params.regenie_step1_optional  ? "$params.regenie_step1_optional":'' 
   
     """
     # qcfiles path required for keep and extract (but not actually set below)
@@ -41,7 +42,8 @@ process REGENIE_STEP1_SPLIT {
         $refFirst \
         --bsize ${params.regenie_bsize_step1} \
         --split-l0 chunks,${params.genotypes_prediction_chunks} \
-        --out chunks
+        --out chunks \
+        $step1_optional
     """
 
 }
