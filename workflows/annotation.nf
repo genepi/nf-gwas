@@ -12,19 +12,13 @@ workflow ANNOTATION {
     genes_hg19 = file("$baseDir/genes/genes.hg19.v32.csv", checkIfExists: true)
     genes_hg38 = file("$baseDir/genes/genes.hg38.v32.csv", checkIfExists: true)
 
-    //Optional rsids annotation file and _tbi file
     rsids = params.rsids_filename
-    if (rsids != null) {
-        rsids_file = file(rsids, checkIfExists: true)
-        rsids_tbi_file = file(rsids+".tbi", checkIfExists: true)
-    } else {
-        println ANSI_YELLOW+  "WARN: A large rsID file will be downloaded for annotation. Please specify in config to avoid download." + ANSI_RESET
-    }
-    
     if(rsids == null) {
         DOWNLOAD_RSIDS(association_build)
         annotation_files =  DOWNLOAD_RSIDS.out.rsids_ch
         } else {
+            rsids_file = file(rsids, checkIfExists: true)
+            rsids_tbi_file = file(rsids+".tbi", checkIfExists: true)
             annotation_files = tuple(rsids_file, rsids_tbi_file)
         }
 

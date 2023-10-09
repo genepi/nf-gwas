@@ -57,11 +57,15 @@ class WorkflowMain {
     }
 
     if(params["covariates_filename"] != null && (params.covariates_columns.isEmpty() && params.covariates_cat_columns.isEmpty())) {
-        println ANSI_YELLOW+  "WARN: Option covariates_filename is set but no specific covariate columns (params: covariates_columns, covariates_cat_columns) are specified." + ANSI_RESET
+        println ANSI_YELLOW +  "WARN: Option covariates_filename is set but no specific covariate columns (params: covariates_columns, covariates_cat_columns) are specified." + ANSI_RESET
     }
 
     if(params["genotypes_build"] == null && params["association_build"] == null ) {
         exit 1, "Parameter association_build is required."
+    }
+
+    if(params.rsids_filename == null) {
+        println ANSI_YELLOW +  "WARN: A large rsID file will be downloaded for annotation. Please specify the path to the 'rsids_filename' parameter in the config (see docs for file creation) to avoid multiple downloads." + ANSI_RESET
     }
 
     if(params.genotypes_association_chunk_size > 0 && genotypes_association_format != 'bgen' ) {
