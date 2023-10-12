@@ -1,5 +1,5 @@
 process REGENIE_STEP2_RUN_GENE_TESTS {
-
+    conda "$projectDir/modules/local/regenie/environment.yml"
     publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.log'
     publishDir "${params.pubDir}/masks", mode: 'copy', pattern: '*masks*.{txt,snplist,bed,bim,fam}'
 

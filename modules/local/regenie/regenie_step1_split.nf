@@ -1,5 +1,6 @@
 process REGENIE_STEP1_SPLIT {
-
+    conda "$projectDir/modules/local/regenie/environment.yml"
+    
     input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
     path snplist

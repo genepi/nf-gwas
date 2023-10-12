@@ -1,5 +1,5 @@
 process REGENIE_STEP1_RUN_CHUNK {
-
+    conda "$projectDir/modules/local/regenie/environment.yml"
     publishDir "${params.pubDir}/logs", mode: 'copy', pattern: "chunks_job_${chunk}.log"
 
     input:

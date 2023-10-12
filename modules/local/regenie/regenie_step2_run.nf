@@ -1,7 +1,6 @@
 process REGENIE_STEP2_RUN {
-
+    conda "$projectDir/modules/local/regenie/environment.yml"
     publishDir "${params.pubDir}/logs", mode: 'copy', pattern: '*.log'
-
     tag "${plink2_pgen_file.simpleName}"
 
     input:

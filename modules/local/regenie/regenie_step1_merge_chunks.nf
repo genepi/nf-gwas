@@ -1,5 +1,5 @@
 process REGENIE_STEP1_MERGE_CHUNKS {
-
+    conda "$projectDir/modules/local/regenie/environment.yml"
     publishDir "${params.pubDir}/logs", mode: 'copy', pattern: 'regenie_step1_out.log'
     tag "${phenotype}"
 

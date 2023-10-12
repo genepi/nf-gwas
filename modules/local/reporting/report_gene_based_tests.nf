@@ -1,5 +1,5 @@
 process REPORT_GENE_BASED_TESTS {
-
+    conda "$projectDir/modules/local/reporting/environment.yml"
     publishDir "${params.pubDir}", mode: 'copy'
 
     input:
