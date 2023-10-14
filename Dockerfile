@@ -4,11 +4,13 @@ COPY environment.yml .
 #  Install miniconda
 RUN  apt-get update && apt-get install -y wget
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-  /bin/bash ~/miniconda.sh -b -p /opt/conda
+    /bin/bash ~/miniconda.sh -b -p /opt/conda 
+RUN rm ~/miniconda.sh  
 ENV PATH=/opt/conda/bin:${PATH}
 
-RUN conda update -y conda
-RUN conda env update -n root -f environment.yml
+RUN conda update -y conda && \
+    conda env update -n root -f environment.yml && \
+    conda clean --all
 
 # Install software
 RUN apt-get update && \
@@ -42,7 +44,6 @@ RUN jbang export portable --verbose -O=RegenieLogParser.jar RegenieLogParser.jav
 COPY ./bin/RegenieValidateInput.java ./
 RUN jbang export portable -O=RegenieValidateInput.jar RegenieValidateInput.java
 
-
 # Install regenie (not as conda package available)
 WORKDIR "/opt"
 ENV REGENIE_VERSION="v3.3"
@@ -52,4 +53,5 @@ RUN mkdir regenie && cd regenie && \
     rm regenie_v3.*.gz_x86_64_Linux.zip && \
     mv regenie_v3.*.gz_x86_64_Linux regenie && \
     chmod +x regenie
+
 ENV PATH="/opt/regenie/:${PATH}"
