@@ -1,0 +1,12 @@
+{
+    "Should execute regenie step2 without predictions": {
+        "content": [
+            [
+                "example",
+                "example.regenie.gz:md5,18c80204000d96c4cffbfd1859088111",
+                "example.regenie.Ydict:md5,89086862ab0ea9b2a1a92f3bee0b55d3"
+            ]
+        ],
+        "timestamp": "2023-12-14T14:47:08.826254"
+    }
+}
