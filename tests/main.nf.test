@@ -29,11 +29,49 @@ nextflow_pipeline {
             regenie_gene_vc_mac_thr       = 10
             regenie_gene_build_mask       = 'sum'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
-        }
+            outdir                        = "$outputDir"
+         }
     }
 
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
+    }
+
+}
+
+   test("Should fail since no phenotype is specified") {
+
+    when {
+
+        params {
+            project                       = 'test-gene-based-test'
+            genotypes_build               = 'hg19'
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association_format  = 'bed'
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
+            phenotypes_binary_trait       = true
+            phenotypes_columns            = ''
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
+            covariates_columns            = 'V1,V2,V3'
+            regenie_run_gene_based_tests  = true
+            regenie_gene_anno             = "$projectDir/tests/input/gene_based_tests/example.annotation"
+            regenie_gene_setlist          = "$projectDir/tests/input/gene_based_tests/example.setlist"
+            regenie_gene_masks            = "$projectDir/tests/input/gene_based_tests/example.masks"
+            regenie_gene_test             = 'skat'
+            regenie_gene_aaf              = 0.01
+            regenie_gene_vc_max_aaf       = 100
+            regenie_gene_vc_mac_thr       = 10
+            regenie_gene_build_mask       = 'sum'
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
+         }
+    }
+
+    then {
+        assert workflow.fail
+        assert workflow.out.my_channel.size() == 0
     }
 
 }
@@ -64,11 +102,13 @@ test("Should execute gene-based test pipeline") {
             regenie_gene_build_mask       = 'max'
             regenie_write_bed_masks       = true
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
 
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 
 }
@@ -89,11 +129,13 @@ test("Should execute GWAS with pruning pipeline") {
             regenie_test                  = 'additive'
             prune_enabled                 = true
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
 
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 
 }
@@ -114,11 +156,13 @@ test("Should execute GWAS with additive test and multiple chromosomes") {
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 2
+            outdir                        = "$outputDir"
         }
     }
 
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 
 }
@@ -140,11 +184,13 @@ test("Should execute liftover and GWAS pipeline with array results") {
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 1
+            outdir                        = "$outputDir"
         }
     }
 
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 
 }
@@ -166,11 +212,13 @@ test("Should execute liftover and GWAS pipeline") {
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 1
+            outdir                        = "$outputDir"
         }
     }
 
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 
 }
@@ -191,11 +239,13 @@ test("Should execute GWAS with additive test and RSIDs") {
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 2
+            outdir                        = "$outputDir"
         }
     }
 
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 
 }
@@ -217,14 +267,13 @@ test("Should execute GWAS with additive test and RSIDs") {
                 outdir                        = "$outputDir"
                 rsids_filename                = "/$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
+                outdir                        = "$outputDir"
             }
         }
 
         then {
             assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), workflow.trace).match()
             assert workflow.success
-            assert workflow.trace.tasks().size() == 15
-            assert new File("$outputDir/results/Y1.regenie.gz").exists()
         }
 
     }
@@ -246,11 +295,13 @@ test("Should execute GWAS with additive test and RSIDs") {
                 outdir                        = "$outputDir"
                 rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
+                outdir                        = "$outputDir"
             }
         }
 
         then {
             assert workflow.success
+            assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
         }
 
     }
@@ -269,10 +320,12 @@ test("Should execute GWAS with binary trait (no Firth approximation)") {
             regenie_test                  = 'additive'
             regenie_firth_approx          = false
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -290,10 +343,12 @@ test("Should execute GWAS with binary trait (no Firth)") {
             regenie_test                  = 'additive'
             regenie_firth                 = false
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -310,10 +365,12 @@ test("Should execute GWAS with binary trait (with missing data)") {
             phenotypes_binary_trait       = true
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -332,10 +389,12 @@ test("Should execute GWAS with additive test on 2 chromosomes") {
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             annotation_min_log10p         = 2
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -357,10 +416,12 @@ test("Should execute GWAS with header in phenotype file with chunking") {
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/PHENO1.regenie.gz"), new File("$outputDir/results/PHENO2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -380,10 +441,12 @@ test("Should execute GWAS with header in phenotype file (custom batch size)") {
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -401,10 +464,12 @@ test("Should execute GWAS with header in phenotype file (default batch size)") {
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/PHENO1.regenie.gz"), new File("$outputDir/results/PHENO2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -424,10 +489,12 @@ test("Should execute GWAS with condition file") {
             regenie_test                  = 'additive'
             regenie_condition_list        = "$projectDir/tests/input/pipeline/condition_snps.txt"
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -446,10 +513,12 @@ test("Should execute GWAS with covariates file") {
             covariates_columns            = 'V1,V2'
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -467,10 +536,12 @@ test("Should execute GWAS with deletion of missing phenotype data") {
             phenotypes_delete_missings    = true
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -487,10 +558,12 @@ test("Should execute GWAS with dominant test") {
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'dominant'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -508,10 +581,12 @@ test("Should execute GWAS with force step 1") {
             regenie_test                  = 'additive'
             regenie_force_step1           = true
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -528,10 +603,12 @@ test("Should execute GWAS with header in phenotype file") {
             phenotypes_binary_trait       = false
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/PHENO1.regenie.gz"), new File("$outputDir/results/PHENO2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -548,10 +625,12 @@ test("Should execute GWAS with liftover to hg38 and annotation") {
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -572,10 +651,12 @@ test("Should execute GWAS with interaction tests") {
             regenie_test                  = 'additive'
             regenie_interaction_snp       = '100'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -596,10 +677,12 @@ test("Should execute GWAS with interaction tests (interaction term)") {
             regenie_test                  = 'additive'
             regenie_interaction           = 'V3'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -617,10 +700,12 @@ test("Should execute GWAS with custom Manhattan plot y-limit") {
             regenie_test                  = 'additive'
             plot_ylimit                   = 2
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -637,10 +722,12 @@ test("Should execute GWAS with phenotype file in tabs format") {
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -657,10 +744,12 @@ test("Should execute GWAS with phenotype file containing three empty values") {
             phenotypes_columns            = 'Y1,Y2'
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -678,10 +767,12 @@ test("Should execute GWAS with range filter") {
             regenie_range                 = '1:100-200'
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -699,10 +790,12 @@ test("Should execute GWAS with recessive test") {
             regenie_test                  = 'recessive'
             regenie_ref_first             = true
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -719,10 +812,12 @@ test("Should execute GWAS with skipped predictions") {
             regenie_skip_predictions      = true
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
         }
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
     }
 }
 
@@ -744,13 +839,13 @@ test("Should execute pipeline for binary trait with optional regenie params") {
                 rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
                 regenie_step2_optional        = "--maxCatLevels 3"
-            }
+            outdir                        = "$outputDir"
         }
-
-        then {
-            assert workflow.success
-        }
-
+    }
+    then {
+        assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
+    }
 }
 
 test("Should execute pipeline for binary trait with optional regenie step1 param") {
@@ -771,12 +866,13 @@ test("Should execute pipeline for binary trait with optional regenie step1 param
                 rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
                 regenie_step1_optional        = "--pThresh 0.01"
-            }
+                outdir                        = "$outputDir"
         }
-
-        then {
-            assert workflow.success
-        }
+    }
+    then {
+        assert workflow.success
+        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
+    }
 }
 
 test("Should GWAS with chunking and optional step 1 param") {
@@ -800,6 +896,7 @@ test("Should GWAS with chunking and optional step 1 param") {
     }
     then {
         assert workflow.success
+        assert snapshot(new File("$outputDir/results/PHENO1.regenie.gz"), new File("$outputDir/results/PHENO2.regenie.gz") , workflow.trace).match()
     }
 }
 
