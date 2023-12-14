@@ -5,7 +5,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
 
     input:
     path step1_out
-    tuple val(filename), path(genotyped_plink_file)
+    tuple val(filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
     val assoc_format
 	path phenotypes_file
     path covariates_file
