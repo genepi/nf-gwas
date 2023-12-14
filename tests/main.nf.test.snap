@@ -1,4 +1,28 @@
 {
+    "Should execute GWAS with range filter": {
+        "content": [
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
+            "Y2.regenie.gz:md5,ec530d48c4c76056d06e5735bca4e5cd",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 15,
+                "tasksSucceeded": 15
+            }
+        ],
+        "timestamp": "2023-12-14T17:03:22.52629"
+    },
+    "Should execute GWAS with phenotype file in tabs format": {
+        "content": [
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
+            "Y2.regenie.gz:md5,ec530d48c4c76056d06e5735bca4e5cd",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 15,
+                "tasksSucceeded": 15
+            }
+        ],
+        "timestamp": "2023-12-14T17:02:25.833032"
+    },
     "Should execute GWAS with binary trait (with missing data)": {
         "content": [
             "Y1.regenie.gz:md5,a02e75e69b48c80606de1eb5af1e6fc4",
@@ -23,6 +47,30 @@
         ],
         "timestamp": "2023-12-14T16:48:11.2585"
     },
+    "Should execute GWAS with custom Manhattan plot y-limit": {
+        "content": [
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
+            "Y2.regenie.gz:md5,ec530d48c4c76056d06e5735bca4e5cd",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 15,
+                "tasksSucceeded": 15
+            }
+        ],
+        "timestamp": "2023-12-14T17:01:57.60339"
+    },
+    "Should execute pipeline for binary trait with optional regenie step1 param": {
+        "content": [
+            "Y1.regenie.gz:md5,f80dee2e3a0f824408cfa0bf963f4a2d",
+            "Y2.regenie.gz:md5,a575744e2c16402456bef561ddc9de03",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 14,
+                "tasksSucceeded": 14
+            }
+        ],
+        "timestamp": "2023-12-14T17:05:12.14642"
+    },
     "Should execute gene-based test pipeline with specified parameters with sum": {
         "content": [
             "Y1.regenie.gz:md5,61a5f115619d3ee3c14a34a63e1fe73b",
@@ -34,6 +82,18 @@
             }
         ],
         "timestamp": "2023-12-14T16:19:45.878446"
+    },
+    "Should execute GWAS with skipped predictions": {
+        "content": [
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
+            "Y2.regenie.gz:md5,ec530d48c4c76056d06e5735bca4e5cd",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 12,
+                "tasksSucceeded": 12
+            }
+        ],
+        "timestamp": "2023-12-14T17:04:16.854487"
     },
     "Should execute liftover and GWAS pipeline": {
         "content": [
@@ -163,61 +223,29 @@
         ],
         "timestamp": "2023-12-14T16:44:21.551356"
     },
+    "Should execute GWAS with recessive test": {
+        "content": [
+            "Y1.regenie.gz:md5,9c1d4d00535b1857ca5889b00d75b31f",
+            "Y2.regenie.gz:md5,5837d7d1b63e28f4b7de1009f1746706",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 15,
+                "tasksSucceeded": 15
+            }
+        ],
+        "timestamp": "2023-12-14T17:03:50.532327"
+    },
     "Should execute GWAS with header in phenotype file": {
         "content": [
-            {
-                "directory": false,
-                "file": false,
-                "freeSpace": 0,
-                "canonicalPath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/7068a16c25fb28c823980188870c4531/output/results/Y1.regenie.gz",
-                "usableSpace": 0,
-                "hidden": false,
-                "totalSpace": 0,
-                "path": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/7068a16c25fb28c823980188870c4531/output/results/Y1.regenie.gz",
-                "name": "Y1.regenie.gz",
-                "absolute": true,
-                "absolutePath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/7068a16c25fb28c823980188870c4531/output/results/Y1.regenie.gz",
-                "parent": [
-                    "PHENO1.regenie.gz:md5,c03c47e1d4300277f2a445afc14c6d1e",
-                    "PHENO1.regenie.gz.tbi:md5,52c43bd02a8ceff6c362d0b56ff5fbfe",
-                    "PHENO2.regenie.gz:md5,3b600580a44b792462720d7e7c734ccc",
-                    "PHENO2.regenie.gz.tbi:md5,72f72954151e910c9ed849b95ac9b402",
-                    [
-                        "PHENO1.regenie.filtered.gz:md5,1da6cac933d2aa0b38613b96e9a5c517",
-                        "PHENO2.regenie.filtered.gz:md5,8dba8315f5bd13f8ae62c9ba1a7dfce6"
-                    ]
-                ]
-            },
-            {
-                "directory": false,
-                "file": false,
-                "freeSpace": 0,
-                "canonicalPath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/7068a16c25fb28c823980188870c4531/output/results/Y2.regenie.gz",
-                "usableSpace": 0,
-                "hidden": false,
-                "totalSpace": 0,
-                "path": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/7068a16c25fb28c823980188870c4531/output/results/Y2.regenie.gz",
-                "name": "Y2.regenie.gz",
-                "absolute": true,
-                "absolutePath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/7068a16c25fb28c823980188870c4531/output/results/Y2.regenie.gz",
-                "parent": [
-                    "PHENO1.regenie.gz:md5,c03c47e1d4300277f2a445afc14c6d1e",
-                    "PHENO1.regenie.gz.tbi:md5,52c43bd02a8ceff6c362d0b56ff5fbfe",
-                    "PHENO2.regenie.gz:md5,3b600580a44b792462720d7e7c734ccc",
-                    "PHENO2.regenie.gz.tbi:md5,72f72954151e910c9ed849b95ac9b402",
-                    [
-                        "PHENO1.regenie.filtered.gz:md5,1da6cac933d2aa0b38613b96e9a5c517",
-                        "PHENO2.regenie.filtered.gz:md5,8dba8315f5bd13f8ae62c9ba1a7dfce6"
-                    ]
-                ]
-            },
+            "PHENO1.regenie.gz:md5,c03c47e1d4300277f2a445afc14c6d1e",
+            "PHENO2.regenie.gz:md5,3b600580a44b792462720d7e7c734ccc",
             {
                 "tasksFailed": 0,
                 "tasksCount": 14,
                 "tasksSucceeded": 14
             }
         ],
-        "timestamp": "2023-12-14T16:47:42.503207"
+        "timestamp": "2023-12-14T17:00:13.784558"
     },
     "Should execute GWAS with additive test on 2 chromosomes": {
         "content": [
@@ -233,59 +261,15 @@
     },
     "Should execute GWAS with header in phenotype file (default batch size)": {
         "content": [
-            {
-                "directory": false,
-                "file": false,
-                "freeSpace": 0,
-                "canonicalPath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/9c383fa42927bc018bca044e6631fc07/output/results/Y1.regenie.gz",
-                "usableSpace": 0,
-                "hidden": false,
-                "totalSpace": 0,
-                "path": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/9c383fa42927bc018bca044e6631fc07/output/results/Y1.regenie.gz",
-                "name": "Y1.regenie.gz",
-                "absolute": true,
-                "absolutePath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/9c383fa42927bc018bca044e6631fc07/output/results/Y1.regenie.gz",
-                "parent": [
-                    "PHENO1.regenie.gz:md5,c03c47e1d4300277f2a445afc14c6d1e",
-                    "PHENO1.regenie.gz.tbi:md5,52c43bd02a8ceff6c362d0b56ff5fbfe",
-                    "PHENO2.regenie.gz:md5,3b600580a44b792462720d7e7c734ccc",
-                    "PHENO2.regenie.gz.tbi:md5,72f72954151e910c9ed849b95ac9b402",
-                    [
-                        "PHENO1.regenie.filtered.gz:md5,1da6cac933d2aa0b38613b96e9a5c517",
-                        "PHENO2.regenie.filtered.gz:md5,8dba8315f5bd13f8ae62c9ba1a7dfce6"
-                    ]
-                ]
-            },
-            {
-                "directory": false,
-                "file": false,
-                "freeSpace": 0,
-                "canonicalPath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/9c383fa42927bc018bca044e6631fc07/output/results/Y2.regenie.gz",
-                "usableSpace": 0,
-                "hidden": false,
-                "totalSpace": 0,
-                "path": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/9c383fa42927bc018bca044e6631fc07/output/results/Y2.regenie.gz",
-                "name": "Y2.regenie.gz",
-                "absolute": true,
-                "absolutePath": "/home/nanopore/genepi_hackathon/nf-test/nf-gwas-1/.nf-test/tests/9c383fa42927bc018bca044e6631fc07/output/results/Y2.regenie.gz",
-                "parent": [
-                    "PHENO1.regenie.gz:md5,c03c47e1d4300277f2a445afc14c6d1e",
-                    "PHENO1.regenie.gz.tbi:md5,52c43bd02a8ceff6c362d0b56ff5fbfe",
-                    "PHENO2.regenie.gz:md5,3b600580a44b792462720d7e7c734ccc",
-                    "PHENO2.regenie.gz.tbi:md5,72f72954151e910c9ed849b95ac9b402",
-                    [
-                        "PHENO1.regenie.filtered.gz:md5,1da6cac933d2aa0b38613b96e9a5c517",
-                        "PHENO2.regenie.filtered.gz:md5,8dba8315f5bd13f8ae62c9ba1a7dfce6"
-                    ]
-                ]
-            },
+            "PHENO1.regenie.gz:md5,c03c47e1d4300277f2a445afc14c6d1e",
+            "PHENO2.regenie.gz:md5,3b600580a44b792462720d7e7c734ccc",
             {
                 "tasksFailed": 0,
                 "tasksCount": 34,
                 "tasksSucceeded": 34
             }
         ],
-        "timestamp": "2023-12-14T16:44:53.423586"
+        "timestamp": "2023-12-14T16:57:23.850687"
     },
     "Should execute GWAS with additive test and RSIDs": {
         "content": [
@@ -309,6 +293,18 @@
             }
         ],
         "timestamp": "2023-12-14T13:41:14.112083"
+    },
+    "Should execute GWAS with phenotype file containing three empty values": {
+        "content": [
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
+            "Y2.regenie.gz:md5,d9cb8506e0819ddff02eb1122284f9f3",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 15,
+                "tasksSucceeded": 15
+            }
+        ],
+        "timestamp": "2023-12-14T17:02:54.005539"
     },
     "Should execute GWAS with dominant test": {
         "content": [
@@ -405,6 +401,18 @@
             }
         ],
         "timestamp": "2023-12-14T16:48:34.843303"
+    },
+    "Should execute pipeline for binary trait with optional regenie params": {
+        "content": [
+            "Y1.regenie.gz:md5,f80dee2e3a0f824408cfa0bf963f4a2d",
+            "Y2.regenie.gz:md5,a575744e2c16402456bef561ddc9de03",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 14,
+                "tasksSucceeded": 14
+            }
+        ],
+        "timestamp": "2023-12-14T17:04:44.409121"
     },
     "Should execute GWAS with condition file": {
         "content": [

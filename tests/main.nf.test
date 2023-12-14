@@ -446,7 +446,7 @@ test("Should execute GWAS with header in phenotype file (custom batch size)") {
     }
     then {
         assert workflow.success
-        assert snapshot(new File("$outputDir/results/Y1.regenie.gz"), new File("$outputDir/results/Y2.regenie.gz") , workflow.trace).match()
+        assert snapshot(new File("$outputDir/results/PHENO1.regenie.gz"), new File("$outputDir/results/PHENO2.regenie.gz") , workflow.trace).match()
     }
 }
 
