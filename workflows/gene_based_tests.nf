@@ -44,13 +44,19 @@ workflow GENE_BASED_TESTS {
     } else {
 
         // imputed_plink2_ch = Channel.fromFilePairs(genotypes_association, size: 3)
-        println "ERR: We do not support plink files anymore!!!"
+        /*println "ERR: We do not support plink files anymore!!!"
         exit 1
+        */
+        // NB the chunking here is just needed to support bgen files
+        imputed_files_ch
+            .map { tuple(it.baseName, it, [], [], -1) }
+            .set {imputed_plink2_ch}
+
         /* CHUNKING (
             imputed_files_ch
         )
         imputed_plink2_ch = CHUNKING.out.imputed_plink2_ch
-         */
+        */
 
     }
 

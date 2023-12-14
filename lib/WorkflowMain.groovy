@@ -82,11 +82,10 @@ class WorkflowMain {
             //&& genotypes_association_format != 'bgen' ) {
             exit 1, " Chunking is currently not available for gene-based tests (param: genotypes_association_chunk_size=0)."
         }
-        
+
         //Check association file format for gene-based tests
-        // TODO Change this check to support for bgen
-        if (genotypes_association_format != 'vcf'){
-            exit 1, "File format " + genotypes_association_format + " currently not supported for gene-based tests. Please use 'bed' input instead. "
+        if (genotypes_association_format != 'vcf' && genotypes_association_format != "bgen"){
+            exit 1, "File format " + genotypes_association_format + " currently not supported for gene-based tests. Please use 'vcf' or 'bgen' input instead. "
         }
         } else {
             //Check if tests exists

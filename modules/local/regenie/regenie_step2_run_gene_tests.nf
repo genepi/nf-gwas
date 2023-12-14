@@ -9,6 +9,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     val assoc_format
 	path phenotypes_file
     path covariates_file
+    path sample_file
     path regenie_gene_anno_file
     path regenie_gene_setlist_file
     path regenie_gene_masks_file
@@ -25,6 +26,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     // TODO Remember to add sample file input if assoc_format == "bgen"
     def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = assoc_format == 'bgen' ? ".bgen" : ''
+    def bgen_sample = sample_file ? "--sample $sample_file" : ''
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
@@ -68,6 +70,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
         $predictions \
         $apply_rint \
         $geneTest \
+        $bgen_sample \
         $aaf \
         $maxAaf \
         $vcMACThr \
