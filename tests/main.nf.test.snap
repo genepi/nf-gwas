@@ -1,13 +1,13 @@
 {
     "Should execute pipeline applying an additive model": {
         "content": [
-            "Y1.regenie.gz:md5,e4ddf7505dc35e1173c4401f4090da76",
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
             {
                 "tasksFailed": 0,
                 "tasksCount": 15,
                 "tasksSucceeded": 15
             }
         ],
-        "timestamp": "2023-09-08T15:21:44.585872"
+        "timestamp": "2023-12-14T13:41:14.112083"
     }
 }

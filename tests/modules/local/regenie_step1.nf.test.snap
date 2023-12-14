@@ -1,9 +1,9 @@
 {
     "Should execute regenie step 1 for 2 phenotypes ": {
         "content": [
-            "regenie_step1_out_1.loco.gz:md5,7acd8ecadafb0eb9bbab2eb8b529e54f",
-            "regenie_step1_out_2.loco.gz:md5,41ab9671090c2f7af3834242e691d18a"
+            "regenie_step1_out_1.loco.gz:md5,5e3f3bd230d519c0740ae158d2ba2f41",
+            "regenie_step1_out_2.loco.gz:md5,ff2327b54520a6885df85ad27cebcd19"
         ],
-        "timestamp": "2023-09-08T13:14:33.253877"
+        "timestamp": "2023-12-14T15:05:10.807967"
     }
 }
