@@ -79,7 +79,8 @@ class WorkflowMain {
         }
 
         //Check association file format for gene-based tests
-        if (genotypes_association_format != 'bed'){
+        // TODO Change this check to support for bgen
+        if (genotypes_association_format != 'vcf'){
             exit 1, "File format " + genotypes_association_format + " currently not supported for gene-based tests. Please use 'bed' input instead. "
         }
         } else {

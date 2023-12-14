@@ -5,7 +5,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
 
     input:
     path step1_out
-    tuple val(filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file)
+    tuple val(filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file), val(range)
     val assoc_format
 	path phenotypes_file
     path covariates_file
@@ -20,7 +20,10 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     path "${filename}_masks*"
 
     script:
-    def format = assoc_format == 'bed' ? "--bed" : '--bgen'
+    // Remove if test is ok
+    // def format = assoc_format == 'bed' ? "--bed" : '--bgen'
+    // TODO Remember to add sample file input if assoc_format == "bgen"
+    def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = assoc_format == 'bgen' ? ".bgen" : ''
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""

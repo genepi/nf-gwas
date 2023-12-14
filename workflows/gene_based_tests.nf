@@ -43,8 +43,15 @@ workflow GENE_BASED_TESTS {
         imputed_plink2_ch = IMPUTED_TO_PLINK2.out.imputed_plink2
     } else {
 
-        imputed_plink2_ch = Channel.fromFilePairs(genotypes_association, size: 3)
-    
+        // imputed_plink2_ch = Channel.fromFilePairs(genotypes_association, size: 3)
+        println "ERR: We do not support plink files anymore!!!"
+        exit 1
+        /* CHUNKING (
+            imputed_files_ch
+        )
+        imputed_plink2_ch = CHUNKING.out.imputed_plink2_ch
+         */
+
     }
 
     genotyped_final_ch = Channel.empty()
