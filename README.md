@@ -3,7 +3,9 @@
 [![nf-gwas](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/genepi/nf-gwas/actions/workflows/ci-tests.yml)
 [![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
 
-This cloud-ready GWAS pipeline allows you to run single variant tests and gene-based tests using [REGENIE](https://github.com/rgcgithub/regenie) in an automated and reproducible way. The pipeline outputs tabixed association results (e.g. for LocusZoom), gene-annotated tophits and an interactive HTML report including numerous statistics and plots (e.g. Manhattan Plat, QQ-Plot by MAF).
+**nf-gwas** is a Nextflow pipeline to run biobank-scale genome-wide association studies (GWAS) analysis. The pipeline automatically performs numerous pre- and post-processing steps, integrates regression modeling from the REGENIE package and currently supports single-variant, gene-based and interaction testing. All modules are structured in sub-workflows which allows to extend te pipeline to other methods and tools in future. nf-gwas includes an extensive reporting functionality that allows to inspect thousands of phenotypes and navigate interactive Manhattan plots directly in the web browser. 
+
+The pipeline is tested using the unit-style testing framework [nf-test](https://github.com/askimed/nf-test) and includes a [schema definition](nextflow_schema.json) to run with **Nextflow Tower**. 
 
 ![image](docs/images/Figure2_example_report.png)
 
@@ -19,23 +21,23 @@ Documentation can be found [here](https://genepi.github.io/nf-gwas/).
 Please cite this preprint if you use nf-gwas:
 
 > [Performing highly parallelized and reproducible GWAS analysis on biobank-scale data](https://www.biorxiv.org/content/10.1101/2023.08.08.552417v1).
-> Sebastian Schoenherr, Johanna Schachtl-Riess, Silvia Di Maio, Michele Filosi, Marvin Mark, Claudia Lamina, Christian Fuchsberger, Florian Kronenberg, Lukas Forer
+> Sebastian Schönherr, Johanna Schachtl-Riess, Silvia Di Maio, Michele Filosi, Marvin Mark, Claudia Lamina, Christian Fuchsberger, Florian Kronenberg, Lukas Forer
 > bioRxiv 2023.08.08.552417; doi: [https://doi.org/10.1101/2023.08.08.552417](https://doi.org/10.1101/2023.08.08.552417)
 
 ## Quick Start
 
-1) Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0)
+1) Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=22.10.4)
 
 2) Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/nf-gwas -r v1.0.0 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -r v1.0.4 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3) Run the pipeline on your data
 
 ```
-nextflow run genepi/nf-gwas -c <nextflow.config> -r v1.0.0 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -c <nextflow.config> -r v1.0.4 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 
 Please click [here](tests) for available test config files.

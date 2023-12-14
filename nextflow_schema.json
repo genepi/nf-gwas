@@ -14,7 +14,7 @@
         "outdir": {
           "type": "string",
           "format": "directory-path",
-          "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+          "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure. 'Default' will create a folder under output/${params.project}",
           "fa_icon": "fas fa-folder-open"
         }
       },
@@ -31,24 +31,19 @@
           "description": "Name of the project",
           "fa_icon": "fas fa-project-diagram"
         },
-        "genotypes_prediction": {
-          "type": "string",
-          "description": "Path to the array genotypes (single merged file in plink format).",
-          "fa_icon": "fas fa-project-diagram"
-        },
         "genotypes_association": {
           "type": "string",
-          "description": "Path to imputed genotypes in VCF or BGEN format",
+          "description": "Genotypes for association testing (in VCF or BGEN format).",
           "fa_icon": "fas fa-project-diagram"
         },
         "genotypes_association_format": {
           "type": "string",
-          "description": "Input file format of imputed genotypes",
+          "description": "Format of genotypes for association testing (BGEN vs VCF).",
           "fa_icon": "fas fa-project-diagram"
         },
-        "genotypes_build": {
+        "association_build": {
           "type": "string",
-          "description": "Imputed genotypes build format. hg19 or hg38",
+          "description": "Build of genotypes for association testing (hg19 or hg38).",
           "fa_icon": "fas fa-project-diagram"
         },
         "phenotypes_filename": {
@@ -63,34 +58,23 @@
           "description": "Comma-separated list of phenotypes",
           "fa_icon": "fas fa-project-diagram"
         },
+        "genotypes_prediction": {
+          "type": "string",
+          "description": "Path to the genomic predictions (e.g. array genotypes) as a merged file in plink format).",
+          "fa_icon": "fas fa-project-diagram"
+        },
         "phenotypes_binary_trait": {
           "type": "boolean",
+          "default": false,
           "description": "Binary trait",
-          "fa_icon": "fas fa-project-diagram"
-        },
-        "genotypes_array": {
-          "type": "string",
-          "description": "[DEPRECATED] Please use --genotypes_prediction instead.",
-          "fa_icon": "fas fa-project-diagram"
-        },
-        "genotypes_imputed": {
-          "type": "string",
-          "description": "[DEPRECATED] Please use --genotypes_association instead.",
-          "fa_icon": "fas fa-project-diagram"
-        },
-        "genotypes_imputed_format": {
-          "type": "string",
-          "description": "[DEPRECATED] Please use --genotypes_association_format instead.",
           "fa_icon": "fas fa-project-diagram"
         }
       },
       "required": [
         "project",
-        "genotypes_prediction",
         "genotypes_association",
         "phenotypes_filename",
-        "phenotypes_columns",
-        "phenotypes_binary_trait"
+        "phenotypes_columns"
       ],
       "fa_icon": "fas fa-project-diagram"
     },
@@ -233,6 +217,21 @@
           "type": "string",
           "default": "RANGE",
           "description": "Chunk strategy ('RANGE' or 'VARIANTS') for association files.",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "regenie_step1_optional": {
+          "type": "string",
+          "description": "Optional REGENIE Step1 parameters.",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "regenie_step2_optional": {
+          "type": "string",
+          "description": "Optional REGENIE Step2 parameters.",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "validate_params": {
+          "type": "boolean",
+          "description": "Validate input parameters.",
           "fa_icon": "fas fa-project-diagram"
         }
       },
@@ -428,7 +427,7 @@
       "default": "",
       "properties": {
         "regenie_gene_aaf": {
-          "type": "string",
+          "type": "number",
           "description": "Comma-separated list of AAF upper bounds to use when building masks",
           "fa_icon": "fas fa-project-diagram"
         },
@@ -455,12 +454,12 @@
           "fa_icon": "fas fa-project-diagram"
         },
         "regenie_gene_vc_mac_thr": {
-          "type": "string",
+          "type": "integer",
           "description": "MAC threshold below which to collapse variants in SKAT/ACAT-type tests",
           "fa_icon": "fas fa-project-diagram"
         },
         "regenie_gene_vc_max_aaf": {
-          "type": "string",
+          "type": "integer",
           "description": "AAF upper bound to use for SKAT/ACAT-type tests",
           "fa_icon": "fas fa-project-diagram"
         }
@@ -536,8 +535,9 @@
       "description": "Other optional parameters.",
       "default": "",
       "properties": {
-        "association_build": {
+        "genotypes_build": {
           "type": "string",
+          "description": "[DEPRECATED]",
           "fa_icon": "fas fa-project-diagram"
         },
         "target_build": {
@@ -550,6 +550,21 @@
         },
         "regenie_range": {
           "type": "string",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "genotypes_array": {
+          "type": "string",
+          "description": "[DEPRECATED] Please use --genotypes_prediction instead.",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "genotypes_imputed": {
+          "type": "string",
+          "description": "[DEPRECATED] Please use --genotypes_association instead.",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "genotypes_imputed_format": {
+          "type": "string",
+          "description": "[DEPRECATED] Please use --genotypes_association_format instead.",
           "fa_icon": "fas fa-project-diagram"
         }
       },

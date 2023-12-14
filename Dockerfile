@@ -3,12 +3,13 @@ COPY environment.yml .
 
 #  Install miniconda
 RUN  apt-get update && apt-get install -y wget
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py39_23.9.0-0-Linux-x86_64.sh -O ~/miniconda.sh && \
   /bin/bash ~/miniconda.sh -b -p /opt/conda
 ENV PATH=/opt/conda/bin:${PATH}
 
-RUN conda update -y conda
-RUN conda env update -n root -f environment.yml
+RUN conda update -y conda && \
+    conda env update -n root -f environment.yml && \
+    conda clean --all
 
 # Install software
 RUN apt-get update && \
@@ -31,7 +32,7 @@ ENV PATH="/opt/jbang/bin:${PATH}"
 
 # Install genomic-utils
 WORKDIR "/opt"
-ENV GENOMIC_UTILS_VERSION="v0.3.6"
+ENV GENOMIC_UTILS_VERSION="v0.3.7"
 RUN wget https://github.com/genepi/genomic-utils/releases/download/${GENOMIC_UTILS_VERSION}/genomic-utils.jar
 
 ENV JAVA_TOOL_OPTIONS="-Djdk.lang.Process.launchMechanism=vfork"
@@ -42,14 +43,14 @@ RUN jbang export portable --verbose -O=RegenieLogParser.jar RegenieLogParser.jav
 COPY ./bin/RegenieValidateInput.java ./
 RUN jbang export portable -O=RegenieValidateInput.jar RegenieValidateInput.java
 
-
 # Install regenie (not as conda package available)
 WORKDIR "/opt"
-ENV REGENIE_VERSION="v3.2.9"
+ENV REGENIE_VERSION="v3.3"
 RUN mkdir regenie && cd regenie && \
     wget https://github.com/rgcgithub/regenie/releases/download/${REGENIE_VERSION}/regenie_${REGENIE_VERSION}.gz_x86_64_Linux.zip && \
     unzip -q regenie_v3.*.gz_x86_64_Linux.zip && \
     rm regenie_v3.*.gz_x86_64_Linux.zip && \
     mv regenie_v3.*.gz_x86_64_Linux regenie && \
     chmod +x regenie
+
 ENV PATH="/opt/regenie/:${PATH}"

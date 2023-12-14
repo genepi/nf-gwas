@@ -10,7 +10,7 @@ nextflow_process {
 
             process {
                 """
-                 input[0] =  Channel.fromFilePairs("tests/input/pipeline/example.{bim,bed,fam}", size: 3)
+                 input[0] =  Channel.fromFilePairs("$projectDir/tests/input/pipeline/example.{bim,bed,fam}", size: 3)
                 """
             }
         }
