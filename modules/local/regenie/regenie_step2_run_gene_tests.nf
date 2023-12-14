@@ -21,9 +21,6 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     path "${filename}_masks*"
 
     script:
-    // Remove if test is ok
-    // def format = assoc_format == 'bed' ? "--bed" : '--bgen'
-    // TODO Remember to add sample file input if assoc_format == "bgen"
     def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = assoc_format == 'bgen' ? ".bgen" : ''
     def bgen_sample = sample_file ? "--sample $sample_file" : ''
