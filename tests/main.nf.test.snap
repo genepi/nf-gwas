@@ -11,6 +11,17 @@
         ],
         "timestamp": "2023-12-14T17:03:22.52629"
     },
+    "Should fail(?) because no significant hit was found": {
+        "content": [
+            "Y1.regenie.gz:md5,f80dee2e3a0f824408cfa0bf963f4a2d",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 14,
+                "tasksSucceeded": 14
+            }
+        ],
+        "timestamp": "2023-12-15T11:12:53.355508"
+    },
     "Should execute GWAS with phenotype file in tabs format": {
         "content": [
             "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
@@ -166,6 +177,18 @@
             }
         ],
         "timestamp": "2023-12-14T16:41:52.068742"
+    },
+    "Should execute GWAS with additive testig with no significant hits": {
+        "content": [
+            "Y1.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e",
+            "Y2.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 14,
+                "tasksSucceeded": 14
+            }
+        ],
+        "timestamp": "2023-12-15T11:19:19.183957"
     },
     "Should execute GWAS with header in phenotype file (custom batch size)": {
         "content": [

@@ -803,7 +803,7 @@ test("Should execute pipeline for binary trait with optional regenie params") {
                 rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
                 annotation_min_log10p         = 2
                 regenie_step2_optional        = "--maxCatLevels 3"
-            outdir                        = "$outputDir"
+                outdir                        = "$outputDir"
         }
     }
     then {
@@ -936,8 +936,36 @@ test("Should GWAS with chunking and optional step 1 param") {
         assert workflow.failed
         snapshot(workflow.trace).match()
     }
+    
+    }
 
-}
 
+   test("Should execute GWAS with additive testig with no significant hits") {
+
+    when {
+
+            params {
+                project                       = "test-gwas-binary"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = true
+                regenie_test                  = 'additive'
+                outdir                        = "$outputDir"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+                annotation_min_log10p         = 100
+                regenie_step1_optional        = "--pThresh 0.01"
+                outdir                        = "$outputDir"
+        }
+    }
+
+    then {
+        assert workflow.success
+        assert snapshot(new File("$outputDir/results/tophits/Y1.regenie.filtered.gz"), new File("$outputDir/results/tophits/Y2.regenie.filtered.gz"), workflow.trace).match()
+    }
+   }
 
 }
