@@ -6,16 +6,18 @@ nav_order: 2
 
 ## Getting Started
 
-1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0).
-**Windows users**: this [step-by-step](https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html) tutorial could make your life much easier.
+1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0) 
 
-2. Install [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://sylabs.io/).
+2. Install [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://sylabs.io/). 
 
-3. Run the pipeline on a test dataset using Docker to validate your installation.
+**Note** for *Windows users*: check out this [step-by-step tutorial](https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html) to set up Nextflow on your local machine.
+
+3. Run the pipeline on a test dataset to validate your installation. If you specify the option -profile docker, Nextflow will automatically find it in our repository.
 
     ```
     nextflow run genepi/nf-gwas -r v<[latest tag](https://github.com/genepi/nf-gwas/tags)> -profile test,<docker,singularity>
     ```
+**Note:** Following the [latest tag](https://github.com/genepi/nf-gwas/tags) link, you will be redirected to the list of the pipeline releases. You can specify the latest tag in the command above e.g. (-r v1.0.0 )
 
 ### Run the pipeline on your data
 
@@ -37,9 +39,9 @@ nav_order: 2
     ```
 
 
-2. Run the pipeline with your configuration file
+2. Run the pipeline on your data with your configuration file
     ```
-    nextflow run genepi/nf-gwas -c project.config -r v1.0.0 -profile <docker,singularity>
+    nextflow run genepi/nf-gwas -c project.config -r v<[latest tag](https://github.com/genepi/nf-gwas/tags)> -profile <docker,singularity>
     ```
 
 **Note:** The slurm profiles require that (a) singularity is installed on all nodes and (b) a shared file system path as a working directory.

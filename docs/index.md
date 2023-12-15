@@ -22,7 +22,7 @@ A Nextflow pipeline to perform genome-wide association studies (GWAS).
 This cloud-ready GWAS pipeline allows you to run **single variant tests**, **gene-based tests**  and **interaction testing** using [REGENIE](https://github.com/rgcgithub/regenie) in an automated and reproducible way.
 
 For single variant tests, the pipeline works with BGEN (e.g. from UK Biobank) or VCF files (e.g. from [Michigan Imputation Server](https://imputationserver.sph.umich.edu/)). For gene-based tests, we currently support BED files as an input.
-The pipeline outputs association results (tabixed, works with e.g. LocusZoom out of the box), annotated loci tophits and an interactive HTML report provding statistics and plots.
+The output files of the pipeline include results of the association tests (in tabix indexed format, which works with e.g. LocusZoom out of the box), annotated loci tophits and an interactive HTML report with summary statistics and plots.
 
 The single-variant pipeline currently includes the following steps:
 
@@ -33,9 +33,9 @@ The single-variant pipeline currently includes the following steps:
 
 3. Prune micro-array data using [plink2](https://www.cog-genomics.org/plink/2.0/) (optional).
 
-4. Filter micro-array data using plink2 based on MAF, MAC, HWE, genotype missingess and sample missingness.
+4. Filter micro-array data using plink2 based on MAF, MAC, HWE, genotype missingness and sample missingness.
 
-5. Run [regenie](https://github.com/rgcgithub/regenie) and tabix results to use with LocusZoom.
+5. Run [regenie](https://github.com/rgcgithub/regenie) and index (tabix) results to use with LocusZoom.
 
 6. Parse regenie log and create summary statistics.
 

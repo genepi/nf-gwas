@@ -7,7 +7,7 @@ nav_order: 3
 
 ### Running the nf-gwas pipeline
 
-To  run the pipeline on your data, prepare the phenotype and (optional) covariate files as described [here](https://rgcgithub.github.io/regenie/options/#input)). In addition, you need the genotyping data for step 1 in bim,bed,fam format and your imputed genotypes in VCF or BGEN format. Transfer all these files using FileZilla to the folder of your choice on the server.
+To run the pipeline on your data, prepare the phenotype and (optional) covariate files as described [here](https://rgcgithub.github.io/regenie/options/#input)). In addition, you need the genotyping data for step 1 in bim,bed,fam format and your imputed genotypes in VCF or BGEN format. Transfer all these files using FileZilla to the folder of your choice on the server.
 
 Now, you we need to prepare a configuration file for the pipeline. You can use any text editor! For example, we use the IDE [Visual Studio Code](https://code.visualstudio.com/), which has some very convenient features, including highlighting different code elements. The required and optional parameters for the configuration file are all listed [here](../params/params) of the pipeline. To make your own config file, it is the easiest to copy one of the exemplary [config files](https://github.com/genepi/nf-gwas/blob/main/conf/test.config). Adapt all the paths and parameters to fit your data and save the file (e.g. as: first-gwas.config). If you´ve used additional parameters, just make sure that they are within the curly brackets.
 
