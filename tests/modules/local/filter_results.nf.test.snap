@@ -1,4 +1,31 @@
 {
+    "Should output all regenie lines": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d637f770b60b67e3fe3a5454dadc143b"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,6febee3426eaca4ca8b72540ba75e633"
+                    ]
+                ],
+                "results_filtered": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d637f770b60b67e3fe3a5454dadc143b"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,6febee3426eaca4ca8b72540ba75e633"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-12-15T10:30:54.852916"
+    },
     "Should output only 117 filtered lines": {
         "content": [
             {

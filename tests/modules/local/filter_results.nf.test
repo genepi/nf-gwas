@@ -39,25 +39,9 @@ nextflow_process {
 
                 then {
                     assert process.success
-
-                    with(process.out) {
-
-                        with(results_filtered){
-
-                        assert (size() == 2)
-
-                        def lines = path(get(0).get(1)).readLinesGzip()
-
-                        //check if regenie header is as expected
-                assert lines.get(0).equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
-
-                        //all lines included since filter value is 0
-                        assert (lines.size() == 1001)
-                        }
-
-                        }
-                    }
+                    assert snapshot(process.out).match()
 
                 }
 
         }
+}
