@@ -40,42 +40,6 @@ nextflow_pipeline {
 
 }
 
-   test("Should fail since no phenotype is specified") {
-
-    when {
-
-        params {
-            project                       = 'test-gene-based-test'
-            genotypes_build               = 'hg19'
-            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association_format  = 'bed'
-            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
-            phenotypes_binary_trait       = true
-            phenotypes_columns            = ''
-            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
-            covariates_columns            = 'V1,V2,V3'
-            regenie_run_gene_based_tests  = true
-            regenie_gene_anno             = "$projectDir/tests/input/gene_based_tests/example.annotation"
-            regenie_gene_setlist          = "$projectDir/tests/input/gene_based_tests/example.setlist"
-            regenie_gene_masks            = "$projectDir/tests/input/gene_based_tests/example.masks"
-            regenie_gene_test             = 'skat'
-            regenie_gene_aaf              = 0.01
-            regenie_gene_vc_max_aaf       = 100
-            regenie_gene_vc_mac_thr       = 10
-            regenie_gene_build_mask       = 'sum'
-            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
-            outdir                        = "$outputDir"
-         }
-    }
-
-    then {
-        assert workflow.fail
-        assert workflow.out.my_channel.size() == 0
-    }
-
-}
-
 test("Should execute gene-based test pipeline") {
 
     when {
@@ -898,6 +862,80 @@ test("Should GWAS with chunking and optional step 1 param") {
         assert workflow.success
         assert snapshot(new File("$outputDir/results/PHENO1.regenie.gz"), new File("$outputDir/results/PHENO2.regenie.gz") , workflow.trace).match()
     }
+}
+
+
+   test("Should execute gene-based-test with only one output file") {
+
+    when {
+
+        params {
+            project                       = 'test-gene-based-test'
+            genotypes_build               = 'hg19'
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association_format  = 'bed'
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
+            phenotypes_binary_trait       = true
+            phenotypes_columns            = 'Y1'
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
+            covariates_columns            = 'V1,V2,V3'
+            regenie_run_gene_based_tests  = true
+            regenie_gene_anno             = "$projectDir/tests/input/gene_based_tests/example.annotation"
+            regenie_gene_setlist          = "$projectDir/tests/input/gene_based_tests/example.setlist"
+            regenie_gene_masks            = "$projectDir/tests/input/gene_based_tests/example.masks"
+            regenie_gene_test             = 'skat'
+            regenie_gene_aaf              = 0.01
+            regenie_gene_vc_max_aaf       = 100
+            regenie_gene_vc_mac_thr       = 10
+            regenie_gene_build_mask       = 'sum'
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
+         }
+    }
+
+    then {
+        assert workflow.success
+        snapshot(new File("$outputDir/results/Y1.regenie.gz"), workflow.trace).match()
+    }
+
+}
+
+
+   test("Should fail since no phenotype is specified") {
+
+    when {
+
+        params {
+            project                       = 'test-gene-based-test'
+            genotypes_build               = 'hg19'
+            genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+            genotypes_association_format  = 'bed'
+            phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
+            phenotypes_binary_trait       = true
+            phenotypes_columns            = ''
+            covariates_filename           = "$projectDir/tests/input/pipeline/covariates.txt"
+            covariates_columns            = 'V1,V2,V3'
+            regenie_run_gene_based_tests  = true
+            regenie_gene_anno             = "$projectDir/tests/input/gene_based_tests/example.annotation"
+            regenie_gene_setlist          = "$projectDir/tests/input/gene_based_tests/example.setlist"
+            regenie_gene_masks            = "$projectDir/tests/input/gene_based_tests/example.masks"
+            regenie_gene_test             = 'skat'
+            regenie_gene_aaf              = 0.01
+            regenie_gene_vc_max_aaf       = 100
+            regenie_gene_vc_mac_thr       = 10
+            regenie_gene_build_mask       = 'sum'
+            rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            outdir                        = "$outputDir"
+         }
+    }
+
+    then {
+        assert workflow.failed
+        snapshot(workflow.trace).match()
+    }
+
 }
 
 
