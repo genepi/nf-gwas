@@ -1,0 +1,62 @@
+nextflow_process {
+
+    name "Test Process REGENIE_STEP2_GENE_BASED_TESTS"
+    script "modules/local/regenie/regenie_step2_run_gene_tests.nf"
+    process "REGENIE_STEP2_RUN_GENE_TESTS"
+
+    test("Should execute regenie step2 without predictions") {
+
+        when {
+            params {
+                //set required phenotypes_column
+                phenotypes_columns = 'Y1,Y2'
+                regenie_test = 'additive'
+                regenie_skip_predictions = true
+                outdir = "$outputDir"
+                regenie_gene_test             = 'skat'
+                regenie_gene_aaf              = 0.01
+                regenie_gene_vc_max_aaf       = 100
+                regenie_gene_vc_mac_thr       = 10
+                regenie_gene_build_mask       = 'max'
+                regenie_write_bed_masks       = true
+            }
+            process {
+                """
+                input[0] = Channel.fromPath("$projectDir/tests/input/regenie_step2/regenie_step1_out*")
+                input[1] = Channel.fromPath("$projectDir/tests/input/pipeline/gene_based_tests_regenie/example_3chr.bgen")
+                .map { tuple(it.baseName, it, file('dummy_a'), file('dummy_b'), -1) }
+                input[2] = 'bgen'
+                input[3] = file("$projectDir/tests/input/pipeline/phenotype.txt")
+                input[4] = []
+                input[5] = "$projectDir/tests/input/pipeline/gene_based_tests_regenie/example_3chr.sample"
+                input[6] = "$projectDir/tests/input/pipeline/gene_based_tests_regenie/example_3chr.annotations"
+                input[7] = "$projectDir/tests/input/pipeline/gene_based_tests_regenie/example_3chr.setlist"
+                input[8] = "$projectDir/tests/input/pipeline/gene_based_tests_regenie/example_3chr.masks"
+                input[9] = []
+           
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            //check amount of processes
+            assert process.trace.tasks().size() == 1
+
+            with(process.out) {
+
+        
+                with(regenie_step2_out.get(0)){
+                
+                // access second element of first tuple
+                def lines = path(get(1)[0]).readLinesGzip()
+                //check amount of lines
+                assert lines.size() == 10
+                }
+
+            }
+        }
+
+    }
+
+}
