@@ -932,6 +932,7 @@ test("Should GWAS with chunking and optional step 1 param") {
     }
 
     then {
+        println workflow.stderr.contains("Missing required parameter")
         assert workflow.failed
         snapshot(workflow.trace).match()
     }
