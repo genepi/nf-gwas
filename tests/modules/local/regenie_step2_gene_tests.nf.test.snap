@@ -1,0 +1,14 @@
+{
+    "Should execute regenie step2 without predictions": {
+        "content": [
+            [
+                "example_3chr",
+                [
+                    "example_3chr_Y1.regenie.gz:md5,1175e6eaac296ef126cfc56004dcfa04",
+                    "example_3chr_Y2.regenie.gz:md5,934ee2a4df77ea864c24289146c9795f"
+                ]
+            ]
+        ],
+        "timestamp": "2023-12-15T11:14:20.549264"
+    }
+}

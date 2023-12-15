@@ -15,6 +15,11 @@ workflow REGENIE_STEP2_GENE_TESTS {
     regenie_anno_file    = file(params.regenie_gene_anno, checkIfExists: true)
     regenie_setlist_file = file(params.regenie_gene_setlist, checkIfExists: true)
     regenie_masks_file   = file(params.regenie_gene_masks, checkIfExists: true)
+    if (!params.regenie_sample_file) {
+        sample_file = []
+    } else {
+        sample_file = file(params.regenie_sample_file, checkIfExists: true)
+    }
 
     REGENIE_STEP2_RUN_GENE_TESTS (
         regenie_step1_out_ch.collect(),
@@ -22,6 +27,7 @@ workflow REGENIE_STEP2_GENE_TESTS {
         genotypes_association_format,
         phenotypes_file_validated,
         covariates_file_validated,
+        sample_file,
         regenie_anno_file,
         regenie_setlist_file,
         regenie_masks_file,
