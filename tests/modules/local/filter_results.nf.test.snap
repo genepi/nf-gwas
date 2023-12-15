@@ -1,0 +1,29 @@
+{
+    "Should output only 117 filtered lines": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,973ef7138c333f4c2d2787fad6c83f50"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d471f295b41ae96c0b094faa464c549b"
+                    ]
+                ],
+                "results_filtered": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,973ef7138c333f4c2d2787fad6c83f50"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d471f295b41ae96c0b094faa464c549b"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-12-15T10:16:52.606586"
+    }
+}
