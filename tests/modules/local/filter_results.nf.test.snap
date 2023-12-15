@@ -52,5 +52,32 @@
             }
         ],
         "timestamp": "2023-12-15T10:16:52.606586"
+    },
+    "Should output an empty file": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "results_filtered": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-12-15T10:37:15.316506"
     }
 }
