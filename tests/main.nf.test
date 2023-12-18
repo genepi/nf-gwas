@@ -932,7 +932,7 @@ test("Should GWAS with chunking and optional step 1 param") {
     }
 
     then {
-        println workflow.stderr.contains("Missing required parameter")
+        assert workflow.stderr.contains("* Missing required parameter: --phenotypes_columns")
         assert workflow.failed
         snapshot(workflow.trace).match()
     }
@@ -940,7 +940,7 @@ test("Should GWAS with chunking and optional step 1 param") {
     }
 
 
-   test("Should execute GWAS with additive testig with no significant hits") {
+   test("Should execute GWAS with additive testing with no significant hits") {
 
     when {
 
