@@ -5,10 +5,11 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
 
     input:
     path step1_out
-    tuple val(filename), path(genotyped_plink_file)
+    tuple val(filename), path(genotyped_plink_bim_file), path(genotyped_plink_bed_file), path(genotyped_plink_fam_file), val(range)
     val assoc_format
 	path phenotypes_file
     path covariates_file
+    path sample_file
     path regenie_gene_anno_file
     path regenie_gene_setlist_file
     path regenie_gene_masks_file
@@ -20,8 +21,9 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
     path "${filename}_masks*"
 
     script:
-    def format = assoc_format == 'bed' ? "--bed" : '--bgen'
+    def format = assoc_format == 'bgen' ? "--bgen" : '--pgen'
     def extension = assoc_format == 'bgen' ? ".bgen" : ''
+    def bgen_sample = sample_file ? "--sample $sample_file" : ''
     def firthApprox = params.regenie_firth_approx ? "--approx" : ""
     def firth = params.regenie_firth ? "--firth $firthApprox" : ""
     def binaryTrait =  params.phenotypes_binary_trait ? "--bt $firth " : ""
@@ -65,6 +67,7 @@ process REGENIE_STEP2_RUN_GENE_TESTS {
         $predictions \
         $apply_rint \
         $geneTest \
+        $bgen_sample \
         $aaf \
         $maxAaf \
         $vcMACThr \
