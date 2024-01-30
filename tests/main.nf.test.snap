@@ -204,41 +204,15 @@
     },
     "Should GWAS with chunking and optional step 1 param": {
         "content": [
-            {
-                "directory": false,
-                "file": false,
-                "freeSpace": 0,
-                "canonicalPath": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results/PHENO1.regenie.gz",
-                "usableSpace": 0,
-                "hidden": false,
-                "totalSpace": 0,
-                "path": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results/PHENO1.regenie.gz",
-                "name": "PHENO1.regenie.gz",
-                "absolute": true,
-                "absolutePath": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results/PHENO1.regenie.gz",
-                "parent": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results"
-            },
-            {
-                "directory": false,
-                "file": false,
-                "freeSpace": 0,
-                "canonicalPath": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results/PHENO2.regenie.gz",
-                "usableSpace": 0,
-                "hidden": false,
-                "totalSpace": 0,
-                "path": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results/PHENO2.regenie.gz",
-                "name": "PHENO2.regenie.gz",
-                "absolute": true,
-                "absolutePath": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results/PHENO2.regenie.gz",
-                "parent": "/data2/git/nf-gwas/.nf-test/tests/a90f6be2ec6879aff5ed5e10566d8c45/output/results"
-            },
+            "PHENO1.regenie.gz:md5,c03c47e1d4300277f2a445afc14c6d1e",
+            "PHENO2.regenie.gz:md5,3b600580a44b792462720d7e7c734ccc",
             {
                 "tasksFailed": 0,
                 "tasksCount": 40,
                 "tasksSucceeded": 40
             }
         ],
-        "timestamp": "2024-01-30T12:59:14.923268195"
+        "timestamp": "2024-01-30T14:58:51.832310272"
     },
     "Should execute GWAS with recessive test": {
         "content": [
@@ -299,29 +273,6 @@
             }
         ],
         "timestamp": "2023-12-14T16:40:28.618801"
-    },
-    "Should execute pipeline applying an additive model": {
-        "content": [
-            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
-            {
-                "tasksFailed": 0,
-                "tasksCount": 15,
-                "tasksSucceeded": 15
-            }
-        ],
-        "timestamp": "2023-12-14T13:41:14.112083"
-    },
-    "Should execute GWAS with phenotype file containing three empty values": {
-        "content": [
-            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
-            "Y2.regenie.gz:md5,d9cb8506e0819ddff02eb1122284f9f3",
-            {
-                "tasksFailed": 0,
-                "tasksCount": 15,
-                "tasksSucceeded": 15
-            }
-        ],
-        "timestamp": "2023-12-14T17:02:54.005539"
     },
     "Should execute GWAS with dominant test": {
         "content": [
@@ -426,7 +377,7 @@
                 "tasksSucceeded": 10
             }
         ],
-        "timestamp": "2024-01-30T13:05:45.441804387"
+        "timestamp": "2024-01-30T13:41:43.043614115"
     },
     "Should execute GWAS with deletion of missing phenotype data": {
         "content": [

@@ -890,6 +890,7 @@ test("Should GWAS with chunking and optional step 1 param") {
             regenie_test                  = 'additive'
             rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
             regenie_step1_optional        = "--pThresh 0.01"
+            outdir                        = "$outputDir"
         }
     }
     then {
