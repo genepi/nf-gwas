@@ -19,22 +19,7 @@ nextflow_process {
 
         then {
             assert process.success
-
-            with(process.out) {
-                with(results_filtered){
-
-                assert (size() == 2)
-
-                // access second element of first tuple
-                def lines = path(get(0).get(1)).readLinesGzip()
-
-                //check if regenie header is as expected
-                assert lines.get(0).equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
-
-                //check amount of lines
-                assert (lines.size() == 117)
-                }
-                }
+            assert snapshot(process.out).match()
             }
 
         }
@@ -54,25 +39,35 @@ nextflow_process {
 
                 then {
                     assert process.success
-
-                    with(process.out) {
-
-                        with(results_filtered){
-
-                        assert (size() == 2)
-
-                        def lines = path(get(0).get(1)).readLinesGzip()
-
-                        //check if regenie header is as expected
-                assert lines.get(0).equals("CHROM\tGENPOS\tID\tALLELE0\tALLELE1\tA1FREQ\tINFO\tN\tTEST\tBETA\tSE\tCHISQ\tLOG10P\tEXTRA")
-
-                        //all lines included since filter value is 0
-                        assert (lines.size() == 1001)
-                        }
-
-                        }
-                    }
+                    assert snapshot(process.out).match()
 
                 }
 
         }
+
+        test("Should output an empty file") {
+
+                when {
+                    params {
+                        annotation_min_log10p = 100
+                    }
+                    process {
+                        """
+                        input[0] = Channel.of( ['Y1', "$baseDir/tests/input/filter_results/regenie_step2_example_Y1.regenie.gz"], ['Y2', "$baseDir/tests/input/filter_results/regenie_step2_example_Y2.regenie.gz"])
+                        """
+                    }
+                }
+
+                then {
+                    assert process.success
+                    assert snapshot(process.out).match()
+                    with(process.out){
+                        with(results_filtered){
+                            def lines = path(get(0).get(1)).readLinesGzip()
+                            assert (lines.size() == 0)
+                        }
+                    }
+                }
+
+        }
+}
