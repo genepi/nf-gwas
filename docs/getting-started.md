@@ -6,18 +6,18 @@ nav_order: 2
 
 ## Getting Started
 
-1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=21.04.0) 
+1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (>=22.10.4) 
 
 2. Install [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://sylabs.io/). 
 
-**Note** for *Windows users*: check out this [step-by-step tutorial](https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html) to set up Nextflow on your local machine.
+**Note for Windows users**: This [step-by-step tutorial](https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html) helps you to set up Nextflow on your local machine.
 
-3. Run the pipeline on a test dataset to validate your installation. If you specify the option -profile docker, Nextflow will automatically find it in our repository.
+3. Run the pipeline on a test dataset to validate your installation.
 
     ```
-    nextflow run genepi/nf-gwas -r v<[latest tag](https://github.com/genepi/nf-gwas/tags)> -profile test,<docker,singularity>
+    nextflow run genepi/nf-gwas -r <latest-tag> -profile test,docker
     ```
-**Note:** Following the [latest tag](https://github.com/genepi/nf-gwas/tags) link, you will be redirected to the list of the pipeline releases. You can specify the latest tag in the command above e.g. (-r v1.0.0 )
+**Note:** Click [here](https://github.com/genepi/nf-gwas/tags) to replace the `<latest-tag>` with the actual version you want to run (e.g. `-r v1.0.0`). 
 
 ### Run the pipeline on your data
 
