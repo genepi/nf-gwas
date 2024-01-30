@@ -8,3 +8,4 @@ tests/output
 nf-test
 .project
 .DS_Store
+.nf-test.log

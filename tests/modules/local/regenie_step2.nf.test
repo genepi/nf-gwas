@@ -31,17 +31,13 @@ nextflow_process {
 
         then {
             assert process.success
-
             //check amount of processes
             assert process.trace.tasks().size() == 1
 
             with(process.out) {
+                assert snapshot(regenie_step2_out.get(0)).match()
                 with(regenie_step2_out.get(0)){
-                    assert size() == 3
-                    assert get(0) == "example"
-                    assert path(get(1)).md5 == 'd02411453e1236fb378020bb95246cc5'
-                    assert path(get(2)).md5 == '89086862ab0ea9b2a1a92f3bee0b55d3'
-
+                
                     // access second element of first tuple
                     def lines = path(get(1)).readLinesGzip()
 

@@ -1,0 +1,83 @@
+{
+    "Should output all regenie lines": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d637f770b60b67e3fe3a5454dadc143b"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,6febee3426eaca4ca8b72540ba75e633"
+                    ]
+                ],
+                "results_filtered": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d637f770b60b67e3fe3a5454dadc143b"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,6febee3426eaca4ca8b72540ba75e633"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-12-15T10:30:54.852916"
+    },
+    "Should output only 117 filtered lines": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,973ef7138c333f4c2d2787fad6c83f50"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d471f295b41ae96c0b094faa464c549b"
+                    ]
+                ],
+                "results_filtered": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,973ef7138c333f4c2d2787fad6c83f50"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d471f295b41ae96c0b094faa464c549b"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-12-15T10:16:52.606586"
+    },
+    "Should output an empty file": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "results_filtered": [
+                    [
+                        "Y1",
+                        "Y1.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ],
+                    [
+                        "Y2",
+                        "Y2.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-12-15T10:37:15.316506"
+    }
+}

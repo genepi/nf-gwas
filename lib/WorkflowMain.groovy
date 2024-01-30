@@ -78,9 +78,14 @@ class WorkflowMain {
             exit 1, "Invalid config file. The 'write-mask' option does not work when building masks with 'sum'."
         }
 
+        if(params.genotypes_association_chunk_size > 0 ) {
+            //&& genotypes_association_format != 'bgen' ) {
+            exit 1, " Chunking is currently not available for gene-based tests (param: genotypes_association_chunk_size=0)."
+        }
+
         //Check association file format for gene-based tests
-        if (genotypes_association_format != 'bed'){
-            exit 1, "File format " + genotypes_association_format + " currently not supported for gene-based tests. Please use 'bed' input instead. "
+        if (genotypes_association_format != 'vcf' && genotypes_association_format != "bgen"){
+            exit 1, "File format " + genotypes_association_format + " currently not supported for gene-based tests. Please use 'vcf' or 'bgen' input instead. "
         }
         } else {
             //Check if tests exists
