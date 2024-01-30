@@ -907,8 +907,8 @@ test("Should GWAS with chunking and optional step 1 param") {
             project                       = 'test-gene-based-test'
             genotypes_build               = 'hg19'
             genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association         = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
-            genotypes_association_format  = 'bed'
+            genotypes_association         = "$projectDir/tests/input/pipeline/example.vcf.gz"
+            genotypes_association_format  = 'vcf'
             phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_bin.txt"
             phenotypes_binary_trait       = true
             phenotypes_columns            = 'Y1'
