@@ -17,11 +17,12 @@ Documentation can be found [here](https://genepi.github.io/nf-gwas/).
 
 ## Citation
 
-Please cite this preprint if you use nf-gwas:
+Please cite [our paper](https://academic.oup.com/nargab/article/6/1/lqae015/7602818) if you use nf-gwas:
 
-> [Performing highly parallelized and reproducible GWAS analysis on biobank-scale data](https://www.biorxiv.org/content/10.1101/2023.08.08.552417v1).
-> Sebastian Schönherr, Johanna Schachtl-Riess, Silvia Di Maio, Michele Filosi, Marvin Mark, Claudia Lamina, Christian Fuchsberger, Florian Kronenberg, Lukas Forer
-> bioRxiv 2023.08.08.552417; doi: [https://doi.org/10.1101/2023.08.08.552417](https://doi.org/10.1101/2023.08.08.552417)
+> Schönherr S*, Schachtl-Riess JF*, Di Maio S*, Filosi M, Mark M, Lamina C, Fuchsberger C, Kronenberg F, Forer L. 
+> Performing highly parallelized and reproducible GWAS analysis on biobank-scale data. 
+> NAR Genom Bioinform. 2024 Feb 7;6(1):lqae015. doi: 10.1093/nargab/lqae015. PMID: 38327871; PMCID: PMC10849172.
+
 
 ## Quick Start
 
