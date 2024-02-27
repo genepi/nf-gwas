@@ -29,7 +29,10 @@ jobs:
           sudo mv nf-test /usr/local/bin/
           
       - name: Build Docker 
-        run:  docker build -t genepi/mtdna-server-2 .
+        run:  docker build -t genepi/nf-gwas .
 
       - name: Run Tests 
         run:  nf-test test
+        
+      - name: Run static tests with development profile
+        run:  ./run-tests.sh
