@@ -9,21 +9,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-    - name: Install nextflow
-      run: sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v23.04.4/nextflow; chmod +x nextflow;
-    - name: Add nextflow to path
-      run: echo "/opt/nextflow" >> $GITHUB_PATH;
-    - name: Install nf-test
-      run: sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.8.4/nf-test-0.8.4.tar.gz; tar xvfz nf-test-*.tar.gz; chmod +x nf-test;
-    - name: Add nf-test to pathdocker build -t genepi/nf-gwas .
-      run: echo "/opt/nf-test" >> $GITHUB_PATH;
-    - name: Run nf-test tests with development profile
-      run:  docker build -t genepi/nf-gwas .; nf-test test
-    - name: Run static tests with development profile
-      run:  ./run-tests.sh
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Setup Nextflow ${{ matrix.nextflow }}
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "latest-edge"
+
+      - name: Install nf-test
+        run: |
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
+          
+      - name: Build Docker 
+        run:  docker build -t genepi/nf-gwas .
+
+      - name: Run Tests 
+        run:  nf-test test
+        
+      - name: Run static tests with development profile
+        run:  ./run-tests.sh
