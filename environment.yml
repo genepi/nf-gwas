@@ -31,3 +31,4 @@ dependencies:
   - bedtools=2.30.0
   - htslib=1.15.1
   - csvtk=0.26.0
+  - awscli=2.15.28
