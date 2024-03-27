@@ -35,7 +35,6 @@ nextflow_process {
             assert process.trace.tasks().size() == 1
 
             with(process.out) {
-                assert snapshot(regenie_step2_out.get(0)).match()
                 with(regenie_step2_out.get(0)){
                 
                     // access second element of first tuple
@@ -46,6 +45,18 @@ nextflow_process {
 
                     //check amount of lines
                     assert lines.size() == 1001
+
+                    //split lines and skip header
+                    def rows = lines.tail()*.split(' ')
+                    assert rows.size() == 1000
+
+                    //Find all variants with LOG10P > 1 and check with expected number
+                    def significantY1 = rows.findAll { (it[12] as Double) > 1}
+                    def significantY2 = rows.findAll { (it[16] as Double) > 1} 
+
+                    assert significantY1.size() == 116
+                    assert significantY2.size() == 127
+
                 }
 
                 with(regenie_step2_out_log){
@@ -55,6 +66,8 @@ nextflow_process {
                     assert path(get(0)).text.contains("--ignore-pred")
                     assert path(get(0)).text.contains("--test additive ")
                 }
+
+                assert snapshot(regenie_step2_out.get(0)).match()
 
             }
         }
