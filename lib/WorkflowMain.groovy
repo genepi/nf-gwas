@@ -64,10 +64,6 @@ class WorkflowMain {
        Nextflow.error("Parameter association_build is required.")
     }
 
-    if(params.rsids_filename == null) {
-       Nextflow.error(ANSI_YELLOW +  "WARN: A large rsID file will be downloaded for annotation. Please specify the path to the 'rsids_filename' parameter in the config (see docs for file creation) to avoid multiple downloads." + ANSI_RESET)
-    }
-
     if(params.genotypes_association_chunk_size > 0 && genotypes_association_format != 'bgen' ) {
         Nextflow.error("Chunking is currently only available for association files in bgen format (param: genotypes_association_chunk_size).")
     }
