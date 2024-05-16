@@ -17,7 +17,7 @@ Useful tip: as indicated on the GitHub repository, the genotypes have to be a si
 
 To run the pipeline with the `first-gwas.config` configuration file, you simply change the working directory to the GWAS folder (`cd /home/myHome/GWAS`) and type in the following command:
 ```
-nextflow run genepi/nf-gwas -c first-gwas.config -r v1.0.0 -profile docker -bg
+nextflow run genepi/nf-gwas -c first-gwas.config -r v1.X.X -profile docker -bg
 ```
 In more detail:
 
@@ -27,7 +27,7 @@ In more detail:
 
 * `-c first-gwas.config` tells the pipeline which configuration file it should use (just exchange first-gwas.config with the name of your config file)
 
-* `-r v1.0.0` tells which version of the pipeline should be used (you can check the number of the latest version on the GitHub repository of the pipeline and change it accordingly)
+* `-r v1.X.X` tells which version of the pipeline should be used (you can check the number of the latest version on the GitHub repository of the pipeline and change it accordingly)
 
 * `-profile docker` this tells Nextflow which configuration profile it should use and you can find the available options on the GitHub repository. The pipeline currently includes profiles for [Docker](https://www.docker.com/) [Singularity](https://apptainer.org/) and [Slurm](https://slurm.schedmd.com/documentation.html). You can learn more about this [here](../configuration/profiles).
 

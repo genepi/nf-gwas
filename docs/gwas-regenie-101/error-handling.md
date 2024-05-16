@@ -8,7 +8,7 @@ nav_order: 4
 
 Before running the pipeline on your own data, you can run the pipeline with a small test dataset with the following command:
 ```
-nextflow run genepi/nf-gwas -r v1.0.0 -profile test,docker -bg
+nextflow run genepi/nf-gwas -r v1.X.X -profile test,docker -bg
 ```
 (adapt the -r and -profile to the one you want to use on your data; for this to work the container software - e.g. [docker](https://docs.docker.com/get-docker/) - must also be pre-installed)
 
@@ -18,7 +18,7 @@ If you still cannot find a solution, post an issue on the GitHub page, I am sure
 
 There are two errors I came across, that are not formatting problems of your input files. If you have the same ones, here are the solutions:
 
-- Error: `Cannot find revision 'v1.0.0'` -- Make sure that it exists in the remote repository `https://github.com/genepi/nf-gwas`
+- Error: `Cannot find revision 'v1.X.X'` -- Make sure that it exists in the remote repository `https://github.com/genepi/nf-gwas`
 -> This happens to me every time I use a new version of the pipeline. If the version exists on GitHub, just re-run the same command, then it works
 - Command error: `Failed to open --vcf file : Permission denied`
 -> of course this could also happen for other files, it means that you don't have reading permission for these files. In this case you have to ask the administrator to give you reading permissions for these files. You can also check the permissions for a file by navigating to the folder and entering the `ls -l` command (the `-l` will list the files in the directory and on the left side it will display the permissions for each file)

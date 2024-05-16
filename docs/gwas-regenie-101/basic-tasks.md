@@ -6,7 +6,7 @@ nav_order: 3
 ---
 
 ## Mastering the basic tasks
-As mentioned in the beginning, I am working on a Windows computer, so I cannot run the pipeline locally. However, my institute has a Linux server on which Nextflow is installed. So the first steps for you are to 1) gain access to a server, a Linux computer that you can access remotely or a cluster and 2) ask the administrator to [install Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) on it (Version ≥ 21.04.0).
+As mentioned in the beginning, I am working on a Windows computer, so I cannot run the pipeline locally. However, my institute has a Linux server on which Nextflow is installed. So the first steps for you are to 1) gain access to a server, a Linux computer that you can access remotely or a cluster and 2) ask the administrator to [install Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) on it (Version ≥ 22.10.04).
 
 ### Accessing a remote server
 
