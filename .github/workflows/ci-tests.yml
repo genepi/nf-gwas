@@ -4,9 +4,12 @@ on: [push, pull_request]
 
 jobs:
 
-  build:
+  test:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4, 5]
 
     steps:
       - name: Checkout
@@ -31,8 +34,8 @@ jobs:
       - name: Build Docker 
         run:  docker build -t genepi/nf-gwas .
 
-      - name: Run Tests 
-        run:  nf-test test
+      - name: Run Tests (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
+        run: nf-test test --shard ${{ matrix.shard }}/${{ strategy.job-total }}
         
       - name: Run static tests with development profile
         run:  ./run-tests.sh
