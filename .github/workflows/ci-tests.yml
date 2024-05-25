@@ -30,9 +30,15 @@ jobs:
         run: |
           wget -qO- https://code.askimed.com/install/nf-test | bash  -s 0.9.0-rc2
           sudo mv nf-test /usr/local/bin/
-          
-      - name: Build Docker 
-        run:  docker build -t genepi/nf-gwas .
+
+      - name: Build Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: "genepi/nf-gwas"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Run Tests (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
         run: nf-test test --ci --shard ${{ matrix.shard }}/${{ strategy.job-total }}
