@@ -28,7 +28,7 @@ jobs:
 
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash  -s 0.9.0-rc1
+          wget -qO- https://code.askimed.com/install/nf-test | bash  -s 0.9.0-rc2
           sudo mv nf-test /usr/local/bin/
           
       - name: Build Docker 
