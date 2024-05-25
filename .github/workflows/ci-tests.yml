@@ -39,8 +39,9 @@ jobs:
         with:
           context: .
           push: false
+          load: true
           tags: "genepi/nf-gwas"
-          cache-from: type=gha
+          cache-from: type=gha          
           cache-to: type=gha,mode=max
 
       - name: Run Tests (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
