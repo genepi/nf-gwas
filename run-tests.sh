@@ -4,7 +4,7 @@ set -e
 
 # test all config files in tests folder
 config_files="tests/*.conf"
-docker build -t genepi/nf-gwas .
+# docker build -t genepi/nf-gwas .
 for config_file in $config_files
 do
   echo "---------------------------------------------------------"
