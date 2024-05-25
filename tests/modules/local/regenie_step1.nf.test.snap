@@ -4,6 +4,10 @@
             "regenie_step1_out_1.loco.gz:md5,5e3f3bd230d519c0740ae158d2ba2f41",
             "regenie_step1_out_2.loco.gz:md5,ff2327b54520a6885df85ad27cebcd19"
         ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T15:05:10.807967"
     }
 }

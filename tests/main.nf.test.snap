@@ -9,18 +9,11 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:03:22.52629"
-    },
-    "Should fail(?) because no significant hit was found": {
-        "content": [
-            "Y1.regenie.gz:md5,f80dee2e3a0f824408cfa0bf963f4a2d",
-            {
-                "tasksFailed": 0,
-                "tasksCount": 14,
-                "tasksSucceeded": 14
-            }
-        ],
-        "timestamp": "2023-12-15T11:12:53.355508"
     },
     "Should execute GWAS with phenotype file in tabs format": {
         "content": [
@@ -32,6 +25,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:02:25.833032"
     },
     "Should execute GWAS with binary trait (with missing data)": {
@@ -44,6 +41,10 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:42:46.245326"
     },
     "Should execute GWAS with liftover to hg38 and annotation": {
@@ -56,6 +57,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:48:11.2585"
     },
     "Should execute GWAS with custom Manhattan plot y-limit": {
@@ -68,6 +73,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:01:57.60339"
     },
     "Should execute pipeline for binary trait with optional regenie step1 param": {
@@ -80,6 +89,10 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:05:12.14642"
     },
     "Should execute gene-based test pipeline with specified parameters with sum": {
@@ -92,6 +105,10 @@
                 "tasksSucceeded": 12
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2024-01-30T13:03:21.803945401"
     },
     "Should execute GWAS with skipped predictions": {
@@ -104,6 +121,10 @@
                 "tasksSucceeded": 12
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:04:16.854487"
     },
     "Should execute liftover and GWAS pipeline": {
@@ -116,6 +137,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:40:00.93939"
     },
     "Should execute GWAS with header in phenotype file with chunking": {
@@ -128,6 +153,10 @@
                 "tasksSucceeded": 34
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:56:14.80547"
     },
     "Should execute GWAS with force step 1": {
@@ -140,6 +169,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:47:14.573846"
     },
     "Should execute GWAS with additive test and multiple chromosomes": {
@@ -152,6 +185,10 @@
                 "tasksSucceeded": 18
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:39:07.072853"
     },
     "Should execute GWAS with pruning pipeline": {
@@ -164,6 +201,10 @@
                 "tasksSucceeded": 16
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:31:33.574586"
     },
     "Should execute GWAS with binary trait (no Firth approximation)": {
@@ -176,19 +217,11 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:41:52.068742"
-    },
-    "Should execute GWAS with additive testig with no significant hits": {
-        "content": [
-            "Y1.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e",
-            "Y2.regenie.filtered.gz:md5,d41d8cd98f00b204e9800998ecf8427e",
-            {
-                "tasksFailed": 0,
-                "tasksCount": 14,
-                "tasksSucceeded": 14
-            }
-        ],
-        "timestamp": "2023-12-15T11:19:19.183957"
     },
     "Should execute GWAS with header in phenotype file (custom batch size)": {
         "content": [
@@ -200,6 +233,10 @@
                 "tasksSucceeded": 40
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-15T09:39:33.247657"
     },
     "Should GWAS with chunking and optional step 1 param": {
@@ -212,6 +249,10 @@
                 "tasksSucceeded": 40
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2024-01-30T14:58:51.832310272"
     },
     "Should execute GWAS with recessive test": {
@@ -224,6 +265,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:03:50.532327"
     },
     "Should execute GWAS with header in phenotype file": {
@@ -236,6 +281,10 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:00:13.784558"
     },
     "Should execute GWAS with additive test on 2 chromosomes": {
@@ -248,6 +297,10 @@
                 "tasksSucceeded": 19
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:43:15.539844"
     },
     "Should execute GWAS with header in phenotype file (default batch size)": {
@@ -260,6 +313,10 @@
                 "tasksSucceeded": 34
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:57:23.850687"
     },
     "Should execute GWAS with additive test and RSIDs": {
@@ -272,7 +329,42 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:40:28.618801"
+    },
+    "Should execute pipeline applying an additive model": {
+        "content": [
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 15,
+                "tasksSucceeded": 15
+            }
+        ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
+        "timestamp": "2024-02-14T15:01:58.151408"
+    },
+    "Should execute GWAS with phenotype file containing three empty values": {
+        "content": [
+            "Y1.regenie.gz:md5,3b46e913e302d59a27c87f989384a689",
+            "Y2.regenie.gz:md5,d9cb8506e0819ddff02eb1122284f9f3",
+            {
+                "tasksFailed": 0,
+                "tasksCount": 15,
+                "tasksSucceeded": 15
+            }
+        ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
+        "timestamp": "2024-02-14T15:17:10.622828"
     },
     "Should execute GWAS with dominant test": {
         "content": [
@@ -284,6 +376,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:46:46.732441"
     },
     "Should execute GWAS with interaction tests (interaction term)": {
@@ -296,6 +392,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:48:57.716231"
     },
     "Should execute gene-based test pipeline": {
@@ -308,6 +408,10 @@
                 "tasksSucceeded": 12
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2024-01-30T13:04:14.539623588"
     },
     "Should execute pipeline for binary trait": {
@@ -320,6 +424,10 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:41:24.903565"
     },
     "Should execute GWAS with binary trait (no Firth)": {
@@ -332,6 +440,10 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:42:19.084491"
     },
     "Should fail since no phenotype is specified": {
@@ -342,6 +454,10 @@
                 "tasksSucceeded": 0
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-15T09:46:31.396474"
     },
     "Should execute GWAS with additive testing with no significant hits": {
@@ -354,6 +470,10 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2024-01-30T13:00:05.31347319"
     },
     "Should execute liftover and GWAS pipeline with array results": {
@@ -366,6 +486,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:39:34.107772"
     },
     "Should execute gene-based-test with only one output file": {
@@ -377,6 +501,10 @@
                 "tasksSucceeded": 10
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2024-01-30T13:41:43.043614115"
     },
     "Should execute GWAS with deletion of missing phenotype data": {
@@ -389,6 +517,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:46:18.588273"
     },
     "Should execute GWAS with interaction tests": {
@@ -401,6 +533,10 @@
                 "tasksSucceeded": 15
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:48:34.843303"
     },
     "Should execute pipeline for binary trait with optional regenie params": {
@@ -413,6 +549,10 @@
                 "tasksSucceeded": 14
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T17:04:44.409121"
     },
     "Should execute GWAS with condition file": {
@@ -425,6 +565,10 @@
                 "tasksSucceeded": 16
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:45:21.791936"
     },
     "Should execute GWAS with covariates file": {
@@ -437,6 +581,10 @@
                 "tasksSucceeded": 16
             }
         ],
+        "meta": {
+            "nf-test": "0.8.5",
+            "nextflow": "23.04.3"
+        },
         "timestamp": "2023-12-14T16:45:50.402989"
     }
 }
