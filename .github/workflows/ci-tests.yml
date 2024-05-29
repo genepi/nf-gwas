@@ -21,7 +21,7 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Setup Nextflow ${{ matrix.nextflow }}
+      - name: Setup Nextflow
         uses: nf-core/setup-nextflow@v1
         with:
           version: "latest-edge"
