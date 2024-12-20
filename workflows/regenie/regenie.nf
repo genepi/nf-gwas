@@ -61,7 +61,9 @@ workflow REGENIE {
         regenie_step2_out = REGENIE_STEP2_GENE_TESTS.out.regenie_step2_by_phenotype
         regenie_step2_parsed_logs =  REGENIE_STEP2_GENE_TESTS.out.regenie_step2_parsed_logs
     }
-    emit: 
+    emit:
+    regenie_step1_out_ch
+    regenie_step1_parsed_logs_ch
     regenie_step2_out
     regenie_step2_parsed_logs
 }

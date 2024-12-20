@@ -88,8 +88,9 @@ workflow SINGLE_VARIANT_TESTS {
 
     regenie_step2_out = REGENIE.out.regenie_step2_out
     regenie_step2_parsed_logs = REGENIE.out.regenie_step2_parsed_logs
-    //TODO return logs from step1
-    regenie_step1_parsed_logs_ch = Channel.empty()
+    //return logs from step1
+    regenie_step1_parsed_logs_ch = REGENIE.out.regenie_step1_parsed_logs_ch
+    regenie_step1_out_ch = REGENIE.out.regenie_step1_out_ch
 
     if (!run_interaction_tests) {
 
