@@ -1003,4 +1003,54 @@ test("Should GWAS with chunking and optional step 1 param") {
     }
    }
 
+   test("Execute a GWAS and report number of samples") {
+
+    when {
+
+            params {
+                project                       = "test-gwas-binary"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = false
+                outdir                        = "$outputDir"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            }
+    }
+
+    then {
+        assert workflow.success
+        def gzCsvFile = path("$outputDir/results/tophits/Y1.regenie.filtered.gz").csv(decompress: true, sep: "\t")
+        assert gzCsvFile.rows[1]['N'] == 500
+    }
+   }
+
+   test("Execute a stratified GWAS and report number of samples") {
+
+    when {
+
+            params {
+                project                       = "test-gwas-binary"
+                genotypes_prediction          = "$projectDir/tests/input/pipeline/example.{bim,bed,fam}"
+                genotypes_association         = "$projectDir/tests/input/pipeline/example.bgen"
+                genotypes_build               = 'hg19'
+                genotypes_imputed_format      = 'bgen'
+                phenotypes_filename           = "$projectDir/tests/input/pipeline/phenotype_stratified.txt"
+                phenotypes_columns            = 'Y1,Y2'
+                phenotypes_binary_trait       = false
+                outdir                        = "$outputDir"
+                rsids_filename                = "$projectDir/tests/input/pipeline/rsids.tsv.gz"
+            }
+    }
+
+    then {
+        assert workflow.success
+        def gzCsvFile = path("$outputDir/results/tophits/Y1.regenie.filtered.gz").csv(decompress: true, sep: "\t")
+        assert gzCsvFile.rows[1]['N'] == 492
+    }
+   }
+
 }
