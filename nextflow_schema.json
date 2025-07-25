@@ -59,7 +59,7 @@
           "fa_icon": "fas fa-project-diagram"
         },
         "genotypes_prediction": {
-          "type": "string",
+          "type": "array",
           "description": "Path to the genomic predictions (e.g. array genotypes) as a merged file in plink format).",
           "fa_icon": "fas fa-project-diagram"
         },

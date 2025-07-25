@@ -62,14 +62,30 @@ workflow NF_GWAS {
     genotyped_plink_ch = Channel.empty()
     if(!skip_predictions) {
         
-        genotyped_plink_ch = Channel.fromFilePairs(genotypes_prediction, size: 3, checkIfExists: true)
+        def paths = genotypes_prediction.collect { file(it) }
 
+        // Find any of the files to extract the base name
+        // We can iterate through the paths and pick the first one that has a .fam, .bim, or .bed extension
+        def base_file = paths.find { it.getName().endsWith('.fam') || it.getName().endsWith('.bim') || it.getName().endsWith('.bed') }
+
+        if (!base_file) {
+            error "Could not find a .fam, .bim, or .bed file in the provided genotypes_prediction array to extract the base name."
+        }
+        // Extract the ID (e.g., "EUR") from the chosen base_file
+        // This regex will remove .fam, .bim, or .bed from the end of the filename
+        def id = base_file.getName().replaceFirst(/\.(fam|bim|bed)$/, '')
+
+        genotyped_plink_ch = Channel.of(
+            tuple(id,
+                tuple(paths[0], paths[1], paths[2])
+            )
+        )
     }
 
     //Optional condition-list file
     condition_list_file = Channel.empty()
     if (params.regenie_condition_list) {
-            condition_list_file = Channel.fromPath(params.regenie_condition_list)
+        condition_list_file = Channel.fromPath(params.regenie_condition_list)
     } 
 
     if (!run_gene_tests) {
