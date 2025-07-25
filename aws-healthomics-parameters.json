@@ -1,0 +1,66 @@
+{
+	"phenotypes_filename": {
+		"description": "s3://nci-tdrp-healthomics/data/metadata/sim_pheno_chr22_EUR_pheno.txt",
+		"optional": false
+	},
+	"genotypes_prediction": {
+		"description": "Array of PLINK genotype files (bed, bim, fam)",
+		"optional": false
+	},
+	"regenie_test": {
+		"description": "additive",
+		"optional": false
+	},
+	"vcf_conversion_split_id": {
+		"description": "true",
+		"optional": false
+	},
+	"rsids_filename": {
+		"description": "s3://nci-tdrp-healthomics/data/annotations/rsids-v154-hg38.index.gz",
+		"optional": false
+	},
+	"project": {
+		"description": "nf-gwas-sim",
+		"optional": false
+	},
+	"genotypes_association": {
+		"description": "s3://nci-tdrp-healthomics/data/simulatedData600k_Zhang2022/bgen/all_chr.tag_chr*.bgen",
+		"optional": false
+	},
+	"phenotypes_binary_trait": {
+		"description": "true",
+		"optional": false
+	},
+	"prune_enabled": {
+		"description": "true",
+		"optional": false
+	},
+	"annotation_min_log10p": {
+		"description": "2",
+		"optional": false
+	},
+	"phenotypes_columns": {
+		"description": "sim",
+		"optional": false
+	},
+	"regenie_step1_optional": {
+		"description": " --loocv ",
+		"optional": false
+	},
+	"phenotypes_delete_missings": {
+		"description": "true",
+		"optional": false
+	},
+	"genotypes_association_format": {
+		"description": "bgen",
+		"optional": false
+	},
+	"prune_maf": {
+		"description": "0.05",
+		"optional": false
+	},
+	"association_build": {
+		"description": "hg38",
+		"optional": false
+	}
+}
