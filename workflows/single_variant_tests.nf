@@ -58,7 +58,7 @@ workflow SINGLE_VARIANT_TESTS {
    
     if (!skip_predictions) {
 
-        QUALITY_CONTROL(genotyped_plink_ch)
+        QUALITY_CONTROL(genotyped_plink_ch, phenotypes_file_validated)
         genotyped_final_ch = QUALITY_CONTROL.out.genotyped_filtered_files_ch
         genotyped_filtered_snplist_ch = QUALITY_CONTROL.out.genotyped_filtered_snplist_ch
         genotyped_filtered_id_ch = QUALITY_CONTROL.out.genotyped_filtered_id_ch
