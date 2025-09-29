@@ -11,6 +11,7 @@ nextflow_process {
             process {
                 """
                  input[0] =  Channel.fromFilePairs("$projectDir/tests/input/pipeline/example.{bim,bed,fam}", size: 3)
+                 input[1] = file("$projectDir/tests/input/pipeline/phenotype.txt")
                 """
             }
         }

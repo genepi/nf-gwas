@@ -4,6 +4,7 @@ process QC_FILTER_GENOTYPED {
 
     input:
     tuple val(genotyped_plink_filename), path(genotyped_plink_file)
+    path phenotypes_file
 
     output:
     path "${genotyped_plink_filename}.qc.log"
@@ -15,6 +16,7 @@ process QC_FILTER_GENOTYPED {
     """
     plink2 \
         --bfile ${genotyped_plink_filename} \
+        --keep ${phenotypes_file} \
         --maf ${params.qc_maf} \
         --mac ${params.qc_mac} \
         --geno ${params.qc_geno} \
