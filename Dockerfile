@@ -32,7 +32,7 @@ ENV PATH="/opt/jbang/bin:${PATH}"
 
 # Install genomic-utils
 WORKDIR "/opt"
-ENV GENOMIC_UTILS_VERSION="v0.3.7"
+ENV GENOMIC_UTILS_VERSION="v0.3.10"
 RUN wget https://github.com/genepi/genomic-utils/releases/download/${GENOMIC_UTILS_VERSION}/genomic-utils.jar
 
 ENV JAVA_TOOL_OPTIONS="-Djdk.lang.Process.launchMechanism=vfork"
