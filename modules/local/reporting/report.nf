@@ -29,7 +29,7 @@ process REPORT {
         --peak-pval-threshold ${params.annotation_peak_pval} \
         --max-annotations ${params.annotation_max_genes} \
         --format CSV \
-        --binning BIN_TO_POINTS \
+        --binning ${params.binning_csv} \
         --output ${phenotype}.binned.txt
 
     java -jar /opt/genomic-utils.jar gwas-report \
@@ -42,6 +42,7 @@ process REPORT {
         --max-annotations ${params.annotation_max_genes} \
         --title ${phenotype} \
         --format HTML \
+        --binning ${params.binning_html} \
         --output ${params.project}.${regenie_merged.baseName}.manhattan.html
 
     Rscript -e "require( 'rmarkdown' ); render('${gwas_report_template}',
