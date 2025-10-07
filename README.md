@@ -31,13 +31,13 @@ Please cite [our paper](https://academic.oup.com/nargab/article/6/1/lqae015/7602
 2. Run the pipeline on a test dataset
 
 ```
-nextflow run genepi/nf-gwas -r v1.0.9 -profile test,<docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -r v1.0.10 -profile test,<docker,singularity,slurm,slurm_with_scratch>
 ```
 
 3. Run the pipeline on your data
 
 ```
-nextflow run genepi/nf-gwas -c <nextflow.config> -r v1.0.9 -profile <docker,singularity,slurm,slurm_with_scratch>
+nextflow run genepi/nf-gwas -c <nextflow.config> -r v1.0.10 -profile <docker,singularity,slurm,slurm_with_scratch>
 ```
 
 Please click [here](tests) for available test config files.
